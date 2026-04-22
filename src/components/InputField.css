@@ -1,0 +1,77 @@
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  width: 100%;
+}
+
+.input-label {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-on-surface);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.input-icon {
+  margin-left: 16px;
+  color: var(--color-on-surface-variant);
+  transition: color 0.3s ease;
+}
+
+.input-wrapper:focus-within .input-icon {
+  color: var(--color-primary);
+}
+
+.input-field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 14px 16px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-on-surface);
+  outline: none;
+  width: 100%;
+}
+
+.input-field::placeholder {
+  color: var(--color-outline);
+}
+
+/* Error State */
+.input-wrapper.has-error {
+  border-color: var(--color-error);
+}
+
+.input-wrapper.has-error:focus-within {
+  box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.15);
+}
+
+.input-wrapper.has-error .input-icon {
+  color: var(--color-error);
+}
+
+.input-error-msg {
+  font-size: 12px;
+  color: var(--color-error);
+  margin-top: 4px;
+  animation: fadeIn 0.3s ease-out forwards;
+}

@@ -1,0 +1,36 @@
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.status-default {
+  background-color: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+}
+
+.status-success {
+  background-color: rgba(0, 168, 107, 0.1);
+  color: #008756;
+}
+
+.status-warning {
+  background-color: rgba(245, 166, 35, 0.1);
+  color: #b57a00;
+}
+
+.status-error {
+  background-color: var(--color-error-container);
+  color: var(--color-on-error-container);
+}
+
+.status-primary {
+  background-color: rgba(0, 85, 255, 0.1);
+  color: var(--color-primary);
+}
