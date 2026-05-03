@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { Navigate } from 'react-router-dom'
 import './Login.css'
@@ -5,7 +6,7 @@ import './Login.css'
 const Login = () => {
   const { user, signInWithGoogle } = useAuth()
 
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('Login Page Loaded. URL:', window.location.href)
     console.log('Hash content:', window.location.hash)
   }, [])
