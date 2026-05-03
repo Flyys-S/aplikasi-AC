@@ -1,9 +1,13 @@
-import React from 'react'
 import { useAuth } from '../context/AuthContext'
+import { Navigate } from 'react-router-dom'
 import './Login.css'
 
 const Login = () => {
-  const { signInWithGoogle } = useAuth()
+  const { user, signInWithGoogle } = useAuth()
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   return (
     <div className="login-container">
