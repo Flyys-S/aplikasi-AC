@@ -29,6 +29,10 @@ export default defineConfig({
             purpose: 'any maskable'
           }
         ]
+      },
+      workbox: {
+        navigateFallbackDenylist: [/^\/auth/],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       }
     })
   ]

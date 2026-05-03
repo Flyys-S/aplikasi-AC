@@ -5,6 +5,11 @@ import './Login.css'
 const Login = () => {
   const { user, signInWithGoogle } = useAuth()
 
+  React.useEffect(() => {
+    console.log('Login Page Loaded. URL:', window.location.href)
+    console.log('Hash content:', window.location.hash)
+  }, [])
+
   if (user) {
     return <Navigate to="/dashboard" replace />
   }
