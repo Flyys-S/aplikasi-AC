@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, ChevronRight, ShoppingBag } from 'lucide-react'
+import TopHeader from '../components/TopHeader'
 import BottomNavigation from '../components/BottomNavigation'
 import { useTransactions } from '../hooks/useSupabase'
 import './SalesDashboard.css'
@@ -18,18 +19,12 @@ const Transactions = () => {
 
   return (
     <div className="dashboard-container fade-in">
-      <header className="dashboard-header">
-        <div>
-          <h2>Transaksi</h2>
-          <p>{transactions.length} transaksi tercatat</p>
+      <TopHeader title="Transaksi" subtitle={`${transactions.length} transaksi tercatat`}>
+        <div className="icon-btn" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
+          onClick={() => navigate('/transactions/new')}>
+          <Plus size={20} />
         </div>
-        <div className="header-actions">
-          <div className="icon-btn" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-            onClick={() => navigate('/transactions/new')}>
-            <Plus size={20} />
-          </div>
-        </div>
-      </header>
+      </TopHeader>
 
       <div className="page-content">
         {loading ? (

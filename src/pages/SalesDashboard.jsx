@@ -1,23 +1,13 @@
 import React from 'react';
 import { TrendingUp, Users, Package, Activity, Bell } from 'lucide-react';
+import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import './SalesDashboard.css';
 
 const SalesDashboard = () => {
   return (
     <div className="dashboard-container fade-in">
-      <header className="dashboard-header">
-        <div>
-          <h2>Dashboard</h2>
-          <p>Selamat Pagi, Admin</p>
-        </div>
-        <div className="header-actions">
-          <div className="icon-btn">
-            <Bell size={20} />
-            <span className="badge"></span>
-          </div>
-        </div>
-      </header>
+      <TopHeader title="Dashboard" subtitle="Selamat Pagi, Admin" />
 
       <div className="page-content">
         <section className="stats-grid">

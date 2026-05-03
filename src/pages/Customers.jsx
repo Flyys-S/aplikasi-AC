@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Plus, Phone, MapPin, ChevronRight } from 'lucide-react'
+import TopHeader from '../components/TopHeader'
 import BottomNavigation from '../components/BottomNavigation'
 import CustomerModal from '../components/CustomerModal'
 import { useCustomers } from '../hooks/useSupabase'
@@ -20,18 +21,12 @@ const Customers = () => {
 
   return (
     <div className="dashboard-container fade-in">
-      <header className="dashboard-header">
-        <div>
-          <h2>Pelanggan</h2>
-          <p>{customers.length} pelanggan terdaftar</p>
+      <TopHeader title="Pelanggan" subtitle={`${customers.length} pelanggan terdaftar`}>
+        <div className="icon-btn" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
+          onClick={() => setShowModal(true)}>
+          <Plus size={20} />
         </div>
-        <div className="header-actions">
-          <div className="icon-btn" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-            onClick={() => setShowModal(true)}>
-            <Plus size={20} />
-          </div>
-        </div>
-      </header>
+      </TopHeader>
 
       <div className="page-content">
         <div className="search-input-wrapper card-elevation" style={{ marginBottom: 'var(--space-md)' }}>

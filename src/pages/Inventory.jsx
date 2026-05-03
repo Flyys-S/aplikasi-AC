@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Plus } from 'lucide-react';
+import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import ProductCard from '../components/ProductCard';
 import './SalesDashboard.css';
@@ -19,17 +20,11 @@ const Inventory = () => {
 
   return (
     <div className="dashboard-container fade-in">
-      <header className="dashboard-header">
-        <div>
-          <h2>Inventori</h2>
-          <p>Kelola Stok Produk AC</p>
+      <TopHeader title="Inventori" subtitle="Kelola Stok Produk AC">
+        <div className="icon-btn" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
+          <Plus size={20} />
         </div>
-        <div className="header-actions">
-          <div className="icon-btn" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
-            <Plus size={20} />
-          </div>
-        </div>
-      </header>
+      </TopHeader>
 
       <div className="page-content">
         <div className="search-filter-bar">

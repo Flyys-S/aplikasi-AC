@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2 } from 'lucide-react';
+import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import Button from '../components/Button';
 import StatusChip from '../components/StatusChip';
@@ -11,15 +12,11 @@ const ProductDetails = () => {
 
   return (
     <div className="product-detail-container fade-in">
-      <header className="detail-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          <ArrowLeft size={22} />
-        </button>
-        <h2>Detail Produk</h2>
-        <button className="back-btn">
+      <TopHeader title="Detail Produk" onBack={() => navigate(-1)}>
+        <button className="icon-btn">
           <Share2 size={20} />
         </button>
-      </header>
+      </TopHeader>
 
       <div className="product-hero">
         <div className="product-hero-image">

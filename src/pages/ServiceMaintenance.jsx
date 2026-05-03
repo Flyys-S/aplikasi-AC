@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, PenTool, CheckCircle, Clock } from 'lucide-react';
+import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import Button from '../components/Button';
 import './SalesDashboard.css';
@@ -8,12 +9,7 @@ import './ServiceMaintenance.css';
 const ServiceMaintenance = () => {
   return (
     <div className="dashboard-container fade-in">
-      <header className="dashboard-header">
-        <div>
-          <h2>Servis & Pemeliharaan</h2>
-          <p>Jadwal dan Log Servis</p>
-        </div>
-      </header>
+      <TopHeader title="Servis & Pemeliharaan" subtitle="Jadwal dan Log Servis" />
 
       <div className="page-content">
         <section className="service-booking card-elevation">

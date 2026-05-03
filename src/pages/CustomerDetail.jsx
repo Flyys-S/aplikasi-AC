@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Phone, MapPin, Mail, ShoppingBag, Wrench } from 'lucide-react'
-import BottomNavigation from '../components/BottomNavigation'
+import TopHeader from '../components/TopHeader'
 import { useCustomers, useTransactions, useServiceOrders } from '../hooks/useSupabase'
 import './SalesDashboard.css'
 import './CustomerDetail.css'
@@ -20,7 +20,8 @@ const CustomerDetail = () => {
   if (!customer) {
     return (
       <div className="dashboard-container fade-in">
-        <div className="empty-state" style={{ minHeight: '100vh' }}>
+        <TopHeader title="Profil Pelanggan" onBack={() => navigate(-1)} />
+        <div className="empty-state" style={{ minHeight: '60vh' }}>
           <div className="loading-spinner"></div>
           <p>Memuat data...</p>
         </div>
@@ -32,11 +33,7 @@ const CustomerDetail = () => {
 
   return (
     <div className="dashboard-container fade-in">
-      <header className="detail-header">
-        <button className="back-btn" onClick={() => navigate(-1)}><ArrowLeft size={22} /></button>
-        <h2>Profil Pelanggan</h2>
-        <div style={{ width: 40 }} />
-      </header>
+      <TopHeader title="Profil Pelanggan" onBack={() => navigate(-1)} />
 
       <div className="page-content">
         {/* Customer Profile Card */}
