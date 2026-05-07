@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Phone } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Mail, Lock, User, Phone, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
 import './Login.css'; // Reusing login styles
@@ -9,14 +10,37 @@ const SignUp = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
+    setError(null);
+
+    try {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+            phone: formData.phone
+          }
+        }
+      });
+
+      if (signUpError) throw signUpError;
+
+      setSuccess(true);
+      // Wait a bit then navigate to login
+      setTimeout(() => navigate('/'), 3000);
+    } catch (err) {
+      console.error('Sign up error:', err);
+      setError(err.message || 'Terjadi kesalahan saat mendaftar');
+    } finally {
       setIsLoading(false);
-      navigate('/dashboard');
-    }, 1000);
+    }
   };
 
   return (
@@ -26,6 +50,38 @@ const SignUp = () => {
           <h1>Buat Akun</h1>
           <p>Bergabung dengan Sistem Retail AC</p>
         </div>
+
+        {error && (
+          <div className="auth-error-msg" style={{ 
+            backgroundColor: 'rgba(255, 0, 0, 0.1)', 
+            color: '#ff4d4d', 
+            padding: '10px', 
+            borderRadius: '8px', 
+            marginBottom: '15px',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '14px'
+          }}>
+            <AlertCircle size={16} style={{ marginRight: '8px' }} />
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="auth-success-msg" style={{ 
+            backgroundColor: 'rgba(0, 255, 0, 0.1)', 
+            color: '#00cc66', 
+            padding: '10px', 
+            borderRadius: '8px', 
+            marginBottom: '15px',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '14px'
+          }}>
+            <CheckCircle2 size={16} style={{ marginRight: '8px' }} />
+            Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.
+          </div>
+        )}
 
         <form onSubmit={handleSignUp} className="login-form">
           <InputField 
@@ -64,7 +120,7 @@ const SignUp = () => {
         </form>
 
         <div className="login-footer">
-          <p>Sudah punya akun? <span onClick={() => navigate('/')} className="link">Masuk di sini</span></p>
+          <p>Sudah punya akun? <Link to="/" className="link">Masuk di sini</Link></p>
         </div>
       </div>
     </div>

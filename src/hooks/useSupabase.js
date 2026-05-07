@@ -202,3 +202,39 @@ export const useServiceOrders = () => {
 
   return { orders, loading, fetchOrders, createOrder, updateOrderStatus }
 }
+
+export const useProfiles = () => {
+  const [profiles, setProfiles] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const fetchProfiles = async () => {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (error) setError(error)
+    else setProfiles(data)
+    setLoading(false)
+  }
+
+  const updateProfileRole = async (userId, role) => {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ role })
+      .eq('id', userId)
+    
+    if (!error) {
+      setProfiles(prev => prev.map(p => p.id === userId ? { ...p, role } : p))
+    }
+    return { error }
+  }
+
+  useEffect(() => {
+    fetchProfiles()
+  }, [])
+
+  return { profiles, loading, error, fetchProfiles, updateProfileRole }
+}

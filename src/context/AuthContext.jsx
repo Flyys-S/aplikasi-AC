@@ -7,20 +7,55 @@ export const useAuth = () => useContext(AuthContext)
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
+  const [role, setRole] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  const fetchUserRole = async (userId) => {
+    try {
+      console.log('Fetching role for user:', userId)
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single()
+      
+      if (error) {
+        console.error('Error fetching user role:', error)
+        setRole('visitor')
+      } else {
+        console.log('User role fetched successfully:', data?.role)
+        setRole(data?.role || 'visitor')
+      }
+    } catch (err) {
+      console.error('Unexpected error fetching role:', err)
+      setRole('visitor')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session)
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.email)
       setUser(session?.user ?? null)
-      setLoading(false)
+      if (session?.user) {
+        await fetchUserRole(session.user.id)
+      } else {
+        setLoading(false)
+      }
     })
 
     // Listen to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state change:', event, session)
       setUser(session?.user ?? null)
+      
+      if (session?.user) {
+        await fetchUserRole(session.user.id)
+      } else {
+        setRole(null)
+      }
       setLoading(false)
     })
 
@@ -46,7 +81,15 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      role, 
+      isAdmin: role === 'admin',
+      isTechnician: role === 'technician',
+      loading, 
+      signInWithGoogle, 
+      signOut 
+    }}>
       {children}
     </AuthContext.Provider>
   )

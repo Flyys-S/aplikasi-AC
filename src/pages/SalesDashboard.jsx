@@ -1,13 +1,18 @@
 import React from 'react';
 import { TrendingUp, Users, Package, Activity, Bell } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import './SalesDashboard.css';
 
 const SalesDashboard = () => {
+  const { role, user } = useAuth();
+  const displayRole = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'User';
+  const userName = user?.user_metadata?.full_name || 'Pengguna';
+
   return (
     <div className="dashboard-container fade-in">
-      <TopHeader title="Dashboard" subtitle="Selamat Pagi, Admin" />
+      <TopHeader title="Dashboard" subtitle={`Selamat Pagi, ${userName} (${displayRole})`} />
 
       <div className="page-content">
         <section className="stats-grid">

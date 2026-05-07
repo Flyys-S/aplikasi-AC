@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import './Login.css'
 
 const Login = () => {
@@ -56,6 +56,10 @@ const Login = () => {
               <span className="feature-icon">🔧</span>
               <span>Jadwalkan servis teknisi dengan mudah</span>
             </div>
+          </div>
+
+          <div className="login-footer" style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px' }}>
+            <p style={{ color: '#666' }}>Belum punya akun? <Link to="/signup" className="link" style={{ color: 'var(--color-primary)', fontWeight: '600', textDecoration: 'none' }}>Daftar sekarang</Link></p>
           </div>
         </div>
       </div>

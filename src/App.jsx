@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -14,16 +14,19 @@ import CustomerDetail from './pages/CustomerDetail'
 import Transactions from './pages/Transactions'
 import NewTransaction from './pages/NewTransaction'
 import InvoiceDetail from './pages/InvoiceDetail'
+import SignUp from './pages/SignUp'
+import UserManagement from './pages/UserManagement'
 
 import './App.css'
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <HashRouter>
         <Routes>
           {/* Public */}
           <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
 
           {/* Protected */}
           <Route path="/dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
@@ -35,10 +38,11 @@ function App() {
           <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
           <Route path="/transactions/new" element={<ProtectedRoute><NewTransaction /></ProtectedRoute>} />
           <Route path="/transactions/:id" element={<ProtectedRoute><InvoiceDetail /></ProtectedRoute>} />
+          <Route path="/users" element={<ProtectedRoute allowedRoles={['admin']}><UserManagement /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   )
 }
