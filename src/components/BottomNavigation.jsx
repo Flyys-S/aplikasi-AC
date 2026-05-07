@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import './BottomNavigation.css'
 
@@ -12,7 +12,12 @@ const BottomNavigation = () => {
     <nav className="bottom-nav">
       <NavLink to="/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
         <LayoutDashboard size={22} />
-        <span>Dashboard</span>
+        <span>Beranda</span>
+      </NavLink>
+
+      <NavLink to="/catalog" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+        <BookOpen size={22} />
+        <span>Katalog</span>
       </NavLink>
 
       {isAdmin && (

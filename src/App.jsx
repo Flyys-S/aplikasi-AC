@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 // Pages
 import Login from './pages/Login'
+import Catalog from './pages/Catalog'
 import SalesDashboard from './pages/SalesDashboard'
 import Inventory from './pages/Inventory'
 import ProductDetails from './pages/ProductDetails'
@@ -30,6 +31,7 @@ function App() {
 
           {/* Protected */}
           <Route path="/dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
+          <Route path="/catalog" element={<ProtectedRoute><Catalog /></ProtectedRoute>} />
           <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
           <Route path="/inventory/:id" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>} />
           <Route path="/service" element={<ProtectedRoute><ServiceMaintenance /></ProtectedRoute>} />
