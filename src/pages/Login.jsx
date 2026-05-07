@@ -4,12 +4,21 @@ import { Navigate, Link } from 'react-router-dom'
 import './Login.css'
 
 const Login = () => {
-  const { user, signInWithGoogle } = useAuth()
+  const { user, signInWithGoogle, loading } = useAuth()
 
   useEffect(() => {
     console.log('Login Page Loaded. URL:', window.location.href)
     console.log('Hash content:', window.location.hash)
   }, [])
+
+  if (loading) {
+    return (
+      <div className="loading-screen" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8f9fa' }}>
+        <div className="loading-spinner"></div>
+        <p style={{ marginTop: '20px', color: '#666', fontWeight: '500' }}>Menghubungkan ke sistem...</p>
+      </div>
+    )
+  }
 
   if (user) {
     return <Navigate to="/dashboard" replace />

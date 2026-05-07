@@ -4,7 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>temp_app</title>
+    <title>Arctic Clarity - Management System</title>
+    <script type="text/javascript">
+      // FIX for Supabase OAuth + HashRouter on GitHub Pages
+      (function() {
+        var hash = window.location.hash;
+        if (hash && hash.includes('access_token=') && !hash.includes('#/')) {
+          // If we have an access token but it's not following the #/ pattern,
+          // move it so HashRouter doesn't strip it.
+          var newHash = '#/' + hash.substring(1);
+          window.history.replaceState(null, null, window.location.pathname + window.location.search + newHash);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
