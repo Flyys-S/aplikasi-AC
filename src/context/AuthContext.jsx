@@ -44,45 +44,71 @@ export const AuthProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      console.log('Initial session check:', session?.user?.email)
-      setUser(session?.user ?? null)
+    // Initial check
+    const checkInitialSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        console.log('Initial session check:', session?.user?.email)
+        
+        if (session?.user) {
+          setUser(session.user)
+          await fetchUserRole(session.user.id)
+        } else {
+          // If no session, check if there's an error in the hash (Supabase sometimes leaves it)
+          if (window.location.hash.includes('error=')) {
+            console.error('Auth error in hash:', window.location.hash)
+          }
+          setLoading(false)
+        }
+      } catch (err) {
+        console.error('Session check failed:', err)
+        setLoading(false)
+      }
+    }
+
+    checkInitialSession()
+
+    // Listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log('Auth state change event:', _event)
+      
       if (session?.user) {
+        setUser(session.user)
+        // Only fetch role if we don't have it or if it's a new sign in
         await fetchUserRole(session.user.id)
       } else {
+        setUser(null)
+        setRole(null)
         setLoading(false)
       }
     })
 
-    // Listen to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, session)
-      setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        await fetchUserRole(session.user.id)
-      } else {
-        setRole(null)
-      }
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
+    return () => {
+      if (subscription) subscription.unsubscribe()
+    }
   }, [])
 
   const signInWithGoogle = async () => {
-    // Construct a clean redirect URL
-    const baseUrl = window.location.origin + import.meta.env.BASE_URL
-    console.log('Initiating Google sign-in with redirect to:', baseUrl)
-    
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: baseUrl,
-      },
-    })
-    if (error) console.error('Google sign-in error:', error)
+    try {
+      // Ensure the redirect URL matches exactly what's in Supabase Dashboard
+      const baseUrl = window.location.origin + import.meta.env.BASE_URL
+      console.log('Signing in with Google, redirecting to:', baseUrl)
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: baseUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        }
+      })
+      if (error) throw error
+    } catch (error) {
+      console.error('Error signing in with Google:', error.message)
+      alert('Gagal login: ' + error.message)
+    }
   }
 
   const signOut = async () => {
