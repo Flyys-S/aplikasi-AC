@@ -11,13 +11,21 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   const fetchUserRole = async (userId) => {
+    // Add a timeout to prevent hanging forever
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout fetching role')), 5000)
+    );
+
     try {
       console.log('Fetching role for user:', userId)
-      const { data, error } = await supabase
+      
+      const rolePromise = supabase
         .from('profiles')
         .select('role')
         .eq('id', userId)
-        .single()
+        .single();
+
+      const { data, error } = await Promise.race([rolePromise, timeoutPromise]);
       
       if (error) {
         console.error('Error fetching user role:', error)
@@ -27,9 +35,10 @@ export const AuthProvider = ({ children }) => {
         setRole(data?.role || 'visitor')
       }
     } catch (err) {
-      console.error('Unexpected error fetching role:', err)
-      setRole('visitor')
+      console.error('Fetch role failed or timed out:', err.message)
+      setRole('visitor') // Fallback to visitor so app doesn't hang
     } finally {
+      console.log('Role fetching process completed, setting loading to false')
       setLoading(false)
     }
   }
