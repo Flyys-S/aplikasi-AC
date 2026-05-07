@@ -1,5 +1,5 @@
 import React from 'react'
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -22,7 +22,7 @@ import './App.css'
 function App() {
   return (
     <AuthProvider>
-      <HashRouter>
+      <Router basename="/aplikasi-AC">
         <Routes>
           {/* Public */}
           <Route path="/" element={<Login />} />
@@ -42,7 +42,7 @@ function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </HashRouter>
+      </Router>
     </AuthProvider>
   )
 }

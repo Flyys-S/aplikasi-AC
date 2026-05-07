@@ -90,10 +90,8 @@ export const AuthProvider = ({ children }) => {
 
   const signInWithGoogle = async () => {
     try {
-      // FIX: Add a query param to prevent HashRouter from eating the fragment
-      // This makes the URL look like .../aplikasi-AC/?auth=true#access_token=...
-      // HashRouter will ignore the part before # and Supabase will see the fragment.
-      const baseUrl = window.location.origin + import.meta.env.BASE_URL.replace(/\/$/, '') + '/?auth=true'
+      // Back to clean URL, handled by 404.html + BrowserRouter
+      const baseUrl = window.location.origin + import.meta.env.BASE_URL
       console.log('Signing in with Google, redirecting to:', baseUrl)
       
       const { error } = await supabase.auth.signInWithOAuth({
