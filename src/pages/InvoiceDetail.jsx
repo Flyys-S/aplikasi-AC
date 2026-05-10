@@ -1,147 +1,164 @@
-import React from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, CheckCircle, Share2 } from 'lucide-react'
-import { useTransactions } from '../hooks/useSupabase'
-import './InvoiceDetail.css'
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, CheckCircle, Share2, Printer, Loader2, Download } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import './InvoiceDetail.css';
 
 const InvoiceDetail = () => {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const { transactions } = useTransactions()
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [txn, setTxn] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const txn = transactions.find(t => t.id === id)
+  useEffect(() => {
+    fetchTransaction();
+  }, [id]);
+
+  const fetchTransaction = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('transactions')
+        .select(`
+          *,
+          customers(name, phone, address),
+          items:transaction_items(
+            *,
+            products(name, brand)
+          )
+        `)
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      setTxn(data);
+    } catch (error) {
+      console.error('Error fetching invoice:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
-        title: 'Invoice AC Retail',
-        text: `Invoice #${id?.slice(-8).toUpperCase()} — Total: Rp ${txn?.total_amount?.toLocaleString('id-ID')}`,
-      })
+        title: 'Invoice Arctic Clarity',
+        text: `Invoice #${id?.slice(-8).toUpperCase()} - Total: ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(txn?.total_amount)}`,
+        url: window.location.href
+      });
     }
-  }
+  };
 
-  if (!txn) {
+  if (loading) {
     return (
-      <div className="invoice-loading">
-        <div className="loading-spinner"></div>
-        <p>Memuat invoice...</p>
+      <div className="dashboard-container fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <Loader2 className="spinner" size={32} />
+          <p style={{ marginTop: '12px', color: '#666' }}>Memuat invoice...</p>
+        </div>
       </div>
-    )
+    );
   }
 
-  const date = new Date(txn.created_at)
+  if (!txn) return <div className="page-content">Invoice tidak ditemukan.</div>;
+
+  const date = new Date(txn.created_at);
 
   return (
     <div className="invoice-container fade-in">
-      {/* Header */}
       <div className="invoice-nav">
-        <button className="back-btn" onClick={() => navigate('/transactions')}><ArrowLeft size={22} /></button>
-        <h2>Detail Invoice</h2>
-        <button className="back-btn" onClick={handleShare}><Share2 size={20} /></button>
+        <button className="back-btn" onClick={() => navigate('/transactions')}>
+          <ArrowLeft size={22} />
+        </button>
+        <h2 style={{ fontSize: '18px', fontWeight: 'bold' }}>Detail Invoice</h2>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button className="back-btn" onClick={handleShare}><Share2 size={20} /></button>
+          <button className="back-btn" onClick={() => window.print()}><Printer size={20} /></button>
+        </div>
       </div>
 
-      {/* Invoice Card */}
-      <div className="invoice-card">
-        {/* Company Header */}
-        <div className="invoice-company">
-          <div className="invoice-logo">AC</div>
-          <div>
-            <h3>AC Retail System</h3>
-            <p>Sistem Manajemen Retail AC</p>
+      <div className="invoice-card card-elevation">
+        <div className="invoice-header-branding">
+          <div className="brand-logo">AC</div>
+          <div className="brand-text">
+            <h3>Arctic Clarity</h3>
+            <p>Premium AC Service & Retail</p>
+          </div>
+          <div className="invoice-badge">
+            #{id?.slice(-8).toUpperCase()}
           </div>
         </div>
 
         <div className="invoice-divider" />
 
-        {/* Invoice Info */}
-        <div className="invoice-info-grid">
-          <div className="invoice-info-item">
-            <span className="info-label">No. Invoice</span>
-            <span className="info-value">#{id?.slice(-8).toUpperCase()}</span>
+        <div className="invoice-meta-grid">
+          <div className="meta-item">
+            <span className="meta-label">Tanggal</span>
+            <span className="meta-value">{date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
           </div>
-          <div className="invoice-info-item">
-            <span className="info-label">Tanggal</span>
-            <span className="info-value">
-              {date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-            </span>
+          <div className="meta-item">
+            <span className="meta-label">Metode Bayar</span>
+            <span className="meta-value" style={{ textTransform: 'capitalize' }}>{txn.payment_method}</span>
           </div>
-          <div className="invoice-info-item">
-            <span className="info-label">Pelanggan</span>
-            <span className="info-value">{txn.customers?.name || 'Pelanggan Umum'}</span>
+          <div className="meta-item" style={{ gridColumn: 'span 2' }}>
+            <span className="meta-label">Pelanggan</span>
+            <span className="meta-value">{txn.customers?.name || 'Pelanggan Umum'}</span>
+            <span className="meta-subtext">{txn.customers?.phone}</span>
           </div>
-          <div className="invoice-info-item">
-            <span className="info-label">Pembayaran</span>
-            <span className="info-value">{txn.payment_method}</span>
-          </div>
-          {txn.customers?.phone && (
-            <div className="invoice-info-item" style={{ gridColumn: '1/-1' }}>
-              <span className="info-label">No. HP</span>
-              <span className="info-value">{txn.customers.phone}</span>
-            </div>
-          )}
         </div>
 
         <div className="invoice-divider" />
 
-        {/* Items */}
-        <div className="invoice-items">
-          <div className="invoice-items-header">
-            <span>Produk</span>
-            <span>Qty</span>
-            <span>Subtotal</span>
+        <div className="invoice-items-table">
+          <div className="table-header">
+            <span className="col-desc">Deskripsi</span>
+            <span className="col-qty">Qty</span>
+            <span className="col-total">Total</span>
           </div>
-          {(txn.transaction_items || []).map((item, idx) => (
-            <div key={idx} className="invoice-item-row">
-              <div className="item-name-col">
-                <span className="item-name">{item.products?.name || 'Produk'}</span>
-                <span className="item-brand">{item.products?.brand}</span>
-                <span className="item-unit-price">@ Rp {item.unit_price?.toLocaleString('id-ID')}</span>
+          {txn.items?.map((item, idx) => (
+            <div key={idx} className="table-row">
+              <div className="col-desc">
+                <span className="item-name">{item.products?.name}</span>
+                <span className="item-unit">@ {new Intl.NumberFormat('id-ID').format(item.unit_price)}</span>
               </div>
-              <span className="item-qty">{item.quantity}</span>
-              <span className="item-subtotal">Rp {item.subtotal?.toLocaleString('id-ID')}</span>
+              <span className="col-qty">{item.quantity}</span>
+              <span className="col-total">{new Intl.NumberFormat('id-ID').format(item.subtotal)}</span>
             </div>
           ))}
         </div>
 
         <div className="invoice-divider" />
 
-        {/* Total */}
-        <div className="invoice-total-section">
-          <div className="invoice-total-row">
+        <div className="invoice-summary">
+          <div className="summary-row">
             <span>Subtotal</span>
-            <span>Rp {txn.total_amount?.toLocaleString('id-ID')}</span>
+            <span>{new Intl.NumberFormat('id-ID').format(txn.total_amount)}</span>
           </div>
-          <div className="invoice-total-row grand-total">
-            <span>Total</span>
-            <span>Rp {txn.total_amount?.toLocaleString('id-ID')}</span>
+          <div className="summary-row grand-total">
+            <span>Total Bayar</span>
+            <span>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(txn.total_amount)}</span>
           </div>
         </div>
 
-        {/* Status Badge */}
-        <div className="invoice-status-badge">
-          <CheckCircle size={16} color="#008756" />
-          <span>Transaksi Berhasil</span>
-        </div>
-
-        {txn.notes && (
-          <div className="invoice-notes">
-            <span className="info-label">Catatan:</span>
-            <span>{txn.notes}</span>
+        <div className="invoice-footer-status">
+          <div className="status-indicator">
+            <CheckCircle size={20} color="#008756" />
+            <span>TRANSAKSI BERHASIL</span>
           </div>
-        )}
+          <p>Terima kasih telah mempercayakan AC Anda kepada kami.</p>
+        </div>
       </div>
 
-      {/* Actions */}
-      <div className="invoice-actions">
+      <div className="invoice-actions-footer">
         <button className="btn-secondary" onClick={() => navigate('/transactions')}>
-          Kembali ke Daftar
+          Tutup
         </button>
         <button className="btn-primary" onClick={() => navigate('/transactions/new')}>
-          + Transaksi Baru
+          Transaksi Baru
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default InvoiceDetail
+export default InvoiceDetail;

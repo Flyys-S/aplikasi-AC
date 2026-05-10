@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { LogOut, Bell, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './TopHeader.css';
 
 const TopHeader = ({ title, subtitle, onBack, children }) => {
+  const navigate = useNavigate();
   const { signOut, user } = useAuth();
 
   const handleLogout = async () => {
@@ -36,7 +38,11 @@ const TopHeader = ({ title, subtitle, onBack, children }) => {
         </div>
         
         <div className="user-profile">
-          <div className="user-avatar">
+          <div 
+            className="user-avatar" 
+            onClick={() => navigate('/profile')} 
+            style={{ cursor: 'pointer' }}
+          >
             {userInitial}
           </div>
           <button className="logout-btn" onClick={handleLogout} title="Keluar">

@@ -19,6 +19,7 @@ import NewTransaction from './pages/NewTransaction'
 import InvoiceDetail from './pages/InvoiceDetail'
 import SignUp from './pages/SignUp'
 import UserManagement from './pages/UserManagement'
+import Profile from './pages/Profile'
 
 import './App.css'
 
@@ -44,6 +45,7 @@ function App() {
           <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
           <Route path="/transactions/new" element={<ProtectedRoute><NewTransaction /></ProtectedRoute>} />
           <Route path="/transactions/:id" element={<ProtectedRoute><InvoiceDetail /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute allowedRoles={['admin']}><UserManagement /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />

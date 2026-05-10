@@ -1,82 +1,156 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Plus, ChevronRight, ShoppingBag } from 'lucide-react'
-import TopHeader from '../components/TopHeader'
-import BottomNavigation from '../components/BottomNavigation'
-import { useTransactions } from '../hooks/useSupabase'
-import './SalesDashboard.css'
-import './Transactions.css'
-
-const statusMap = {
-  completed: { label: 'Selesai', type: 'success' },
-  pending: { label: 'Pending', type: 'warning' },
-  cancelled: { label: 'Batal', type: 'error' },
-}
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, ChevronRight, ShoppingBag, Globe, Store, Search, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import TopHeader from '../components/TopHeader';
+import BottomNavigation from '../components/BottomNavigation';
+import './Transactions.css';
 
 const Transactions = () => {
-  const navigate = useNavigate()
-  const { transactions, loading } = useTransactions()
+  const navigate = useNavigate();
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('transactions')
+        .select(`
+          *,
+          customers(name, phone)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTransactions(data || []);
+    } catch (error) {
+      console.error('Error fetching transactions:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'completed': return { label: 'Selesai', color: '#008756', bg: 'rgba(0,135,86,0.1)' };
+      case 'pending_verification': return { label: 'Verifikasi', color: '#f5a623', bg: 'rgba(245,166,35,0.1)' };
+      case 'cancelled': return { label: 'Batal', color: '#ff4444', bg: 'rgba(255,68,68,0.1)' };
+      default: return { label: status, color: '#666', bg: '#eee' };
+    }
+  };
+
+  const filteredTransactions = transactions.filter(t => 
+    (t.customers?.name || 'Umum').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="dashboard-container fade-in">
-      <TopHeader title="Transaksi" subtitle={`${transactions.length} transaksi tercatat`}>
-        <div className="icon-btn" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-          onClick={() => navigate('/transactions/new')}>
+      <TopHeader title="Transaksi" subtitle="Riwayat Penjualan Toko & Online">
+        <div 
+          className="icon-btn" 
+          style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
+          onClick={() => navigate('/transactions/new')}
+        >
           <Plus size={20} />
         </div>
       </TopHeader>
 
-      <div className="page-content">
+      <div className="page-content" style={{ paddingBottom: '100px' }}>
+        <div className="search-input-wrapper card-elevation" style={{ marginBottom: '20px', backgroundColor: 'white', borderRadius: '12px', padding: '0 12px' }}>
+          <Search size={18} color="#999" />
+          <input 
+            type="text" 
+            placeholder="Cari transaksi atau pelanggan..." 
+            className="search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
         {loading ? (
-          <div className="empty-state">
-            <div className="loading-spinner" style={{ width: 32, height: 32, margin: '0 auto 12px' }}></div>
-            <p>Memuat transaksi...</p>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <Loader2 className="spinner" size={32} />
+            <p>Memuat data...</p>
           </div>
-        ) : transactions.length === 0 ? (
-          <div className="empty-state card-elevation">
-            <span>🧾</span>
-            <p>Belum ada transaksi</p>
-            <small>Klik tombol + untuk membuat transaksi baru</small>
+        ) : filteredTransactions.length > 0 ? (
+          <div className="txn-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {filteredTransactions.map(txn => {
+              const status = getStatusLabel(txn.status);
+              return (
+                <div 
+                  key={txn.id} 
+                  className="card-elevation" 
+                  onClick={() => navigate(`/transactions/${txn.id}`)}
+                  style={{ 
+                    padding: '16px', 
+                    borderRadius: '16px', 
+                    backgroundColor: 'white', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '16px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ 
+                    width: '44px', 
+                    height: '44px', 
+                    borderRadius: '12px', 
+                    backgroundColor: txn.is_online ? 'rgba(0, 85, 255, 0.1)' : 'rgba(107, 114, 128, 0.1)', 
+                    color: txn.is_online ? 'var(--color-primary)' : '#666',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {txn.is_online ? <Globe size={20} /> : <Store size={20} />}
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
+                      <span style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--color-primary)' }}>
+                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(txn.total_amount)}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '12px', color: '#999' }}>
+                        {new Date(txn.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      <span style={{ 
+                        fontSize: '10px', 
+                        fontWeight: 'bold', 
+                        padding: '4px 8px', 
+                        borderRadius: '6px', 
+                        backgroundColor: status.bg, 
+                        color: status.color,
+                        textTransform: 'uppercase'
+                      }}>
+                        {status.label}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight size={18} color="#ccc" />
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <div className="txn-list">
-            {transactions.map(txn => {
-              const st = statusMap[txn.status] || statusMap.completed
-              return (
-                <div key={txn.id} className="txn-card card-elevation"
-                  onClick={() => navigate(`/transactions/${txn.id}`)}>
-                  <div className="txn-icon">
-                    <ShoppingBag size={20} />
-                  </div>
-                  <div className="txn-info">
-                    <span className="txn-customer">
-                      {txn.customers?.name || 'Pelanggan Umum'}
-                    </span>
-                    <span className="txn-meta">
-                      {txn.transaction_items?.length || 0} item · {txn.payment_method}
-                    </span>
-                    <span className="txn-date">
-                      {new Date(txn.created_at).toLocaleDateString('id-ID', {
-                        day: 'numeric', month: 'short', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit'
-                      })}
-                    </span>
-                  </div>
-                  <div className="txn-right">
-                    <span className="txn-amount">Rp {txn.total_amount.toLocaleString('id-ID')}</span>
-                    <span className={`txn-status status-${st.type}`}>{st.label}</span>
-                  </div>
-                  <ChevronRight size={16} color="var(--color-outline)" />
-                </div>
-              )
-            })}
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
+            <ShoppingBag size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
+            <p>Belum ada transaksi yang sesuai.</p>
           </div>
         )}
       </div>
 
       <BottomNavigation />
     </div>
-  )
-}
+  );
+};
 
-export default Transactions
+export default Transactions;

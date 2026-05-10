@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, Users, Package, Activity, Bell, ShoppingBag, ChevronRight } from 'lucide-react';
+import { TrendingUp, Users, Package, Activity, ShoppingBag, ChevronRight, Loader2, DollarSign } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import TopHeader from '../components/TopHeader';
@@ -9,28 +9,66 @@ import './SalesDashboard.css';
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
-  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
-  const { role, user } = useAuth();
-  const displayRole = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'User';
-  const userName = user?.user_metadata?.full_name || 'Pengguna';
+  const { role } = useAuth();
+  const [stats, setStats] = useState({
+    totalSales: 0,
+    unitsSold: 0,
+    serviceCount: 0,
+    pendingOrders: 0,
+    recentActivity: []
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPendingOrders = async () => {
-      const { count } = await supabase
-        .from('transactions')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending_verification');
-      setPendingOrdersCount(count || 0);
-    };
-    fetchPendingOrders();
+    fetchDashboardData();
   }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      const [txnRes, jobRes, pendingRes, activityRes] = await Promise.all([
+        supabase.from('transactions').select('total_amount, transaction_items(quantity)').eq('status', 'completed'),
+        supabase.from('service_jobs').select('id', { count: 'exact' }),
+        supabase.from('transactions').select('id', { count: 'exact', head: true }).eq('status', 'pending_verification'),
+        supabase.from('transactions').select('*, customers(name)').order('created_at', { ascending: false }).limit(5)
+      ]);
+
+      const totalSales = txnRes.data?.reduce((sum, t) => sum + (t.total_amount || 0), 0) || 0;
+      const unitsSold = txnRes.data?.reduce((sum, t) => {
+        const itemQty = t.transaction_items?.reduce((s, i) => s + (i.quantity || 0), 0) || 0;
+        return sum + itemQty;
+      }, 0) || 0;
+
+      setStats({
+        totalSales,
+        unitsSold,
+        serviceCount: jobRes.count || 0,
+        pendingOrders: pendingRes.count || 0,
+        recentActivity: activityRes.data || []
+      });
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="dashboard-container fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Loader2 className="spinner" size={32} />
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container fade-in">
-      <TopHeader title="Dashboard Penjualan" subtitle="Ringkasan Performa Toko" />
+      <TopHeader title="Dashboard Bisnis" subtitle="Ringkasan Performa Arctic Clarity" />
 
-      <div className="page-content">
-        {pendingOrdersCount > 0 && (
+      <div className="page-content" style={{ paddingBottom: '100px' }}>
+        {/* Urgent Alerts */}
+        {stats.pendingOrders > 0 && (
           <div 
             className="card-elevation fade-in" 
             onClick={() => navigate('/online-orders')}
@@ -38,79 +76,104 @@ const SalesDashboard = () => {
               padding: '16px', 
               backgroundColor: '#fffbeb', 
               border: '1px solid #fef3c7', 
-              borderRadius: '12px', 
-              marginBottom: '20px',
+              borderRadius: '16px', 
+              marginBottom: '24px',
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
               cursor: 'pointer'
             }}
           >
-            <div style={{ backgroundColor: '#f5a623', color: 'white', padding: '8px', borderRadius: '50%' }}>
+            <div style={{ backgroundColor: '#f5a623', color: 'white', padding: '8px', borderRadius: '12px' }}>
               <ShoppingBag size={20} />
             </div>
             <div style={{ flex: 1 }}>
               <p style={{ margin: 0, fontWeight: 'bold', fontSize: '14px', color: '#92400e' }}>
-                Ada {pendingOrdersCount} Pesanan Online Baru
+                {stats.pendingOrders} Pesanan Menunggu Verifikasi
               </p>
-              <p style={{ margin: 0, fontSize: '12px', color: '#b45309' }}>Klik untuk verifikasi bukti pembayaran</p>
+              <p style={{ margin: 0, fontSize: '12px', color: '#b45309' }}>Segera cek bukti transfer pelanggan</p>
             </div>
             <ChevronRight size={20} color="#b45309" />
           </div>
         )}
-        <section className="stats-grid">
-          <div className="stat-card card-elevation">
-            <div className="stat-icon" style={{ backgroundColor: 'rgba(0, 85, 255, 0.1)', color: 'var(--color-primary)' }}>
-              <TrendingUp size={24} />
+
+        {/* Primary Stats Grid */}
+        <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'var(--color-primary)', color: 'white' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+              <DollarSign size={24} style={{ opacity: 0.8 }} />
+              <TrendingUp size={20} />
             </div>
-            <div className="stat-info">
-              <span className="stat-label">Total Penjualan</span>
-              <span className="stat-value">Rp 45.2M</span>
-              <span className="stat-trend positive">+12% vs bulan lalu</span>
-            </div>
-          </div>
-          
-          <div className="stat-card card-elevation">
-            <div className="stat-icon" style={{ backgroundColor: 'rgba(112, 224, 255, 0.2)', color: 'var(--color-secondary-dark)' }}>
-              <Package size={24} />
-            </div>
-            <div className="stat-info">
-              <span className="stat-label">Unit Terjual</span>
-              <span className="stat-value">128</span>
-              <span className="stat-trend positive">+5 unit</span>
-            </div>
+            <span style={{ fontSize: '12px', opacity: 0.8, display: 'block' }}>Total Pendapatan</span>
+            <span style={{ fontSize: '20px', fontWeight: 'bold', display: 'block' }}>
+              {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(stats.totalSales)}
+            </span>
           </div>
 
-          <div className="stat-card card-elevation">
-            <div className="stat-icon" style={{ backgroundColor: 'rgba(245, 166, 35, 0.1)', color: '#b57a00' }}>
-              <Activity size={24} />
+          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'white' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+              <Package size={24} color="var(--color-primary)" />
             </div>
-            <div className="stat-info">
-              <span className="stat-label">Layanan Servis</span>
-              <span className="stat-value">34</span>
-              <span className="stat-trend pending">4 perlu jadwal</span>
+            <span style={{ fontSize: '12px', color: '#999', display: 'block' }}>Unit Terjual</span>
+            <span style={{ fontSize: '20px', fontWeight: 'bold', display: 'block', color: '#333' }}>
+              {stats.unitsSold} Unit
+            </span>
+          </div>
+
+          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'white', gridColumn: 'span 2' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ padding: '12px', borderRadius: '16px', backgroundColor: 'rgba(0,135,86,0.1)', color: '#008756' }}>
+                <Activity size={24} />
+              </div>
+              <div>
+                <span style={{ fontSize: '12px', color: '#999', display: 'block' }}>Total Pekerjaan Servis</span>
+                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#333' }}>{stats.serviceCount} Servis</span>
+              </div>
             </div>
           </div>
         </section>
 
+        {/* Recent Transactions */}
         <section className="recent-activity">
-          <div className="section-header">
-            <h3>Aktivitas Terkini</h3>
-            <span className="link-text">Lihat Semua</span>
+          <div className="section-header" style={{ marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>Transaksi Terkini</h3>
+            <span className="link-text" onClick={() => navigate('/transactions')}>Lihat Semua</span>
           </div>
-          <div className="activity-list card-elevation">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="activity-item">
-                <div className="activity-avatar">
-                  <Users size={16} />
+          <div className="activity-list card-elevation" style={{ backgroundColor: 'white', borderRadius: '20px', overflow: 'hidden' }}>
+            {stats.recentActivity.length > 0 ? (
+              stats.recentActivity.map((txn) => (
+                <div 
+                  key={txn.id} 
+                  className="activity-item" 
+                  onClick={() => navigate(`/transactions/${txn.id}`)}
+                  style={{ padding: '16px', borderBottom: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
+                >
+                  <div style={{ backgroundColor: txn.is_online ? 'rgba(0, 85, 255, 0.1)' : 'rgba(107, 114, 128, 0.1)', padding: '10px', borderRadius: '12px' }}>
+                    <ShoppingBag size={18} color={txn.is_online ? 'var(--color-primary)' : '#666'} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
+                    <span style={{ fontSize: '12px', color: '#999' }}>{new Date(txn.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} · {txn.payment_method}</span>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
+                      {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(txn.total_amount)}
+                    </span>
+                    <span style={{ 
+                      fontSize: '10px', 
+                      fontWeight: 'bold', 
+                      color: txn.status === 'completed' ? '#008756' : '#f5a623'
+                    }}>
+                      {txn.status === 'completed' ? 'SUKSES' : 'PENDING'}
+                    </span>
+                  </div>
                 </div>
-                <div className="activity-details">
-                  <span className="activity-title">Pembelian Unit AC Daikin 1/2 PK</span>
-                  <span className="activity-time">Oleh Bpk. Budi - 2 jam yang lalu</span>
-                </div>
-                <div className="activity-status success">Selesai</div>
+              ))
+            ) : (
+              <div style={{ padding: '32px', textAlign: 'center', color: '#999' }}>
+                Belum ada aktivitas hari ini.
               </div>
-            ))}
+            )}
           </div>
         </section>
       </div>
