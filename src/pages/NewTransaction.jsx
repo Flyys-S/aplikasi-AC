@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Minus, Trash2, ShoppingCart, Loader2, User } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Minus, Trash2, ShoppingCart, Loader2, User, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { formatAngka, formatRupiah } from '../lib/formatters';
+import { decrementStockBatch } from '../lib/stockUtils';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import TopHeader from '../components/TopHeader';
 import Button from '../components/Button';
 import './NewTransaction.css';
@@ -21,6 +23,7 @@ const NewTransaction = () => {
   const [notes, setNotes] = useState('');
   const [productSearch, setProductSearch] = useState('');
   const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     fetchInitialData();
@@ -50,8 +53,13 @@ const NewTransaction = () => {
     const existing = cart.find(i => i.product_id === product.id);
     const currentQtyInCart = existing ? existing.quantity : 0;
 
+    if (product.stock <= 0) {
+      toast.error('Stok tidak mencukupi!');
+      return;
+    }
+
     if (currentQtyInCart >= product.stock) {
-      alert('Stok tidak mencukupi!');
+      toast.error('Stok tidak mencukupi!');
       return;
     }
 
@@ -66,17 +74,17 @@ const NewTransaction = () => {
         brand: product.brand,
         unit_price: product.price, 
         quantity: 1, 
-        subtotal: product.price 
+        subtotal: product.price,
+        stock: product.stock
       }]);
     }
   };
 
   const updateQty = (productId, delta) => {
-    const product = products.find(p => p.id === productId);
     const item = cart.find(i => i.product_id === productId);
     
-    if (delta > 0 && item.quantity >= product.stock) {
-      alert('Stok maksimal tercapai');
+    if (delta > 0 && item.quantity >= item.stock) {
+      toast.error('Stok maksimal tercapai');
       return;
     }
 
@@ -131,19 +139,19 @@ const NewTransaction = () => {
       const { error: itemsError } = await supabase.from('transaction_items').insert(itemsPayload);
       if (itemsError) throw itemsError;
 
-      // 4. Update Stock
-      for (const item of cart) {
-        const product = products.find(p => p.id === item.product_id);
-        await supabase
-          .from('products')
-          .update({ stock: product.stock - item.quantity })
-          .eq('id', item.product_id);
+      // 4. Update Stock Atomically via RPC
+      const { success: stockSuccess, errors } = await decrementStockBatch(cart);
+      if (!stockSuccess) {
+        console.error('Partial stock update failure:', errors);
       }
 
-      alert('Transaksi berhasil disimpan!');
+      setCart([]);
+      toast.success('Transaksi berhasil disimpan!');
+      setSuccess(true);
       navigate(`/transactions/${txn.id}`);
     } catch (error) {
-      alert('Gagal: ' + error.message);
+      console.error('Transaction error:', error.message);
+      toast.error('Gagal: ' + error.message);
     } finally {
       setSaving(false);
     }

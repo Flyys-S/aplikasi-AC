@@ -163,45 +163,6 @@ export const useTransactions = () => {
   return { transactions, loading, error, fetchTransactions, createTransaction }
 }
 
-export const useServiceOrders = () => {
-  const { user } = useAuth()
-  const [orders, setOrders] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  const fetchOrders = async () => {
-    if (!user) return
-    setLoading(true)
-    const { data, error } = await supabase
-      .from('service_orders')
-      .select('*, customers(name, phone)')
-      .order('scheduled_date', { ascending: true })
-    if (!error) setOrders(data)
-    setLoading(false)
-  }
-
-  const createOrder = async (orderData) => {
-    const { data, error } = await supabase
-      .from('service_orders')
-      .insert([{ ...orderData, user_id: user.id }])
-      .select()
-      .single()
-    if (!error) fetchOrders()
-    return { data, error }
-  }
-
-  const updateOrderStatus = async (id, status) => {
-    const { error } = await supabase
-      .from('service_orders')
-      .update({ status })
-      .eq('id', id)
-    if (!error) fetchOrders()
-    return { error }
-  }
-
-  useEffect(() => { fetchOrders() }, [user])
-
-  return { orders, loading, fetchOrders, createOrder, updateOrderStatus }
-}
 
 export const useProfiles = () => {
   const [profiles, setProfiles] = useState([])

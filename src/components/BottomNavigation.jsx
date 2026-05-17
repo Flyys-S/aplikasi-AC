@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext'
 import './BottomNavigation.css'
 
 const BottomNavigation = () => {
-  const { isAdmin, role } = useAuth()
-  console.log('BottomNavigation Render - Role:', role, 'isAdmin:', isAdmin)
+  const { role } = useAuth()
+  const isAdmin = role === 'admin'
 
   return (
     <nav className="bottom-nav">

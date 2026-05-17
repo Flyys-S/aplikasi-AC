@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Phone, MapPin, Mail, ShoppingBag, Wrench, Loader2, Calendar, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { formatRupiahCompact, formatRupiah, formatTanggal } from '../lib/formatters';
+import { getStatusLabel } from '../lib/statusUtils';
+import PageLoader from '../components/PageLoader';
+import EmptyState from '../components/EmptyState';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import './CustomerDetail.css';
@@ -42,14 +45,7 @@ const CustomerDetail = () => {
   };
 
   if (loading) {
-    return (
-      <div className="dashboard-container fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <Loader2 className="spinner" size={32} />
-          <p style={{ marginTop: '12px', color: '#666' }}>Memuat profil pelanggan...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader text="Memuat profil pelanggan..." />;
   }
 
   const totalSpend = transactions.reduce((sum, t) => sum + t.total_amount, 0);
@@ -130,9 +126,7 @@ const CustomerDetail = () => {
                   </div>
                 ))
               ) : (
-                <div style={{ padding: '24px', textAlign: 'center', color: '#999', backgroundColor: '#f9f9f9', borderRadius: '16px' }}>
-                  Belum ada transaksi tercatat.
-                </div>
+                <EmptyState icon={ShoppingBag} text="Belum ada transaksi tercatat." />
               )}
             </div>
           </section>
@@ -156,18 +150,16 @@ const CustomerDetail = () => {
                       fontWeight: 'bold', 
                       padding: '4px 8px', 
                       borderRadius: '6px', 
-                      backgroundColor: job.status === 'completed' ? 'rgba(0,135,86,0.1)' : 'rgba(245,166,35,0.1)', 
-                      color: job.status === 'completed' ? '#008756' : '#f5a623',
+                      backgroundColor: getStatusLabel(job.status).bg, 
+                      color: getStatusLabel(job.status).color,
                       textTransform: 'uppercase'
                     }}>
-                      {job.status === 'completed' ? 'Selesai' : job.status === 'in_progress' ? 'Proses' : 'Menunggu'}
+                      {getStatusLabel(job.status).label}
                     </span>
                   </div>
                 ))
               ) : (
-                <div style={{ padding: '24px', textAlign: 'center', color: '#999', backgroundColor: '#f9f9f9', borderRadius: '16px' }}>
-                  Belum ada riwayat servis.
-                </div>
+                <EmptyState icon={Wrench} text="Belum ada riwayat servis." />
               )}
             </div>
           </section>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { Toaster } from 'react-hot-toast'
 import ProtectedRoute from './components/ProtectedRoute'
 
 // Pages
@@ -26,6 +27,7 @@ import './App.css'
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-center" />
       <Router basename="/aplikasi-AC">
         <Routes>
           {/* Public */}

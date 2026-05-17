@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, Plus, Loader2 } from 'lucide-react';
+import { Plus, Search, Loader2, Package, Filter } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { formatRupiah } from '../lib/formatters';
+import InlineLoader from '../components/InlineLoader';
+import EmptyState from '../components/EmptyState';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import ProductCard from '../components/ProductCard';
@@ -77,10 +79,7 @@ const Inventory = () => {
         </div>
 
         {loading ? (
-          <div className="loading-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px' }}>
-            <Loader2 className="spinner" size={32} />
-            <p style={{ marginTop: '12px', color: '#666' }}>Memuat data produk...</p>
-          </div>
+          <InlineLoader text="Memuat data produk..." />
         ) : (
           <div className="inventory-grid">
             {filteredProducts.length > 0 ? (
@@ -96,9 +95,7 @@ const Inventory = () => {
                 />
               ))
             ) : (
-              <div className="empty-state" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px' }}>
-                <p>Tidak ada produk yang ditemukan.</p>
-              </div>
+              <EmptyState icon={Package} text="Tidak ada produk yang ditemukan." />
             )}
           </div>
         )}

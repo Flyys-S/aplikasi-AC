@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronRight, ShoppingBag, Globe, Store, Search, Loader2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import { formatRupiah, formatTanggalJam } from '../lib/formatters';
+import { supabase } from '../lib/supabase';
+import { getStatusLabel } from '../lib/statusUtils';
+import InlineLoader from '../components/InlineLoader';
+import EmptyState from '../components/EmptyState';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import './Transactions.css';
@@ -37,14 +40,7 @@ const Transactions = () => {
     }
   };
 
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 'completed': return { label: 'Selesai', color: '#008756', bg: 'rgba(0,135,86,0.1)' };
-      case 'pending_verification': return { label: 'Verifikasi', color: '#f5a623', bg: 'rgba(245,166,35,0.1)' };
-      case 'cancelled': return { label: 'Batal', color: '#ff4444', bg: 'rgba(255,68,68,0.1)' };
-      default: return { label: status, color: '#666', bg: '#eee' };
-    }
-  };
+
 
   const filteredTransactions = transactions.filter(t => 
     (t.customers?.name || 'Umum').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -76,10 +72,7 @@ const Transactions = () => {
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <Loader2 className="spinner" size={32} />
-            <p>Memuat data...</p>
-          </div>
+          <InlineLoader text="Memuat data..." />
         ) : filteredTransactions.length > 0 ? (
           <div className="txn-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {filteredTransactions.map(txn => {
@@ -142,10 +135,7 @@ const Transactions = () => {
             })}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
-            <ShoppingBag size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-            <p>Belum ada transaksi yang sesuai.</p>
-          </div>
+          <EmptyState icon={ShoppingBag} text="Belum ada transaksi yang sesuai." />
         )}
       </div>
 

@@ -4,6 +4,7 @@ import { ChevronLeft, MapPin, Phone, User, CreditCard, Upload, Loader2, CheckCir
 import { supabase } from '../lib/supabase';
 import { formatRupiah } from '../lib/formatters';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import TopHeader from '../components/TopHeader';
 import Button from '../components/Button';
 
@@ -33,6 +34,13 @@ const Checkout = () => {
     }
   }, []);
 
+  const generateUniqueId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -40,11 +48,11 @@ const Checkout = () => {
     try {
       setUploading(true);
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const fileName = `${generateUniqueId()}.${fileExt}`;
       const filePath = `payments/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('product-images') // Reusing the same bucket for simplicity
+        .from('product-images')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
@@ -55,7 +63,7 @@ const Checkout = () => {
 
       setFormData({ ...formData, payment_proof_url: publicUrl });
     } catch (error) {
-      alert('Gagal mengunggah bukti: ' + error.message);
+      toast.error('Gagal mengunggah bukti: ' + error.message);
     } finally {
       setUploading(false);
     }
@@ -63,7 +71,7 @@ const Checkout = () => {
 
   const handleSubmit = async () => {
     if (!formData.name || !formData.phone || !formData.address || !formData.payment_proof_url) {
-      alert('Mohon lengkapi semua data dan unggah bukti transfer.');
+      toast.error('Mohon lengkapi semua data dan unggah bukti transfer.');
       return;
     }
 
@@ -82,7 +90,10 @@ const Checkout = () => {
           status: 'pending_verification',
           is_online: true,
           payment_proof_url: formData.payment_proof_url,
-          notes: `Alamat: ${formData.address} | No. HP: ${formData.phone} | Nama: ${formData.name}`
+          buyer_name: formData.name,
+          buyer_phone: formData.phone,
+          buyer_address: formData.address,
+          notes: null
         }])
         .select()
         .single();
@@ -108,7 +119,7 @@ const Checkout = () => {
       localStorage.removeItem('arctic_cart');
       setSuccess(true);
     } catch (error) {
-      alert('Gagal memproses pesanan: ' + error.message);
+      toast.error('Gagal memproses pesanan: ' + error.message);
     } finally {
       setLoading(false);
     }

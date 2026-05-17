@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard } from 'lucide-react';
+import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { formatRupiah } from '../lib/formatters';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import ProductCard from '../components/ProductCard';
 import Button from '../components/Button';
+import InlineLoader from '../components/InlineLoader';
+import EmptyState from '../components/EmptyState';
 import './Inventory.css';
 
 const Catalog = () => {
@@ -112,10 +114,7 @@ const Catalog = () => {
         </div>
 
         {loading ? (
-          <div className="loading-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px' }}>
-            <Loader2 className="spinner" size={32} />
-            <p style={{ marginTop: '12px', color: '#666' }}>Membuka katalog...</p>
-          </div>
+          <InlineLoader text="Membuka katalog..." />
         ) : (
           <div className="inventory-grid" style={{ paddingBottom: '100px' }}>
             {filteredProducts.length > 0 ? (
@@ -157,9 +156,7 @@ const Catalog = () => {
                 </div>
               ))
             ) : (
-              <div className="empty-state" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px' }}>
-                <p>Produk tidak ditemukan di katalog.</p>
-              </div>
+              <EmptyState icon={Package} text="Produk tidak ditemukan di katalog." />
             )}
           </div>
         )}
@@ -176,7 +173,7 @@ const Catalog = () => {
 
             <div className="cart-items" style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
               {cart.length === 0 ? (
-                <div style={{ textAlign: 'center', marginTop: '40px', color: '#999' }}>Keranjang masih kosong.</div>
+                <EmptyState icon={ShoppingCart} text="Keranjang masih kosong." />
               ) : (
                 cart.map(item => (
                   <div key={item.id} style={{ display: 'flex', gap: '12px', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #f5f5f5' }}>

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import toast from 'react-hot-toast'
 
 const AuthContext = createContext({})
 
@@ -17,7 +18,6 @@ export const AuthProvider = ({ children }) => {
     );
 
     try {
-      console.log('Fetching role for user:', userId)
       
       const rolePromise = supabase
         .from('profiles')
@@ -31,14 +31,12 @@ export const AuthProvider = ({ children }) => {
         console.error('Error fetching user role:', error)
         setRole('visitor')
       } else {
-        console.log('User role fetched successfully:', data?.role)
         setRole(data?.role || 'visitor')
       }
     } catch (err) {
       console.error('Fetch role failed or timed out:', err.message)
       setRole('visitor') // Fallback to visitor so app doesn't hang
     } finally {
-      console.log('Role fetching process completed, setting loading to false')
       setLoading(false)
     }
   }
@@ -48,7 +46,6 @@ export const AuthProvider = ({ children }) => {
     const checkInitialSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession()
-        console.log('Initial session check:', session?.user?.email)
         
         if (session?.user) {
           setUser(session.user)
@@ -70,9 +67,8 @@ export const AuthProvider = ({ children }) => {
 
     // Listen for changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log('Auth state change event:', _event)
       
-      if (session?.user) {
+      if (_event === 'SIGNED_IN') {
         setUser(session.user)
         // Only fetch role if we don't have it or if it's a new sign in
         await fetchUserRole(session.user.id)
@@ -92,9 +88,8 @@ export const AuthProvider = ({ children }) => {
     try {
       // Back to clean URL, handled by 404.html + BrowserRouter
       const baseUrl = window.location.origin + import.meta.env.BASE_URL
-      console.log('Signing in with Google, redirecting to:', baseUrl)
       
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: baseUrl,
@@ -106,8 +101,10 @@ export const AuthProvider = ({ children }) => {
       })
       if (error) throw error
     } catch (error) {
-      console.error('Error signing in with Google:', error.message)
-      alert('Gagal login: ' + error.message)
+      console.error('Google Sign-In Error:', error)
+      toast.error('Gagal login: ' + error.message)
+    } finally {
+      setLoading(false)
     }
   }
 

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2, Camera, Loader2, Save, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import toast from 'react-hot-toast';
+import PageLoader from '../components/PageLoader';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import Button from '../components/Button';
@@ -52,6 +54,13 @@ const ProductDetails = () => {
     }
   };
 
+  const generateUniqueId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  };
+
   const handleImageUpload = async (event) => {
     try {
       setUploading(true);
@@ -59,7 +68,7 @@ const ProductDetails = () => {
       if (!file) return;
 
       const fileExt = file.name.split('.').pop();
-      const fileName = `${id}-${Math.random()}.${fileExt}`;
+      const fileName = `${id}-${generateUniqueId()}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -84,7 +93,7 @@ const ProductDetails = () => {
         if (updateError) throw updateError;
       }
     } catch (error) {
-      alert('Gagal mengunggah gambar: ' + error.message);
+      toast.error('Gagal mengunggah gambar: ' + error.message);
     } finally {
       setUploading(false);
     }
@@ -108,21 +117,16 @@ const ProductDetails = () => {
         if (error) throw error;
         fetchProduct();
       }
-      alert('Data produk berhasil disimpan!');
+      toast.success('Data produk berhasil disimpan!');
     } catch (error) {
-      alert('Gagal menyimpan: ' + error.message);
+      toast.error('Gagal menyimpan: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="loading-screen" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <Loader2 className="spinner" size={48} />
-        <p style={{ marginTop: '20px', color: '#666' }}>Memuat informasi produk...</p>
-      </div>
-    );
+    return <PageLoader text="Memuat informasi produk..." />;
   }
 
   return (

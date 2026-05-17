@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Users, Package, Activity, ShoppingBag, ChevronRight, Loader2, DollarSign } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { formatRupiahCompact, formatTanggalJam } from '../lib/formatters';
+import { getStatusLabel } from '../lib/statusUtils';
 import { useAuth } from '../context/AuthContext';
+import PageLoader from '../components/PageLoader';
+import EmptyState from '../components/EmptyState';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import './SalesDashboard.css';
@@ -56,11 +59,7 @@ const SalesDashboard = () => {
   };
 
   if (loading) {
-    return (
-      <div className="dashboard-container fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Loader2 className="spinner" size={32} />
-      </div>
-    );
+    return <PageLoader text="Memuat dashboard..." />;
   }
 
   return (
@@ -163,17 +162,15 @@ const SalesDashboard = () => {
                     <span style={{ 
                       fontSize: '10px', 
                       fontWeight: 'bold', 
-                      color: txn.status === 'completed' ? '#008756' : '#f5a623'
+                      color: getStatusLabel(txn.status).color
                     }}>
-                      {txn.status === 'completed' ? 'SUKSES' : 'PENDING'}
+                      {getStatusLabel(txn.status).label.toUpperCase()}
                     </span>
                   </div>
                 </div>
               ))
             ) : (
-              <div style={{ padding: '32px', textAlign: 'center', color: '#999' }}>
-                Belum ada aktivitas hari ini.
-              </div>
+              <EmptyState icon={Activity} text="Belum ada aktivitas hari ini." />
             )}
           </div>
         </section>

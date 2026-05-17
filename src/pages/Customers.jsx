@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Plus, Phone, MapPin, ChevronRight } from 'lucide-react'
+import { Search, Plus, Phone, MapPin, ChevronRight, Users } from 'lucide-react'
+import InlineLoader from '../components/InlineLoader'
+import EmptyState from '../components/EmptyState'
 import TopHeader from '../components/TopHeader'
 import BottomNavigation from '../components/BottomNavigation'
 import CustomerModal from '../components/CustomerModal'
@@ -41,16 +43,9 @@ const Customers = () => {
         </div>
 
         {loading ? (
-          <div className="empty-state">
-            <div className="loading-spinner" style={{ width: 32, height: 32, margin: '0 auto 12px' }}></div>
-            <p>Memuat data pelanggan...</p>
-          </div>
+          <InlineLoader text="Memuat data pelanggan..." />
         ) : filtered.length === 0 ? (
-          <div className="empty-state card-elevation">
-            <span>👥</span>
-            <p>Belum ada pelanggan</p>
-            <small>Klik tombol + untuk menambahkan pelanggan baru</small>
-          </div>
+          <EmptyState icon={Users} text="Belum ada pelanggan" subtext="Klik tombol + untuk menambahkan pelanggan baru" />
         ) : (
           <div className="customers-list">
             {filtered.map(customer => (

@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, PenTool, CheckCircle, Clock, User, Plus, Loader2, Wrench } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import InlineLoader from '../components/InlineLoader';
+import EmptyState from '../components/EmptyState';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import Button from '../components/Button';
+import toast from 'react-hot-toast';
 import './SalesDashboard.css';
 import './ServiceMaintenance.css';
 
@@ -76,7 +79,7 @@ const ServiceMaintenance = () => {
 
   const handleCreateJob = async () => {
     if (!newJob.customer_id || !newJob.technician_id) {
-      alert('Mohon pilih pelanggan dan teknisi.');
+      toast.error('Mohon pilih pelanggan dan teknisi.');
       return;
     }
 
@@ -88,7 +91,7 @@ const ServiceMaintenance = () => {
 
       if (error) throw error;
       
-      alert('Penugasan teknisi berhasil dibuat!');
+      toast.success('Penugasan teknisi berhasil dibuat!');
       fetchInitialData();
       // Reset form
       setNewJob({
@@ -98,7 +101,7 @@ const ServiceMaintenance = () => {
         notes: ''
       });
     } catch (error) {
-      alert('Gagal membuat penugasan: ' + error.message);
+      toast.error('Gagal membuat penugasan: ' + error.message);
     } finally {
       setSaving(false);
     }
@@ -113,8 +116,9 @@ const ServiceMaintenance = () => {
       
       if (error) throw error;
       fetchInitialData();
+      toast.success('Status berhasil diperbarui!');
     } catch (error) {
-      alert('Gagal update status: ' + error.message);
+      toast.error('Gagal update status: ' + error.message);
     }
   };
 
@@ -213,10 +217,7 @@ const ServiceMaintenance = () => {
           <h3 className="section-title">{isAdmin ? "Semua Jadwal Servis" : "Tugas Servis Saya"}</h3>
           
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '40px' }}>
-              <Loader2 className="spinner" size={32} />
-              <p>Memuat tugas...</p>
-            </div>
+            <InlineLoader text="Memuat tugas..." />
           ) : (
             <div className="timeline">
               {jobs.length > 0 ? (
@@ -257,9 +258,7 @@ const ServiceMaintenance = () => {
                   </div>
                 ))
               ) : (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
-                  Belum ada jadwal servis terdaftar.
-                </div>
+                <EmptyState icon={Calendar} text="Belum ada jadwal servis terdaftar." />
               )}
             </div>
           )}

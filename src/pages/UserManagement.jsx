@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Users, Shield, User as UserIcon, Check, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import { useProfiles } from '../hooks/useSupabase';
@@ -14,7 +15,9 @@ const UserManagement = () => {
     setUpdatingId(userId);
     const { error } = await updateProfileRole(userId, newRole);
     if (error) {
-      alert('Gagal memperbarui role: ' + error.message);
+      toast.error('Gagal memperbarui role: ' + error.message);
+    } else {
+      toast.success('Role berhasil diperbarui');
     }
     setUpdatingId(null);
   };

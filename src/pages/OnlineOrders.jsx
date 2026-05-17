@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, Eye, CheckCircle, XCircle, Clock, MapPin, Phone, Loader2, Image as ImageIcon } from 'lucide-react';
+import { ShoppingBag, Eye, CheckCircle, XCircle, Clock, MapPin, Phone, Loader2, Image as ImageIcon, User } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { formatAngka, formatRupiah, formatTanggalJam } from '../lib/formatters';
+import { decrementStockBatch } from '../lib/stockUtils';
+import { getStatusLabel } from '../lib/statusUtils';
+import toast from 'react-hot-toast';
+import InlineLoader from '../components/InlineLoader';
+import EmptyState from '../components/EmptyState';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import Button from '../components/Button';
@@ -55,26 +60,16 @@ const OnlineOrders = () => {
 
       if (transError) throw transError;
 
-      // 2. Subtract Stock for each item
-      for (const item of order.items) {
-        const { data: product } = await supabase
-          .from('products')
-          .select('stock')
-          .eq('id', item.product_id)
-          .single();
-
-        const newStock = Math.max(0, product.stock - item.quantity);
-        
-        await supabase
-          .from('products')
-          .update({ stock: newStock })
-          .eq('id', item.product_id);
+      // 2. Subtract Stock for each item atomically via RPC
+      const { success, errors } = await decrementStockBatch(order.items);
+      if (!success) {
+         console.error('Partial stock update failure on approval:', errors);
       }
 
-      alert('Pesanan disetujui dan stok telah diperbarui!');
+      toast.success('Pesanan disetujui dan stok telah diperbarui!');
       fetchOrders();
     } catch (error) {
-      alert('Gagal menyetujui: ' + error.message);
+      toast.error('Gagal menyetujui: ' + error.message);
     } finally {
       setProcessing(null);
     }
@@ -92,7 +87,7 @@ const OnlineOrders = () => {
       if (error) throw error;
       fetchOrders();
     } catch (error) {
-      alert('Gagal membatalkan: ' + error.message);
+      toast.error('Gagal membatalkan: ' + error.message);
     } finally {
       setProcessing(null);
     }
@@ -104,10 +99,7 @@ const OnlineOrders = () => {
 
       <div className="page-content" style={{ paddingBottom: '100px' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <Loader2 className="spinner" size={32} />
-            <p>Memuat antrean...</p>
-          </div>
+          <InlineLoader text="Memuat antrean..." />
         ) : (
           <div className="order-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {orders.length > 0 ? (
@@ -120,8 +112,21 @@ const OnlineOrders = () => {
                         <Clock size={12} className="inline-icon" /> {formatTanggalJam(order.created_at)}
                       </p>
                     </div>
-                    <div className={`status-tag ${order.status === 'completed' ? 'tag-success' : order.status === 'pending_verification' ? 'tag-pending' : 'tag-error'}`}>
-                      {order.status === 'completed' ? 'Terverifikasi' : order.status === 'pending_verification' ? 'Menunggu' : 'Dibatalkan'}
+                    <div className="status-tag" style={{ backgroundColor: getStatusLabel(order.status).bg, color: getStatusLabel(order.status).color, border: 'none' }}>
+                      {getStatusLabel(order.status).label}
+                    </div>
+                  </div>
+
+                  {/* Buyer Info */}
+                  <div style={{ backgroundColor: '#f0f4ff', padding: '12px', borderRadius: '8px', marginBottom: '12px', fontSize: '13px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <User size={14} color="#666" /> <strong style={{ color: '#333' }}>{order.buyer_name || 'Pelanggan Online (Data Lama)'}</strong>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', color: '#555' }}>
+                      <Phone size={14} color="#666" /> {order.buyer_phone || '-'}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', color: '#555' }}>
+                      <MapPin size={14} color="#666" style={{ marginTop: '2px', flexShrink: 0 }} /> <span style={{ flex: 1, lineHeight: '1.4' }}>{order.buyer_address || order.notes || 'Tidak ada alamat terdaftar'}</span>
                     </div>
                   </div>
 
@@ -169,10 +174,7 @@ const OnlineOrders = () => {
                 </div>
               ))
             ) : (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
-                <ShoppingBag size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-                <p>Belum ada pesanan online.</p>
-              </div>
+              <EmptyState icon={ShoppingBag} text="Belum ada pesanan online." />
             )}
           </div>
         )}
