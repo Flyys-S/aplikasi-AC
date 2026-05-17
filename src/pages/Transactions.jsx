@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronRight, ShoppingBag, Globe, Store, Search, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatRupiah, formatTanggalJam } from '../lib/formatters';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import './Transactions.css';
@@ -115,12 +116,12 @@ const Transactions = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                       <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
                       <span style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--color-primary)' }}>
-                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(txn.total_amount)}
+                        {formatRupiah(txn.total_amount)}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '12px', color: '#999' }}>
-                        {new Date(txn.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        {formatTanggalJam(txn.created_at)}
                       </span>
                       <span style={{ 
                         fontSize: '10px', 

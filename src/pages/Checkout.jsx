@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Phone, User, CreditCard, Upload, Loader2, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatRupiah } from '../lib/formatters';
 import { useAuth } from '../context/AuthContext';
 import TopHeader from '../components/TopHeader';
 import Button from '../components/Button';
@@ -111,14 +112,6 @@ const Checkout = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0
-    }).format(price);
   };
 
   if (success) {
@@ -231,12 +224,12 @@ const Checkout = () => {
           {cart.map(item => (
             <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
               <span>{item.quantity}x {item.brand} {item.name}</span>
-              <span>{formatPrice(item.price * item.quantity)}</span>
+              <span>{formatRupiah(item.price * item.quantity)}</span>
             </div>
           ))}
           <div style={{ borderTop: '1px solid #eee', marginTop: '12px', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
             <span>Total Bayar</span>
-            <span style={{ color: 'var(--color-primary)', fontSize: '18px' }}>{formatPrice(cart.reduce((s, i) => s + (i.price * i.quantity), 0))}</span>
+            <span style={{ color: 'var(--color-primary)', fontSize: '18px' }}>{formatRupiah(cart.reduce((s, i) => s + (i.price * i.quantity), 0))}</span>
           </div>
         </section>
 

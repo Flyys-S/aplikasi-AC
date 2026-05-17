@@ -125,14 +125,6 @@ const ProductDetails = () => {
     );
   }
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0
-    }).format(price);
-  };
-
   return (
     <div className="product-detail-container fade-in">
       <TopHeader title={id === 'new' ? 'Tambah Produk' : 'Detail Produk'} onBack={() => navigate('/inventory')}>

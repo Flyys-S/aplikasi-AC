@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, Plus, Minus, Trash2, ShoppingCart, Loader2, User } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatAngka, formatRupiah } from '../lib/formatters';
 import { useAuth } from '../context/AuthContext';
 import TopHeader from '../components/TopHeader';
 import Button from '../components/Button';
@@ -232,7 +233,7 @@ const NewTransaction = () => {
                           <span style={{ fontSize: '14px' }}>{item.quantity}</span>
                           <button onClick={() => updateQty(item.product_id, 1)} style={{ width: '24px', height: '24px', borderRadius: '4px', border: '1px solid #ddd', background: 'none' }}><Plus size={12} /></button>
                         </div>
-                        <span style={{ fontSize: '13px', fontWeight: 'bold' }}>{new Intl.NumberFormat('id-ID').format(item.subtotal)}</span>
+                        <span style={{ fontSize: '13px', fontWeight: 'bold' }}>{formatAngka(item.subtotal)}</span>
                       </div>
                     </div>
                   ))
@@ -242,7 +243,7 @@ const NewTransaction = () => {
               <div style={{ padding: '12px', backgroundColor: '#f9f9f9', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
                   <span>Total</span>
-                  <span style={{ color: 'var(--color-primary)', fontSize: '18px' }}>Rp {new Intl.NumberFormat('id-ID').format(total)}</span>
+                  <span style={{ color: 'var(--color-primary)', fontSize: '18px' }}>{formatRupiah(total)}</span>
                 </div>
               </div>
 

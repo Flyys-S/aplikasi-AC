@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Plus, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatRupiah } from '../lib/formatters';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import ProductCard from '../components/ProductCard';
@@ -33,14 +34,6 @@ const Inventory = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0
-    }).format(price);
   };
 
   const filteredProducts = products.filter(product =>
@@ -96,7 +89,7 @@ const Inventory = () => {
                   key={product.id}
                   image={product.image_url}
                   title={`${product.brand} ${product.name}`}
-                  price={formatPrice(product.price)}
+                  price={formatRupiah(product.price)}
                   specs={[`Stok: ${product.stock} unit`, `${product.capacity_pk} PK`]}
                   status={getStatusLabel(product.stock)}
                   onClick={() => navigate(`/inventory/${product.id}`)}

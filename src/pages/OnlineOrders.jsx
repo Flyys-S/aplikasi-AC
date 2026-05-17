@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Eye, CheckCircle, XCircle, Clock, MapPin, Phone, Loader2, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatAngka, formatRupiah, formatTanggalJam } from '../lib/formatters';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import Button from '../components/Button';
@@ -116,7 +117,7 @@ const OnlineOrders = () => {
                     <div>
                       <h4 style={{ margin: '0 0 4px 0' }}>Order #{order.id.slice(0, 8)}</h4>
                       <p className="time" style={{ fontSize: '12px', color: '#999', margin: 0 }}>
-                        <Clock size={12} className="inline-icon" /> {new Date(order.created_at).toLocaleString('id-ID')}
+                        <Clock size={12} className="inline-icon" /> {formatTanggalJam(order.created_at)}
                       </p>
                     </div>
                     <div className={`status-tag ${order.status === 'completed' ? 'tag-success' : order.status === 'pending_verification' ? 'tag-pending' : 'tag-error'}`}>
@@ -128,12 +129,12 @@ const OnlineOrders = () => {
                     {order.items?.map(item => (
                       <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                         <span>{item.quantity}x {item.products?.brand} {item.products?.name}</span>
-                        <span style={{ fontWeight: '500' }}>{new Intl.NumberFormat('id-ID').format(item.subtotal)}</span>
+                        <span style={{ fontWeight: '500' }}>{formatAngka(item.subtotal)}</span>
                       </div>
                     ))}
                     <div style={{ borderTop: '1px solid #ddd', marginTop: '8px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
                       <span>Total</span>
-                      <span style={{ color: 'var(--color-primary)' }}>Rp {new Intl.NumberFormat('id-ID').format(order.total_amount)}</span>
+                      <span style={{ color: 'var(--color-primary)' }}>{formatRupiah(order.total_amount)}</span>
                     </div>
                   </div>
 

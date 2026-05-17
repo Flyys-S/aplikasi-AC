@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Users, Package, Activity, ShoppingBag, ChevronRight, Loader2, DollarSign } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatRupiahCompact, formatTanggalJam } from '../lib/formatters';
 import { useAuth } from '../context/AuthContext';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
@@ -106,7 +107,7 @@ const SalesDashboard = () => {
             </div>
             <span style={{ fontSize: '12px', opacity: 0.8, display: 'block' }}>Total Pendapatan</span>
             <span style={{ fontSize: '20px', fontWeight: 'bold', display: 'block' }}>
-              {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(stats.totalSales)}
+              {formatRupiahCompact(stats.totalSales)}
             </span>
           </div>
 
@@ -153,11 +154,11 @@ const SalesDashboard = () => {
                   </div>
                   <div style={{ flex: 1 }}>
                     <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
-                    <span style={{ fontSize: '12px', color: '#999' }}>{new Date(txn.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} · {txn.payment_method}</span>
+                    <span style={{ fontSize: '12px', color: '#999' }}>{formatTanggalJam(txn.created_at)} · {txn.payment_method}</span>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-                      {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(txn.total_amount)}
+                      {formatRupiahCompact(txn.total_amount)}
                     </span>
                     <span style={{ 
                       fontSize: '10px', 

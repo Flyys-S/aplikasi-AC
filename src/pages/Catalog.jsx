@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatRupiah } from '../lib/formatters';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import ProductCard from '../components/ProductCard';
@@ -74,14 +75,6 @@ const Catalog = () => {
 
   const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0
-    }).format(price);
-  };
-
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.brand.toLowerCase().includes(searchQuery.toLowerCase())
@@ -131,7 +124,7 @@ const Catalog = () => {
                   <ProductCard 
                     image={product.image_url}
                     title={`${product.brand} ${product.name}`}
-                    price={formatPrice(product.price)}
+                    price={formatRupiah(product.price)}
                     specs={[`${product.capacity_pk} PK`, product.stock > 0 ? 'Ready Stock' : 'Indent']}
                     status={product.stock > 0 ? 'Tersedia' : 'Habis'}
                     onClick={() => navigate(`/inventory/${product.id}`)}
@@ -192,7 +185,7 @@ const Catalog = () => {
                     </div>
                     <div style={{ flex: 1 }}>
                       <h4 style={{ fontSize: '14px', margin: '0 0 4px 0' }}>{item.brand} {item.name}</h4>
-                      <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '14px', margin: 0 }}>{formatPrice(item.price)}</p>
+                      <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '14px', margin: 0 }}>{formatRupiah(item.price)}</p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ddd', borderRadius: '6px' }}>
                           <button onClick={() => updateQuantity(item.id, -1)} style={{ border: 'none', background: 'none', padding: '4px 8px' }}><Minus size={14} /></button>
@@ -211,7 +204,7 @@ const Catalog = () => {
               <div className="cart-footer" style={{ padding: '20px', borderTop: '1px solid #eee', backgroundColor: '#f9f9f9' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
                   <span style={{ fontWeight: '500' }}>Total Estimasi</span>
-                  <span style={{ fontWeight: 'bold', color: 'var(--color-primary)', fontSize: '18px' }}>{formatPrice(totalPrice)}</span>
+                  <span style={{ fontWeight: 'bold', color: 'var(--color-primary)', fontSize: '18px' }}>{formatRupiah(totalPrice)}</span>
                 </div>
                 <Button fullWidth icon={CreditCard} onClick={() => navigate('/checkout')}>
                   Checkout Sekarang

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Phone, MapPin, Mail, ShoppingBag, Wrench, Loader2, Calendar, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatRupiahCompact, formatRupiah, formatTanggal } from '../lib/formatters';
 import TopHeader from '../components/TopHeader';
 import BottomNavigation from '../components/BottomNavigation';
 import './CustomerDetail.css';
@@ -91,7 +92,7 @@ const CustomerDetail = () => {
           </div>
           <div className="card-elevation" style={{ padding: '16px', borderRadius: '16px', backgroundColor: 'white', textAlign: 'center' }}>
             <Calendar size={24} color="#f5a623" style={{ margin: '0 auto 8px' }} />
-            <span style={{ display: 'block', fontSize: '18px', fontWeight: 'bold' }}>{new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(totalSpend)}</span>
+            <span style={{ display: 'block', fontSize: '18px', fontWeight: 'bold' }}>{formatRupiahCompact(totalSpend)}</span>
             <span style={{ fontSize: '12px', color: '#999' }}>Total Belanja</span>
           </div>
         </div>
@@ -120,10 +121,10 @@ const CustomerDetail = () => {
                   >
                     <div>
                       <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold' }}>{txn.items?.length || 0} Produk</span>
-                      <span style={{ fontSize: '12px', color: '#999' }}>{new Date(txn.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                      <span style={{ fontSize: '12px', color: '#999' }}>{formatTanggal(txn.created_at)}</span>
                     </div>
                     <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(txn.total_amount)}</span>
+                      <span style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>{formatRupiah(txn.total_amount)}</span>
                       <ChevronRight size={18} color="#ccc" />
                     </div>
                   </div>
@@ -148,7 +149,7 @@ const CustomerDetail = () => {
                   >
                     <div>
                       <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold' }}>{job.service_type}</span>
-                      <span style={{ fontSize: '12px', color: '#999' }}>{new Date(job.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                      <span style={{ fontSize: '12px', color: '#999' }}>{formatTanggal(job.created_at)}</span>
                     </div>
                     <span style={{ 
                       fontSize: '10px', 

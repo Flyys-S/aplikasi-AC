@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Share2, Printer, Loader2, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { formatRupiah, formatAngka, formatTanggal } from '../lib/formatters';
 import './InvoiceDetail.css';
 
 const InvoiceDetail = () => {
@@ -43,7 +44,7 @@ const InvoiceDetail = () => {
     if (navigator.share) {
       await navigator.share({
         title: 'Invoice Arctic Clarity',
-        text: `Invoice #${id?.slice(-8).toUpperCase()} - Total: ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(txn?.total_amount)}`,
+        text: `Invoice #${id?.slice(-8).toUpperCase()} - Total: ${formatRupiah(txn?.total_amount)}`,
         url: window.location.href
       });
     }
@@ -61,8 +62,6 @@ const InvoiceDetail = () => {
   }
 
   if (!txn) return <div className="page-content">Invoice tidak ditemukan.</div>;
-
-  const date = new Date(txn.created_at);
 
   return (
     <div className="invoice-container fade-in">
@@ -94,7 +93,7 @@ const InvoiceDetail = () => {
         <div className="invoice-meta-grid">
           <div className="meta-item">
             <span className="meta-label">Tanggal</span>
-            <span className="meta-value">{date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            <span className="meta-value">{formatTanggal(txn.created_at)}</span>
           </div>
           <div className="meta-item">
             <span className="meta-label">Metode Bayar</span>
@@ -119,10 +118,10 @@ const InvoiceDetail = () => {
             <div key={idx} className="table-row">
               <div className="col-desc">
                 <span className="item-name">{item.products?.name}</span>
-                <span className="item-unit">@ {new Intl.NumberFormat('id-ID').format(item.unit_price)}</span>
+                <span className="item-unit">@ {formatAngka(item.unit_price)}</span>
               </div>
               <span className="col-qty">{item.quantity}</span>
-              <span className="col-total">{new Intl.NumberFormat('id-ID').format(item.subtotal)}</span>
+              <span className="col-total">{formatAngka(item.subtotal)}</span>
             </div>
           ))}
         </div>
@@ -132,11 +131,11 @@ const InvoiceDetail = () => {
         <div className="invoice-summary">
           <div className="summary-row">
             <span>Subtotal</span>
-            <span>{new Intl.NumberFormat('id-ID').format(txn.total_amount)}</span>
+            <span>{formatAngka(txn.total_amount)}</span>
           </div>
           <div className="summary-row grand-total">
             <span>Total Bayar</span>
-            <span>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(txn.total_amount)}</span>
+            <span>{formatRupiah(txn.total_amount)}</span>
           </div>
         </div>
 
