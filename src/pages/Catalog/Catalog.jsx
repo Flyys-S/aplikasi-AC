@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
+import { useAuth } from '../../context/AuthContext';
 import TopHeader from '../../components/TopHeader';
 import Navigation from '../../components/Navigation';
 import ProductCard from '../../components/ProductCard';
@@ -10,9 +11,12 @@ import Button from '../../components/Button';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import '../Inventory/Inventory.css';
+import './Catalog.css';
 
 const Catalog = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const catalogSectionRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,25 +89,73 @@ const Catalog = () => {
     product.brand.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const scrollToCatalog = () => {
+    catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <div className="dashboard-container">
+    <div className={`dashboard-container ${!user ? 'guest-layout' : ''}`}>
       <TopHeader title="Katalog Produk" subtitle="Brosur Digital AC Arctic Clarity">
-        <div 
-          className="icon-btn" 
-          style={{ backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)', color: cart.length > 0 ? 'white' : 'inherit', position: 'relative' }}
-          onClick={() => setIsCartOpen(true)}
-        >
-          <ShoppingCart size={20} />
-          {cart.length > 0 && (
-            <span style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: '#ff4444', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyCenter: 'center', fontWeight: 'bold' }}>
-              {cart.reduce((a, b) => a + b.quantity, 0)}
-            </span>
-          )}
-        </div>
+        {user ? (
+          <div 
+            className="icon-btn" 
+            style={{ backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)', color: cart.length > 0 ? 'white' : 'inherit', position: 'relative' }}
+            onClick={() => setIsCartOpen(true)}
+          >
+            <ShoppingCart size={20} />
+            {cart.length > 0 && (
+              <span style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: '#ff4444', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyCenter: 'center', fontWeight: 'bold' }}>
+                {cart.reduce((a, b) => a + b.quantity, 0)}
+              </span>
+            )}
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Button size="small" variant="outline" onClick={() => navigate('/login')}>
+              Masuk
+            </Button>
+            <Button size="small" onClick={() => navigate('/signup')}>
+              Daftar
+            </Button>
+          </div>
+        )}
       </TopHeader>
 
       <div className="page-content fade-in">
-        <div className="search-filter-bar">
+        {!user && (
+          <section className="company-profile-hero glass-panel fade-in" style={{ marginBottom: '40px' }}>
+            <div className="hero-badge">❄️ ARCTIC CLARITY</div>
+            <h1>Solusi Pendingin Udara Premium & Retail AC Tepercaya</h1>
+            <p className="hero-description">
+              Kami berkomitmen menghadirkan kesejukan udara murni berstandar tinggi untuk hunian dan perkantoran Anda. 
+              Menyediakan unit AC orisinal kualitas terbaik, instalasi profesional, serta layanan pemeliharaan berkala didukung oleh teknisi ahli bersertifikat.
+            </p>
+            
+            <div className="hero-features-grid">
+              <div className="hero-feature-card card-elevation">
+                <span className="feature-icon">🛡️</span>
+                <h4>Unit Original 100%</h4>
+                <p>Garansi resmi langsung dari produsen terkemuka dunia.</p>
+              </div>
+              <div className="hero-feature-card card-elevation">
+                <span className="feature-icon">👨‍🔧</span>
+                <h4>Teknisi Ahli</h4>
+                <p>Instalasi & pemeliharaan presisi tinggi bersertifikat resmi.</p>
+              </div>
+              <div className="hero-feature-card card-elevation">
+                <span className="feature-icon">⚡</span>
+                <h4>Efisiensi Tinggi</h4>
+                <p>Rekomendasi AC hemat energi ramah lingkungan hemat listrik.</p>
+              </div>
+            </div>
+            
+            <button className="explore-catalog-btn" onClick={scrollToCatalog}>
+              Jelajahi Katalog AC 👇
+            </button>
+          </section>
+        )}
+
+        <div ref={catalogSectionRef} className="search-filter-bar">
           <div className="search-input-wrapper card-elevation">
             <Search size={18} className="search-icon" />
             <input 
@@ -129,33 +181,35 @@ const Catalog = () => {
                     price={formatRupiah(product.price)}
                     specs={[`${product.capacity_pk} PK`, product.stock > 0 ? 'Ready Stock' : 'Indent']}
                     status={product.stock > 0 ? 'Tersedia' : 'Habis'}
-                    onClick={() => navigate(`/inventory/${product.id}`)}
+                    onClick={() => user && navigate(`/inventory/${product.id}`)}
                   />
-                  <button 
-                    className="add-to-cart-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addToCart(product);
-                    }}
-                    style={{
-                      position: 'absolute',
-                      bottom: '20px',
-                      right: '20px',
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '10px',
-                      border: 'none',
-                      backgroundColor: 'var(--color-primary)',
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      boxShadow: '0 4px 10px rgba(0,85,255,0.3)'
-                    }}
-                  >
-                    <Plus size={20} />
-                  </button>
+                  {user && (
+                    <button 
+                      className="add-to-cart-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(product);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        bottom: '20px',
+                        right: '20px',
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '10px',
+                        border: 'none',
+                        backgroundColor: 'var(--color-primary)',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 10px rgba(0,85,255,0.3)'
+                      }}
+                    >
+                      <Plus size={20} />
+                    </button>
+                  )}
                 </div>
               ))
             ) : (
@@ -215,7 +269,7 @@ const Catalog = () => {
         </div>
       )}
 
-      <Navigation />
+      {user && <Navigation />}
     </div>
   );
 };

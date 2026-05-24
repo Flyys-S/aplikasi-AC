@@ -31,12 +31,12 @@ function App() {
       <Router basename="/aplikasi-AC">
         <Routes>
           {/* Public */}
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Catalog />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
 
           {/* Protected */}
           <Route path="/dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
-          <Route path="/catalog" element={<ProtectedRoute><Catalog /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
           <Route path="/online-orders" element={<ProtectedRoute><OnlineOrders /></ProtectedRoute>} />
           <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />

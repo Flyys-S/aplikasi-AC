@@ -291,6 +291,9 @@ ul {
     padding-left: 260px; /* leaves perfect room for Left Sidebar Nav */
     transition: var(--transition-premium);
   }
+  .dashboard-container.guest-layout {
+    padding-left: 0 !important;
+  }
   .page-content {
     padding-bottom: var(--space-lg); /* remove mobile bottom spacing on desktop */
   }
