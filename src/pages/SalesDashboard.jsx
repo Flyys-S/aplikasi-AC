@@ -13,7 +13,7 @@ import './SalesDashboard.css';
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
-  const { role } = useAuth();
+  useAuth(); // subscribe to auth context changes
   const [stats, setStats] = useState({
     totalSales: 0,
     unitsSold: 0,
@@ -22,10 +22,6 @@ const SalesDashboard = () => {
     recentActivity: []
   });
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
 
   const fetchDashboardData = async () => {
     try {
@@ -57,6 +53,10 @@ const SalesDashboard = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
   if (loading) {
     return <PageLoader text="Memuat dashboard..." />;
