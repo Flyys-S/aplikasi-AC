@@ -20,8 +20,8 @@ import NewTransaction from './pages/NewTransaction'
 import InvoiceDetail from './pages/InvoiceDetail'
 import SignUp from './pages/SignUp'
 import UserManagement from './pages/UserManagement'
-import CompanyProfile from './pages/CompanyProfile';
-import UserProfile from './pages/UserProfile';
+import CompanyProfile from './pages/CompanyProfile'
+import UserProfile from './pages/UserProfile/Profile.jsx'
 
 import './App.css'
 

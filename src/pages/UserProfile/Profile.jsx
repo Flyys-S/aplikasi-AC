@@ -20,6 +20,7 @@ const UserProfile = () => {
         <h2 className="user-name">Nama Pengguna</h2>
         <p className="user-email">user@example.com</p>
       </div>
+        <h1 className="section-title">User Profile</h1>
       <div className="user-details glass">
         {/* Add more user details or settings here */}
         <p>Ini adalah halaman profil pengguna. Anda dapat menambahkan formulir pengaturan di sini.</p>
