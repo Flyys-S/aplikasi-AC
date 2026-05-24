@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { User, Shield, LogOut, ChevronRight, Settings, Info, Moon, Sun } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import TopHeader from '../../components/TopHeader'
+import '../../pages/Profile/Profile.css'
 import Navigation from '../../components/Navigation';
 
 const Profile = () => {
@@ -65,51 +66,12 @@ const Profile = () => {
       <TopHeader title="Pengaturan Sistem" subtitle="Manajemen Akun, Preferensi & Aplikasi" />
 
       <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
-        {/* Profile Card Info with Double Bezel concentric highlights */}
-        <div 
-          className="card-elevation" 
-          style={{ 
-            padding: '24px', 
-            borderRadius: '24px', 
-            backgroundColor: 'var(--color-surface-container-lowest)', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            marginBottom: '28px',
-            border: '1px solid var(--color-outline-variant)'
-          }}
-        >
-          <div style={{ 
-            width: '92px', 
-            height: '92px', 
-            borderRadius: '28px', 
-            backgroundColor: 'var(--color-primary)', 
-            color: 'var(--color-on-primary)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            fontSize: '36px', 
-            fontWeight: 'bold',
-            marginBottom: '16px',
-            boxShadow: '0 8px 24px rgba(0, 85, 255, 0.2)'
-          }}>
-            {user?.email?.charAt(0).toUpperCase()}
+        <div className="profile-header">
+          <img src={require('../../assets/profile_header.png')} alt="Header" className="profile-header-image" />
+          <div className="profile-header-overlay">
+            <h1 className="profile-company-name">PT. MITRA MAJU SEJATI</h1>
+            <p className="profile-user-role">{role || 'Visitor'}</p>
           </div>
-          <h2 style={{ margin: '0 0 4px 0', fontSize: '20px', color: 'var(--color-on-surface)', fontWeight: '700' }}>
-            {user?.user_metadata?.full_name || 'Staf PT. MITRA MAJU SEJATI'}
-          </h2>
-          <span style={{ 
-            fontSize: '10px', 
-            fontWeight: '700', 
-            letterSpacing: '0.1em',
-            color: 'var(--color-primary)', 
-            backgroundColor: 'rgba(0, 85, 255, 0.08)', 
-            padding: '4px 14px', 
-            borderRadius: '20px',
-            textTransform: 'uppercase'
-          }}>
-            {role || 'Visitor'}
-          </span>
         </div>
 
         {/* Settings Menu List */}
