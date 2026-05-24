@@ -65,6 +65,85 @@
   --transition-premium: all 0.6s ease-[cubic-bezier(0.25, 1, 0.5, 1)];
 }
 
+/* 🌙 ARCTIC ICE DARK THEME */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  
+  /* OKLCH Dark Colors - OLED Deep Navy & Frosty Ice */
+  --color-background: oklch(16% 0.015 245); /* Deep dark blue-black */
+  --color-surface: oklch(18% 0.012 245);
+  --color-surface-dim: oklch(12% 0.01 245);
+  --color-surface-bright: oklch(22% 0.015 245);
+  
+  --color-surface-container-lowest: oklch(14% 0.012 245); /* Dark card bg */
+  --color-surface-container-low: oklch(17% 0.014 245);
+  --color-surface-container: oklch(19% 0.016 245);
+  --color-surface-container-high: oklch(22% 0.018 245);
+  --color-surface-container-highest: oklch(25% 0.02 245);
+  
+  --color-on-surface: oklch(96% 0.008 230); /* Light silver-grey text */
+  --color-on-surface-variant: oklch(80% 0.012 230);
+  
+  --color-primary: oklch(68% 0.18 245); /* Vibrant Frosty Light Blue */
+  --color-primary-dark: oklch(55% 0.20 245);
+  --color-on-primary: oklch(14% 0.012 245);
+  --color-on-primary-container: oklch(90% 0.02 245);
+  
+  --color-secondary: oklch(75% 0.10 210); /* Soft glowing cyan */
+  --color-secondary-dark: oklch(35% 0.08 210);
+  --color-on-secondary: oklch(15% 0.04 210);
+  
+  --color-tertiary: oklch(60% 0.01 240);
+  --color-on-background: oklch(96% 0.008 230);
+  
+  --color-outline: oklch(38% 0.02 245);
+  --color-outline-variant: oklch(24% 0.02 245); /* Subtle dark border line */
+
+  /* Shadows tuned for OLED dark depth */
+  --shadow-diffused: 0 12px 48px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-hover: 0 20px 64px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.04);
+}
+
+/* Respect OS preference if user has not explicitly set a preference override */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-background: oklch(16% 0.015 245);
+    --color-surface: oklch(18% 0.012 245);
+    --color-surface-dim: oklch(12% 0.01 245);
+    --color-surface-bright: oklch(22% 0.015 245);
+    
+    --color-surface-container-lowest: oklch(14% 0.012 245);
+    --color-surface-container-low: oklch(17% 0.014 245);
+    --color-surface-container: oklch(19% 0.016 245);
+    --color-surface-container-high: oklch(22% 0.018 245);
+    --color-surface-container-highest: oklch(25% 0.02 245);
+    
+    --color-on-surface: oklch(96% 0.008 230);
+    --color-on-surface-variant: oklch(80% 0.012 230);
+    
+    --color-primary: oklch(68% 0.18 245);
+    --color-primary-dark: oklch(55% 0.20 245);
+    --color-on-primary: oklch(14% 0.012 245);
+    --color-on-primary-container: oklch(90% 0.02 245);
+    
+    --color-secondary: oklch(75% 0.10 210);
+    --color-secondary-dark: oklch(35% 0.08 210);
+    --color-on-secondary: oklch(15% 0.04 210);
+    
+    --color-tertiary: oklch(60% 0.01 240);
+    --color-on-background: oklch(96% 0.008 230);
+    
+    --color-outline: oklch(38% 0.02 245);
+    --color-outline-variant: oklch(24% 0.02 245);
+    
+    --shadow-diffused: 0 12px 48px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.02);
+    --shadow-hover: 0 20px 64px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.04);
+  }
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

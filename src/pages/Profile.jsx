@@ -1,21 +1,42 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { User, Shield, LogOut, ChevronRight, Settings, Info, ArrowLeft, Loader2 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import TopHeader from '../components/TopHeader';
-import BottomNavigation from '../components/BottomNavigation';
-import './SalesDashboard.css'; // Reuse container styles
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { User, Shield, LogOut, ChevronRight, Settings, Info, Moon, Sun } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import TopHeader from '../components/TopHeader'
+import BottomNavigation from '../components/BottomNavigation'
 
 const Profile = () => {
-  const navigate = useNavigate();
-  const { user, role, signOut, isAdmin } = useAuth();
+  const navigate = useNavigate()
+  const { user, role, signOut, isAdmin } = useAuth()
+
+  // Initialize Dark Mode state based on current DOM setting
+  const [isDark, setIsDark] = useState(() => {
+    return document.documentElement.getAttribute('data-theme') === 'dark'
+  })
+
+  // Listen to external theme changes (like OS changes or instant loads)
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute('data-theme')
+      setIsDark(currentTheme === 'dark')
+    })
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [])
+
+  const toggleTheme = () => {
+    const nextTheme = isDark ? 'light' : 'dark'
+    document.documentElement.setAttribute('data-theme', nextTheme)
+    localStorage.setItem('theme', nextTheme)
+    setIsDark(!isDark)
+  }
 
   const handleLogout = async () => {
     if (window.confirm('Apakah Anda yakin ingin keluar?')) {
-      await signOut();
-      navigate('/');
+      await signOut()
+      navigate('/')
     }
-  };
+  }
 
   const menuItems = [
     { 
@@ -32,60 +53,126 @@ const Profile = () => {
       action: () => navigate('/users')
     },
     { 
-      title: 'Pengaturan Aplikasi', 
-      icon: <Settings size={20} />, 
-      subtitle: 'Notifikasi & preferensi',
-      action: () => {} 
-    },
-    { 
       title: 'Tentang Aplikasi', 
       icon: <Info size={20} />, 
       subtitle: 'Versi 1.2.0 (Premium)',
       action: () => {} 
     }
-  ];
+  ]
 
   return (
     <div className="dashboard-container fade-in">
-      <TopHeader title="Pengaturan Profil" subtitle="Manajemen Akun & Aplikasi" />
+      <TopHeader title="Pengaturan Sistem" subtitle="Manajemen Akun, Preferensi & Aplikasi" />
 
       <div className="page-content" style={{ paddingBottom: '100px' }}>
-        {/* Profile Info */}
-        <div className="card-elevation" style={{ padding: '24px', borderRadius: '24px', backgroundColor: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px' }}>
+        {/* Profile Card Info with Double Bezel concentric highlights */}
+        <div 
+          className="card-elevation" 
+          style={{ 
+            padding: '24px', 
+            borderRadius: '24px', 
+            backgroundColor: 'var(--color-surface-container-lowest)', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            marginBottom: '28px',
+            border: '1px solid var(--color-outline-variant)'
+          }}
+        >
           <div style={{ 
-            width: '100px', 
-            height: '100px', 
-            borderRadius: '30px', 
+            width: '92px', 
+            height: '92px', 
+            borderRadius: '28px', 
             backgroundColor: 'var(--color-primary)', 
-            color: 'white', 
+            color: 'var(--color-on-primary)', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            fontSize: '40px', 
+            fontSize: '36px', 
             fontWeight: 'bold',
             marginBottom: '16px',
-            boxShadow: '0 10px 20px rgba(0, 85, 255, 0.2)'
+            boxShadow: '0 8px 24px rgba(0, 85, 255, 0.2)'
           }}>
             {user?.email?.charAt(0).toUpperCase()}
           </div>
-          <h2 style={{ margin: '0 0 4px 0', fontSize: '22px' }}>{user?.user_metadata?.full_name || 'Admin Arctic'}</h2>
+          <h2 style={{ margin: '0 0 4px 0', fontSize: '20px', color: 'var(--color-on-surface)', fontWeight: '700' }}>
+            {user?.user_metadata?.full_name || 'Staf Arctic Clarity'}
+          </h2>
           <span style={{ 
-            fontSize: '12px', 
-            fontWeight: 'bold', 
+            fontSize: '10px', 
+            fontWeight: '700', 
+            letterSpacing: '0.1em',
             color: 'var(--color-primary)', 
-            backgroundColor: 'rgba(0, 85, 255, 0.1)', 
-            padding: '4px 12px', 
+            backgroundColor: 'rgba(0, 85, 255, 0.08)', 
+            padding: '4px 14px', 
             borderRadius: '20px',
             textTransform: 'uppercase'
           }}>
-            {role || 'Staff'}
+            {role || 'Visitor'}
           </span>
         </div>
 
-        {/* Menu List */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* Settings Menu List */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          
+          {/* 🌓 DARK MODE SETTING ROW (Awwwards-Tier Premium Switch) */}
+          <div 
+            className="card-elevation" 
+            onClick={toggleTheme}
+            style={{ 
+              padding: '16px', 
+              borderRadius: '16px', 
+              backgroundColor: 'var(--color-surface-container-lowest)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '16px',
+              cursor: 'pointer',
+              border: '1px solid var(--color-outline-variant)'
+            }}
+          >
+            <div style={{ 
+              padding: '10px', 
+              borderRadius: '12px', 
+              backgroundColor: 'var(--color-surface-container-low)', 
+              color: isDark ? 'var(--color-primary)' : 'var(--color-on-surface-variant)',
+              transition: 'var(--transition-premium)'
+            }}>
+              {isDark ? <Moon size={20} /> : <Sun size={20} />}
+            </div>
+            <div style={{ flex: 1 }}>
+              <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>
+                Mode Gelap (Dark Mode)
+              </span>
+              <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
+                {isDark ? 'Mengaktifkan tema visual es dingin redup' : 'Mengaktifkan tema visual es putih bersih'}
+              </span>
+            </div>
+            
+            {/* Premium Toggler Switch */}
+            <div style={{
+              width: '44px',
+              height: '24px',
+              borderRadius: '999px',
+              backgroundColor: isDark ? 'var(--color-primary)' : 'var(--color-outline-variant)',
+              padding: '3px',
+              transition: 'var(--transition-premium)',
+              position: 'relative',
+              boxShadow: isDark ? '0 2px 8px rgba(0, 85, 255, 0.3)' : 'none'
+            }}>
+              <div style={{
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                backgroundColor: 'white',
+                transform: isDark ? 'translateX(20px)' : 'translateX(0)',
+                transition: 'var(--transition-premium)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
+              }} />
+            </div>
+          </div>
+
           {menuItems.map((item, idx) => {
-            if (item.show === false) return null;
+            if (item.show === false) return null
             return (
               <div 
                 key={idx} 
@@ -94,33 +181,40 @@ const Profile = () => {
                 style={{ 
                   padding: '16px', 
                   borderRadius: '16px', 
-                  backgroundColor: 'white', 
+                  backgroundColor: 'var(--color-surface-container-lowest)', 
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: '16px',
-                  cursor: 'pointer'
+                  cursor: item.action === undefined ? 'default' : 'pointer',
+                  border: '1px solid var(--color-outline-variant)'
                 }}
               >
-                <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: 'rgba(107, 114, 128, 0.05)', color: '#666' }}>
+                <div style={{ 
+                  padding: '10px', 
+                  borderRadius: '12px', 
+                  backgroundColor: 'var(--color-surface-container-low)', 
+                  color: 'var(--color-on-surface-variant)' 
+                }}>
                   {item.icon}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold' }}>{item.title}</span>
-                  <span style={{ fontSize: '12px', color: '#999' }}>{item.subtitle}</span>
+                  <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>{item.title}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>{item.subtitle}</span>
                 </div>
-                <ChevronRight size={18} color="#ccc" />
+                {item.action !== undefined && <ChevronRight size={16} color="var(--color-outline)" />}
               </div>
-            );
+            )
           })}
 
+          {/* Logout Button */}
           <div 
             className="card-elevation" 
             onClick={handleLogout}
             style={{ 
-              marginTop: '16px',
+              marginTop: '12px',
               padding: '16px', 
               borderRadius: '16px', 
-              backgroundColor: 'rgba(255, 68, 68, 0.05)', 
+              backgroundColor: 'rgba(255, 68, 68, 0.04)', 
               display: 'flex', 
               alignItems: 'center', 
               gap: '16px',
@@ -128,21 +222,21 @@ const Profile = () => {
               border: '1px solid rgba(255, 68, 68, 0.1)'
             }}
           >
-            <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: 'rgba(255, 68, 68, 0.1)', color: '#ff4444' }}>
+            <div style={{ padding: '10px', borderRadius: '12px', backgroundColor: 'rgba(255, 68, 68, 0.08)', color: '#ff4444' }}>
               <LogOut size={20} />
             </div>
             <div style={{ flex: 1 }}>
               <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#ff4444' }}>Keluar Akun</span>
-              <span style={{ fontSize: '12px', color: '#ff8888' }}>Akhiri sesi login Anda</span>
+              <span style={{ fontSize: '11px', color: '#ff7777' }}>Akhiri sesi login manajemen Anda</span>
             </div>
-            <ChevronRight size={18} color="#ffcccc" />
+            <ChevronRight size={16} color="#ff8888" />
           </div>
         </div>
       </div>
 
       <BottomNavigation />
     </div>
-  );
-};
+  )
+}
 
-export default Profile;
+export default Profile
