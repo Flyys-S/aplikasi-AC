@@ -1,5 +1,13 @@
 /* UserProfile page styling */
 
+.user-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+}
+
 .dashboard-container {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(12px);
@@ -8,13 +16,8 @@
   position: relative;
 }
 
-.user-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 24px;
-}
+
+
 
 .avatar {
   width: 120px;

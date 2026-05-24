@@ -15,6 +15,7 @@ const UserProfile = () => {
   return (
     <div className="dashboard-container user-profile">
       <button className="dark-mode-toggle btn" onClick={toggleDarkMode} aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>{isDark ? '🌙' : '☀️'}</button>
+      <div className="user-header glass">
         <div className="avatar" style={{ backgroundImage: `url(${avatarImg})` }}></div>
         <h2 className="user-name">Nama Pengguna</h2>
         <p className="user-email">user@example.com</p>
