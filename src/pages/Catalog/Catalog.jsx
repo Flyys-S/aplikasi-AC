@@ -93,59 +93,100 @@ const Catalog = () => {
     catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const baseUrl = import.meta.env.BASE_URL || '/';
+
   return (
     <div className={`dashboard-container ${!user ? 'guest-layout' : ''}`}>
-      <TopHeader title="Katalog Produk" subtitle="Brosur Digital AC Arctic Clarity">
-        {user ? (
-          <div 
-            className="icon-btn" 
-            style={{ backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)', color: cart.length > 0 ? 'white' : 'inherit', position: 'relative' }}
-            onClick={() => setIsCartOpen(true)}
-          >
-            <ShoppingCart size={20} />
-            {cart.length > 0 && (
-              <span style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: '#ff4444', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyCenter: 'center', fontWeight: 'bold' }}>
-                {cart.reduce((a, b) => a + b.quantity, 0)}
-              </span>
-            )}
-          </div>
-        ) : (
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Button size="small" variant="outline" onClick={() => navigate('/login')}>
-              Masuk
-            </Button>
-            <Button size="small" onClick={() => navigate('/signup')}>
-              Daftar
-            </Button>
+      <header className="catalog-header glass-panel fade-in">
+        <div className="catalog-header-centered">
+          <span className="logo-icon">❄️</span>
+          <span className="catalog-header-brand">Arctic Clarity</span>
+        </div>
+        {user && (
+          <div className="catalog-header-actions">
+            <div 
+              className="icon-btn cart-btn-header" 
+              style={{ 
+                backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)', 
+                color: cart.length > 0 ? 'white' : 'inherit', 
+                position: 'relative',
+                cursor: 'pointer'
+              }}
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingCart size={20} />
+              {cart.length > 0 && (
+                <span style={{ 
+                  position: 'absolute', 
+                  top: '-5px', 
+                  right: '-5px', 
+                  backgroundColor: '#ff4444', 
+                  color: 'white', 
+                  borderRadius: '50%', 
+                  width: '18px', 
+                  height: '18px', 
+                  fontSize: '10px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontWeight: 'bold' 
+                }}>
+                  {cart.reduce((a, b) => a + b.quantity, 0)}
+                </span>
+              )}
+            </div>
           </div>
         )}
-      </TopHeader>
+      </header>
 
       <div className="page-content fade-in">
         {!user && (
           <section className="company-profile-hero glass-panel fade-in" style={{ marginBottom: '40px' }}>
-            <div className="hero-badge">❄️ ARCTIC CLARITY</div>
-            <h1>Solusi Pendingin Udara Premium & Retail AC Tepercaya</h1>
-            <p className="hero-description">
-              Kami berkomitmen menghadirkan kesejukan udara murni berstandar tinggi untuk hunian dan perkantoran Anda. 
-              Menyediakan unit AC orisinal kualitas terbaik, instalasi profesional, serta layanan pemeliharaan berkala didukung oleh teknisi ahli bersertifikat.
-            </p>
-            
-            <div className="hero-features-grid">
-              <div className="hero-feature-card card-elevation">
-                <span className="feature-icon">🛡️</span>
-                <h4>Unit Original 100%</h4>
-                <p>Garansi resmi langsung dari produsen terkemuka dunia.</p>
+            {/* Premium Animated Sliding Image Carousel Section */}
+            <div className="hero-carousel-container">
+              <div className="hero-carousel-track">
+                <div className="carousel-slide">
+                  <img src={`${baseUrl}hero_living_room.png`} alt="Premium Living Room" />
+                  <div className="carousel-caption">
+                    <h3>Arctic Clarity - Kenyamanan Udara Premium</h3>
+                    <p>Menghadirkan pendingin udara berkualitas tinggi dan orisinal untuk kenyamanan hunian modern Anda.</p>
+                  </div>
+                </div>
+                <div className="carousel-slide">
+                  <img src={`${baseUrl}technician_service.png`} alt="Technician Service" />
+                  <div className="carousel-caption">
+                    <h3>Layanan Instalasi & Pemeliharaan Profesional</h3>
+                    <p>Dukungan teknisi ahli bersertifikat untuk memastikan performa pendingin ruangan Anda optimal.</p>
+                  </div>
+                </div>
+                <div className="carousel-slide">
+                  <img src={`${baseUrl}premium_ac_unit.png`} alt="Premium AC Unit" />
+                  <div className="carousel-caption">
+                    <h3>Solusi Hemat Energi Ramah Lingkungan</h3>
+                    <p>Pilihan AC pintar dengan efisiensi daya tinggi untuk penghematan listrik berkelanjutan.</p>
+                  </div>
+                </div>
               </div>
-              <div className="hero-feature-card card-elevation">
-                <span className="feature-icon">👨‍🔧</span>
-                <h4>Teknisi Ahli</h4>
-                <p>Instalasi & pemeliharaan presisi tinggi bersertifikat resmi.</p>
-              </div>
-              <div className="hero-feature-card card-elevation">
-                <span className="feature-icon">⚡</span>
-                <h4>Efisiensi Tinggi</h4>
-                <p>Rekomendasi AC hemat energi ramah lingkungan hemat listrik.</p>
+            </div>
+
+            <div className="hero-profile-info glass-panel card-elevation">
+              <h2>Tentang Perusahaan</h2>
+              <p>
+                Arctic Clarity adalah penyedia solusi tata udara premium berstandar internasional. 
+                Kami menghadirkan unit pendingin udara 100% orisinal dengan garansi resmi, 
+                serta layanan pemasangan dan perawatan terpadu oleh teknisi bersertifikat.
+              </p>
+              
+              <div className="hero-auth-actions">
+                <p>Silakan masuk atau daftar untuk memesan produk dari katalog kami</p>
+                <div className="hero-auth-buttons">
+                  <Button variant="outline" onClick={() => navigate('/login')}>
+                    Masuk ke Akun
+                  </Button>
+                  <Button onClick={() => navigate('/signup')}>
+                    Daftar Sekarang
+                  </Button>
+                </div>
               </div>
             </div>
             
