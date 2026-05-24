@@ -45,6 +45,8 @@ const SignUp = () => {
 
   return (
     <div className="login-container">
+      <div className="ambient-orb orb-primary"></div>
+      <div className="ambient-orb orb-accent"></div>
       <div className="login-card glass-panel fade-in">
         <div className="login-header">
           <h1>Buat Akun</h1>
