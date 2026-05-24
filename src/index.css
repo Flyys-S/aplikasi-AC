@@ -214,6 +214,19 @@ ul {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: var(--shadow-diffused);
+  transition: var(--transition-premium);
+}
+
+:root[data-theme='dark'] .glass-panel {
+  background: rgba(18, 22, 33, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .glass-panel {
+    background: rgba(18, 22, 33, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
 }
 
 /* Double-Bezel Concentric Shell Architecture */

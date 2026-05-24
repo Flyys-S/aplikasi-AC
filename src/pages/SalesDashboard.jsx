@@ -74,8 +74,8 @@ const SalesDashboard = () => {
             onClick={() => navigate('/online-orders')}
             style={{ 
               padding: '16px', 
-              backgroundColor: '#fffbeb', 
-              border: '1px solid #fef3c7', 
+              backgroundColor: 'rgba(245, 166, 35, 0.08)', 
+              border: '1px solid rgba(245, 166, 35, 0.25)', 
               borderRadius: '16px', 
               marginBottom: '24px',
               display: 'flex',
@@ -88,18 +88,18 @@ const SalesDashboard = () => {
               <ShoppingBag size={20} />
             </div>
             <div style={{ flex: 1 }}>
-              <p style={{ margin: 0, fontWeight: 'bold', fontSize: '14px', color: '#92400e' }}>
+              <p style={{ margin: 0, fontWeight: 'bold', fontSize: '14px', color: '#e67e22' }}>
                 {stats.pendingOrders} Pesanan Menunggu Verifikasi
               </p>
-              <p style={{ margin: 0, fontSize: '12px', color: '#b45309' }}>Segera cek bukti transfer pelanggan</p>
+              <p style={{ margin: 0, fontSize: '12px', color: '#f39c12' }}>Segera cek bukti transfer pelanggan</p>
             </div>
-            <ChevronRight size={20} color="#b45309" />
+            <ChevronRight size={20} color="#f39c12" />
           </div>
         )}
 
         {/* Primary Stats Grid */}
         <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'var(--color-primary)', color: 'white' }}>
+          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
               <DollarSign size={24} style={{ opacity: 0.8 }} />
               <TrendingUp size={20} />
@@ -110,24 +110,24 @@ const SalesDashboard = () => {
             </span>
           </div>
 
-          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'white' }}>
+          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'var(--color-surface-container-lowest)', border: '1px solid var(--color-outline-variant)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
               <Package size={24} color="var(--color-primary)" />
             </div>
-            <span style={{ fontSize: '12px', color: '#999', display: 'block' }}>Unit Terjual</span>
-            <span style={{ fontSize: '20px', fontWeight: 'bold', display: 'block', color: '#333' }}>
+            <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', display: 'block' }}>Unit Terjual</span>
+            <span style={{ fontSize: '20px', fontWeight: 'bold', display: 'block', color: 'var(--color-on-surface)' }}>
               {stats.unitsSold} Unit
             </span>
           </div>
 
-          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'white', gridColumn: 'span 2' }}>
+          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'var(--color-surface-container-lowest)', gridColumn: 'span 2', border: '1px solid var(--color-outline-variant)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{ padding: '12px', borderRadius: '16px', backgroundColor: 'rgba(0,135,86,0.1)', color: '#008756' }}>
                 <Activity size={24} />
               </div>
               <div>
-                <span style={{ fontSize: '12px', color: '#999', display: 'block' }}>Total Pekerjaan Servis</span>
-                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#333' }}>{stats.serviceCount} Servis</span>
+                <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', display: 'block' }}>Total Pekerjaan Servis</span>
+                <span style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>{stats.serviceCount} Servis</span>
               </div>
             </div>
           </div>
@@ -135,25 +135,25 @@ const SalesDashboard = () => {
 
         {/* Recent Transactions */}
         <section className="recent-activity">
-          <div className="section-header" style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0 }}>Transaksi Terkini</h3>
-            <span className="link-text" onClick={() => navigate('/transactions')}>Lihat Semua</span>
+          <div className="section-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, color: 'var(--color-on-surface)' }}>Transaksi Terkini</h3>
+            <span className="link-text" onClick={() => navigate('/transactions')} style={{ color: 'var(--color-primary)', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}>Lihat Semua</span>
           </div>
-          <div className="activity-list card-elevation" style={{ backgroundColor: 'white', borderRadius: '20px', overflow: 'hidden' }}>
+          <div className="activity-list card-elevation" style={{ backgroundColor: 'var(--color-surface-container-lowest)', borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--color-outline-variant)' }}>
             {stats.recentActivity.length > 0 ? (
               stats.recentActivity.map((txn) => (
                 <div 
                   key={txn.id} 
                   className="activity-item" 
                   onClick={() => navigate(`/transactions/${txn.id}`)}
-                  style={{ padding: '16px', borderBottom: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
+                  style={{ padding: '16px', borderBottom: '1px solid var(--color-outline-variant)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
                 >
-                  <div style={{ backgroundColor: txn.is_online ? 'rgba(0, 85, 255, 0.1)' : 'rgba(107, 114, 128, 0.1)', padding: '10px', borderRadius: '12px' }}>
-                    <ShoppingBag size={18} color={txn.is_online ? 'var(--color-primary)' : '#666'} />
+                  <div style={{ backgroundColor: txn.is_online ? 'rgba(0, 85, 255, 0.08)' : 'rgba(107, 114, 128, 0.08)', padding: '10px', borderRadius: '12px' }}>
+                    <ShoppingBag size={18} color={txn.is_online ? 'var(--color-primary)' : 'var(--color-on-surface-variant)'} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
-                    <span style={{ fontSize: '12px', color: '#999' }}>{formatTanggalJam(txn.created_at)} · {txn.payment_method}</span>
+                    <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>{formatTanggalJam(txn.created_at)} · {txn.payment_method}</span>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
