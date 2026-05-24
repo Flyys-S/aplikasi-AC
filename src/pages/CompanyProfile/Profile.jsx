@@ -3,7 +3,7 @@ import '../Login/Login.css';
 import './Profile.css';
 import headerImg from '../../assets/profile_header.png';
 
-const Profile = () => {
+const CompanyProfile = () => {
   return (
     <div className="dashboard-container">
       <div className="profile-header">
@@ -21,6 +21,6 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default CompanyProfile;
 
 
