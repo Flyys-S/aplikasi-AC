@@ -9,11 +9,14 @@
 }
 
 .profile-header-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: 0% 0%;
+  animation: scrollBg 30s linear infinite;
   filter: blur(8px);
   transform: scale(1.05);
+  z-index: -1;
 }
 
 .profile-header-overlay {

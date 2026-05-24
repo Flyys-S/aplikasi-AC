@@ -1,11 +1,15 @@
 import React from 'react';
+import '../Login/Login.css';
 import './Profile.css';
 import headerImg from '../../assets/profile_header.png';
+
 const Profile = () => {
   return (
     <div className="dashboard-container">
       <div className="profile-header">
-        <img src={headerImg} alt="Header" className="profile-header-image" />
+        <div className="ambient-orb orb-primary"></div>
+        <div className="ambient-orb orb-accent"></div>
+        <div className="profile-header-image" style={{ backgroundImage: `url(${headerImg})` }}></div>
         <div className="profile-header-overlay">
           <h1 className="profile-company-name">PT. MITRA MAJU SEJATI</h1>
         </div>
