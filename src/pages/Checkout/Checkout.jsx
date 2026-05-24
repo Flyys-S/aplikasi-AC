@@ -203,7 +203,7 @@ const Checkout = () => {
           <div style={{ padding: '16px', backgroundColor: '#f0f4ff', borderRadius: '12px', marginBottom: '16px' }}>
             <p style={{ fontSize: '12px', margin: '0 0 4px 0', color: '#666' }}>Bank BCA</p>
             <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 4px 0' }}>1234 5678 90</p>
-            <p style={{ fontSize: '12px', margin: 0, color: '#666' }}>A/N PT Arctic Clarity Indonesia</p>
+            <p style={{ fontSize: '12px', margin: 0, color: '#666' }}>A/N PT Mitra Maju Sejati</p>
           </div>
 
           <div className="form-group">

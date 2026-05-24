@@ -67,7 +67,7 @@ const SalesDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <TopHeader title="Dashboard Bisnis" subtitle="Ringkasan Performa Arctic Clarity" />
+      <TopHeader title="Dashboard Bisnis" subtitle="Ringkasan Performa PT. MITRA MAJU SEJATI" />
 
       <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
         {/* Urgent Alerts */}

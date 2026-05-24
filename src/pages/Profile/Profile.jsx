@@ -96,7 +96,7 @@ const Profile = () => {
             {user?.email?.charAt(0).toUpperCase()}
           </div>
           <h2 style={{ margin: '0 0 4px 0', fontSize: '20px', color: 'var(--color-on-surface)', fontWeight: '700' }}>
-            {user?.user_metadata?.full_name || 'Staf Arctic Clarity'}
+            {user?.user_metadata?.full_name || 'Staf PT. MITRA MAJU SEJATI'}
           </h2>
           <span style={{ 
             fontSize: '10px', 

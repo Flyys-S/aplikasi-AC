@@ -32,7 +32,7 @@ const Sidebar = () => {
         <div className="sidebar-logo">
           <span className="logo-icon">❄️</span>
           <div className="logo-text">
-            <h3>Arctic Clarity</h3>
+            <h3>PT. MITRA MAJU SEJATI</h3>
             <span className="logo-badge">{role?.toUpperCase()}</span>
           </div>
         </div>

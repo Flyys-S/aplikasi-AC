@@ -46,7 +46,7 @@ const InvoiceDetail = () => {
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
-        title: 'Invoice Arctic Clarity',
+        title: 'Invoice PT. MITRA MAJU SEJATI',
         text: `Invoice #${id?.slice(-8).toUpperCase()} - Total: ${formatRupiah(txn?.total_amount)}`,
         url: window.location.href
       });
@@ -83,7 +83,7 @@ const InvoiceDetail = () => {
         <div className="invoice-header-branding">
           <div className="brand-logo">AC</div>
           <div className="brand-text">
-            <h3>Arctic Clarity</h3>
+            <h3>PT. MITRA MAJU SEJATI</h3>
             <p>Premium AC Service & Retail</p>
           </div>
           <div className="invoice-badge">

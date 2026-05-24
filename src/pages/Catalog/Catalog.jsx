@@ -17,9 +17,25 @@ const Catalog = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const catalogSectionRef = useRef(null);
+  const containerRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Parallax 3D tilt state
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5; // -0.5 to 0.5
+    setTilt({ x: x * 15, y: -y * 15 }); // Max tilt angle 15 deg
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
   
   // Cart State
   const [cart, setCart] = useState(() => {
@@ -98,81 +114,108 @@ const Catalog = () => {
   return (
     <div className={`dashboard-container ${!user ? 'guest-layout' : ''}`}>
       <header className="catalog-header glass-panel fade-in">
-        <div className="catalog-header-centered">
+        <div className="catalog-header-left">
           <span className="logo-icon">❄️</span>
-          <span className="catalog-header-brand">Arctic Clarity</span>
+          <span className="catalog-header-brand">PT. MITRA MAJU SEJATI</span>
         </div>
-        {user && (
-          <div className="catalog-header-actions">
-            <div 
-              className="icon-btn cart-btn-header" 
-              style={{ 
-                backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)', 
-                color: cart.length > 0 ? 'white' : 'inherit', 
-                position: 'relative',
-                cursor: 'pointer'
-              }}
-              onClick={() => setIsCartOpen(true)}
-            >
-              <ShoppingCart size={20} />
-              {cart.length > 0 && (
-                <span style={{ 
-                  position: 'absolute', 
-                  top: '-5px', 
-                  right: '-5px', 
-                  backgroundColor: '#ff4444', 
-                  color: 'white', 
-                  borderRadius: '50%', 
-                  width: '18px', 
-                  height: '18px', 
-                  fontSize: '10px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  fontWeight: 'bold' 
-                }}>
-                  {cart.reduce((a, b) => a + b.quantity, 0)}
-                </span>
-              )}
+        <div className="catalog-header-right">
+          {!user ? (
+            <div className="guest-actions">
+              <Button size="small" variant="outline" onClick={() => navigate('/login')}>
+                Masuk
+              </Button>
+              <Button size="small" onClick={() => navigate('/signup')}>
+                Daftar
+              </Button>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="catalog-header-actions">
+              <div 
+                className="icon-btn cart-btn-header" 
+                style={{ 
+                  backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)', 
+                  color: cart.length > 0 ? 'white' : 'inherit', 
+                  position: 'relative',
+                  cursor: 'pointer'
+                }}
+                onClick={() => setIsCartOpen(true)}
+              >
+                <ShoppingCart size={20} />
+                {cart.length > 0 && (
+                  <span style={{ 
+                    position: 'absolute', 
+                    top: '-5px', 
+                    right: '-5px', 
+                    backgroundColor: '#ff4444', 
+                    color: 'white', 
+                    borderRadius: '50%', 
+                    width: '18px', 
+                    height: '18px', 
+                    fontSize: '10px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    fontWeight: 'bold' 
+                  }}>
+                    {cart.reduce((a, b) => a + b.quantity, 0)}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </header>
 
       <div className="page-content fade-in">
         {!user && (
           <section className="company-profile-hero glass-panel fade-in" style={{ marginBottom: '40px' }}>
-            {/* Premium Animated Sliding Image Carousel Section */}
-            <div className="hero-carousel-container">
+            {/* Premium Animated Sliding Image Carousel Section with 3D Parallax Name Overlay */}
+            <div 
+              ref={containerRef}
+              className="hero-carousel-container"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+            >
               <div className="hero-carousel-track">
                 <div className="carousel-slide">
                   <img src={`${baseUrl}hero_living_room.png`} alt="Premium Living Room" />
-                  <div className="carousel-caption">
-                    <h3>Arctic Clarity - Kenyamanan Udara Premium</h3>
-                    <p>Menghadirkan pendingin udara berkualitas tinggi dan orisinal untuk kenyamanan hunian modern Anda.</p>
+                  <div className="carousel-caption-subtle">
+                    <p>Kesejukan Premium Hunian Modern</p>
                   </div>
                 </div>
                 <div className="carousel-slide">
                   <img src={`${baseUrl}technician_service.png`} alt="Technician Service" />
-                  <div className="carousel-caption">
-                    <h3>Layanan Instalasi & Pemeliharaan Profesional</h3>
-                    <p>Dukungan teknisi ahli bersertifikat untuk memastikan performa pendingin ruangan Anda optimal.</p>
+                  <div className="carousel-caption-subtle">
+                    <p>Layanan Pemasangan & Pemeliharaan Profesional</p>
                   </div>
                 </div>
                 <div className="carousel-slide">
                   <img src={`${baseUrl}premium_ac_unit.png`} alt="Premium AC Unit" />
-                  <div className="carousel-caption">
-                    <h3>Solusi Hemat Energi Ramah Lingkungan</h3>
-                    <p>Pilihan AC pintar dengan efisiensi daya tinggi untuk penghematan listrik berkelanjutan.</p>
+                  <div className="carousel-caption-subtle">
+                    <p>Solusi Hemat Energi Ramah Lingkungan</p>
                   </div>
                 </div>
+              </div>
+
+              {/* Massive 3D Parallax Title centered over scrolling carousel */}
+              <div className="hero-3d-overlay">
+                <h1 
+                  className="hero-3d-title"
+                  style={{
+                    transform: `perspective(1000px) rotateY(${tilt.x}deg) rotateX(${tilt.y}deg) translateZ(40px)`,
+                    transition: 'transform 0.08s ease-out'
+                  }}
+                >
+                  PT. MITRA MAJU SEJATI
+                </h1>
+                <span className="hero-3d-badge">COMFORT & QUALITY CO.</span>
               </div>
             </div>
 
             <div className="hero-profile-info glass-panel card-elevation">
-              <h2>Tentang Perusahaan</h2>
+              <h2>Profil Perusahaan</h2>
               <p>
-                Arctic Clarity adalah penyedia solusi tata udara premium berstandar internasional. 
+                PT. MITRA MAJU SEJATI adalah penyedia solusi tata udara premium berstandar internasional. 
                 Kami menghadirkan unit pendingin udara 100% orisinal dengan garansi resmi, 
                 serta layanan pemasangan dan perawatan terpadu oleh teknisi bersertifikat.
               </p>

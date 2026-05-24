@@ -215,7 +215,7 @@
   height: 72px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between; /* Logo on left, actions on right */
   padding: 0 var(--gutter);
   z-index: 1000;
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
@@ -232,13 +232,13 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.catalog-header-centered {
+.catalog-header-left {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.catalog-header-centered .logo-icon {
+.catalog-header-left .logo-icon {
   font-size: 22px;
   animation: pulse-glow 2s infinite;
 }
@@ -246,7 +246,7 @@
 .catalog-header-brand {
   font-family: var(--font-headline);
   font-weight: 800;
-  font-size: 21px;
+  font-size: 20px;
   letter-spacing: -0.04em;
   color: var(--color-primary);
   background: linear-gradient(135deg, var(--color-primary) 0%, oklch(75% 0.15 230) 100%);
@@ -254,11 +254,151 @@
   -webkit-text-fill-color: transparent;
 }
 
-.catalog-header-actions {
-  position: absolute;
-  right: var(--gutter);
+.catalog-header-right {
   display: flex;
   align-items: center;
+}
+
+.guest-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.catalog-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* 🎢 Carousel container upgrades */
+.hero-carousel-container {
+  width: 100%;
+  overflow: hidden;
+  margin: 40px auto;
+  border-radius: 32px; /* Super premium rounded corners as shown in Poliform image */
+  position: relative;
+  height: 520px; /* Taller height to showcase the gorgeous interior design and 3D text */
+  box-shadow: var(--shadow-diffused);
+  border: 1px solid var(--color-outline-variant);
+  perspective: 1000px; /* Perspective container for 3D tilt effects */
+}
+
+/* Semi-dark vignette overlay on the carousel so that the centered 3D white text pops out perfectly */
+.hero-carousel-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.45) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.carousel-caption-subtle {
+  position: absolute;
+  bottom: 24px;
+  left: 32px;
+  z-index: 3;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.carousel-caption-subtle p {
+  margin: 0;
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* 🧊 Spectacular 3D Parallax Centered Brand Title Overlay */
+.hero-3d-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.hero-3d-title {
+  font-family: var(--font-headline);
+  font-size: 68px; /* Massive statement typography */
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  text-align: center;
+  margin: 0;
+  line-height: 1.1;
+  text-transform: uppercase;
+  transform-style: preserve-3d;
+  /* Premium 3D Extrusion Text Shadow */
+  text-shadow: 
+    0 1px 0 #d9d9d9,
+    0 2px 0 #cccccc,
+    0 3px 0 #b3b3b3,
+    0 4px 0 #999999,
+    0 5px 0 #808080,
+    0 6px 1px rgba(0,0,0,.1),
+    0 0 5px rgba(0,0,0,.1),
+    0 1px 3px rgba(0,0,0,.3),
+    0 3px 5px rgba(0,0,0,.2),
+    0 5px 10px rgba(0,0,0,.25),
+    0 10px 10px rgba(0,0,0,.2),
+    0 20px 20px rgba(0,0,0,.25);
+  animation: float-3d-pulse 6s infinite ease-in-out;
+}
+
+.hero-3d-badge {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.2em;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Micro-movement 3D float keyframe to give continuous live animation to text */
+@keyframes float-3d-pulse {
+  0%, 100% {
+    text-shadow: 
+      0 1px 0 #d9d9d9,
+      0 2px 0 #cccccc,
+      0 3px 0 #b3b3b3,
+      0 4px 0 #999999,
+      0 5px 0 #808080,
+      0 6px 1px rgba(0,0,0,.1),
+      0 0 5px rgba(0,0,0,.1),
+      0 1px 3px rgba(0,0,0,.3),
+      0 3px 5px rgba(0,0,0,.2),
+      0 5px 10px rgba(0,0,0,.25),
+      0 10px 10px rgba(0,0,0,.2),
+      0 20px 20px rgba(0,0,0,.25);
+  }
+  50% {
+    text-shadow: 
+      0 1px 0 #cccccc,
+      0 2px 0 #b3b3b3,
+      0 3px 0 #999999,
+      0 4px 0 #808080,
+      0 5px 0 #666666,
+      0 6px 1px rgba(0,0,0,.15),
+      0 0 8px rgba(0,0,0,.15),
+      0 2px 4px rgba(0,0,0,.35),
+      0 4px 8px rgba(0,0,0,.3),
+      0 8px 16px rgba(0,0,0,.35),
+      0 14px 14px rgba(0,0,0,.25),
+      0 24px 24px rgba(0,0,0,.3);
+  }
 }
 
 /* 🏢 Premium Glassmorphic Company Profile Section */
@@ -330,7 +470,11 @@
   }
   
   .hero-carousel-container {
-    height: 220px;
+    height: 280px; /* responsive height */
+  }
+
+  .hero-3d-title {
+    font-size: 32px; /* Responsive title */
   }
   
   .hero-profile-info {
