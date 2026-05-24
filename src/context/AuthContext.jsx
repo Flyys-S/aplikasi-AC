@@ -18,20 +18,16 @@ export const AuthProvider = ({ children }) => {
     );
 
     try {
-      
-      const rolePromise = supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .single();
+      // Call RPC function to safely bypass RLS issues and prevent infinite recursion
+      const rolePromise = supabase.rpc('get_user_role', { user_id: userId });
 
       const { data, error } = await Promise.race([rolePromise, timeoutPromise]);
       
       if (error) {
-        console.error('Error fetching user role:', error)
+        console.error('Error fetching user role via RPC:', error)
         setRole('visitor')
       } else {
-        setRole(data?.role || 'visitor')
+        setRole(data || 'visitor')
       }
     } catch (err) {
       console.error('Fetch role failed or timed out:', err.message)
@@ -65,12 +61,12 @@ export const AuthProvider = ({ children }) => {
 
     checkInitialSession()
 
-    // Listen for changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // Listen for changes responsively to prevent logging out on INITIAL_SESSION or TOKEN_REFRESHED
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state change event:', event, session?.user?.email)
       
-      if (_event === 'SIGNED_IN') {
+      if (session?.user) {
         setUser(session.user)
-        // Only fetch role if we don't have it or if it's a new sign in
         await fetchUserRole(session.user.id)
       } else {
         setUser(null)
