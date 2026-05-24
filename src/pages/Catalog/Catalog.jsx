@@ -86,7 +86,7 @@ const Catalog = () => {
   );
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Katalog Produk" subtitle="Brosur Digital AC Arctic Clarity">
         <div 
           className="icon-btn" 
@@ -102,7 +102,7 @@ const Catalog = () => {
         </div>
       </TopHeader>
 
-      <div className="page-content">
+      <div className="page-content fade-in">
         <div className="search-filter-bar">
           <div className="search-input-wrapper card-elevation">
             <Search size={18} className="search-icon" />

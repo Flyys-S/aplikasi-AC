@@ -54,10 +54,10 @@ const CustomerDetail = () => {
   const totalSpend = transactions.reduce((sum, t) => sum + t.total_amount, 0);
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Profil Pelanggan" subtitle="Detail & Riwayat Aktivitas" />
 
-      <div className="page-content" style={{ paddingBottom: '100px' }}>
+      <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
         <button onClick={() => navigate(-1)} className="back-btn" style={{ marginBottom: '20px' }}>
           <ArrowLeft size={24} /> Kembali
         </button>

@@ -133,7 +133,7 @@ const Checkout = () => {
 
   if (success) {
     return (
-      <div className="dashboard-container fade-in" style={{ textAlign: 'center', justifyContent: 'center' }}>
+      <div className="dashboard-container" style={{ textAlign: 'center', justifyContent: 'center' }}>
         <div style={{ padding: '40px' }}>
           <CheckCircle size={80} color="#008756" style={{ marginBottom: '20px' }} />
           <h2 style={{ fontSize: '24px', marginBottom: '10px' }}>Pesanan Terkirim!</h2>
@@ -149,10 +149,10 @@ const Checkout = () => {
   }
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Checkout" subtitle="Selesaikan Pesanan Anda" />
       
-      <div className="page-content" style={{ paddingBottom: '120px' }}>
+      <div className="page-content fade-in" style={{ paddingBottom: '120px' }}>
         <button onClick={() => navigate(-1)} className="back-btn" style={{ marginBottom: '20px' }}>
           <ChevronLeft size={24} /> Kembali
         </button>

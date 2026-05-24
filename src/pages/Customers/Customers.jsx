@@ -22,7 +22,7 @@ const Customers = () => {
   )
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Pelanggan" subtitle={`${customers.length} pelanggan terdaftar`}>
         <div className="icon-btn" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
           onClick={() => setShowModal(true)}>
@@ -30,7 +30,7 @@ const Customers = () => {
         </div>
       </TopHeader>
 
-      <div className="page-content">
+      <div className="page-content fade-in">
         <div className="search-input-wrapper card-elevation" style={{ marginBottom: 'var(--space-md)' }}>
           <Search size={18} className="search-icon" />
           <input

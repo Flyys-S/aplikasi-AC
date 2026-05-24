@@ -160,10 +160,10 @@ const NewTransaction = () => {
   );
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Transaksi Baru" subtitle="Input Penjualan Langsung" />
 
-      <div className="page-content" style={{ paddingBottom: '120px' }}>
+      <div className="page-content fade-in" style={{ paddingBottom: '120px' }}>
         <button onClick={() => navigate(-1)} className="back-btn" style={{ marginBottom: '20px' }}>
           <ArrowLeft size={24} /> Kembali
         </button>

@@ -23,10 +23,10 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Manajemen User" subtitle="Kelola Akses dan Peran Pengguna" />
 
-      <div className="page-content">
+      <div className="page-content fade-in">
         <div className="user-management-container">
           <div className="user-management-header">
             <h2>Daftar Pengguna</h2>

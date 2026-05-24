@@ -144,10 +144,10 @@ const ServiceMaintenance = () => {
   };
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Servis & Pemeliharaan" subtitle={isAdmin ? "Panel Penugasan Admin" : "Daftar Tugas Anda"} />
 
-      <div className="page-content">
+      <div className="page-content fade-in">
         {isAdmin && (
           <section className="service-booking card-elevation">
             <h3>Buat Penugasan Baru</h3>

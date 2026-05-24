@@ -53,7 +53,7 @@ const Inventory = () => {
   };
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Inventori" subtitle="Kelola Stok Produk AC">
         <div 
           className="icon-btn" 
@@ -64,7 +64,7 @@ const Inventory = () => {
         </div>
       </TopHeader>
 
-      <div className="page-content">
+      <div className="page-content fade-in">
         <div className="search-filter-bar">
           <div className="search-input-wrapper card-elevation">
             <Search size={18} className="search-icon" />

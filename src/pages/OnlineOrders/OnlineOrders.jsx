@@ -94,10 +94,10 @@ const OnlineOrders = () => {
   };
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Pesanan Online" subtitle="Verifikasi Bukti Pembayaran" />
 
-      <div className="page-content" style={{ paddingBottom: '100px' }}>
+      <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
         {loading ? (
           <InlineLoader text="Memuat antrean..." />
         ) : (

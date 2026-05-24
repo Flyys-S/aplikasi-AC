@@ -51,7 +51,7 @@ const Transactions = () => {
   );
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Transaksi" subtitle="Riwayat Penjualan Toko & Online">
         <div 
           className="icon-btn" 
@@ -62,7 +62,7 @@ const Transactions = () => {
         </div>
       </TopHeader>
 
-      <div className="page-content" style={{ paddingBottom: '100px' }}>
+      <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
         <div className="search-input-wrapper card-elevation" style={{ marginBottom: '20px', backgroundColor: 'white', borderRadius: '12px', padding: '0 12px' }}>
           <Search size={18} color="#999" />
           <input 

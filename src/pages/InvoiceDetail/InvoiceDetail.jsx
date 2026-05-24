@@ -55,7 +55,7 @@ const InvoiceDetail = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-container fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div className="dashboard-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
         <div style={{ textAlign: 'center' }}>
           <Loader2 className="spinner" size={32} />
           <p style={{ marginTop: '12px', color: '#666' }}>Memuat invoice...</p>
@@ -64,7 +64,7 @@ const InvoiceDetail = () => {
     );
   }
 
-  if (!txn) return <div className="page-content">Invoice tidak ditemukan.</div>;
+  if (!txn) return <div className="page-content fade-in">Invoice tidak ditemukan.</div>;
 
   return (
     <div className="invoice-container fade-in">

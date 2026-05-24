@@ -61,10 +61,10 @@ const Profile = () => {
   ]
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Pengaturan Sistem" subtitle="Manajemen Akun, Preferensi & Aplikasi" />
 
-      <div className="page-content" style={{ paddingBottom: '100px' }}>
+      <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
         {/* Profile Card Info with Double Bezel concentric highlights */}
         <div 
           className="card-elevation" 

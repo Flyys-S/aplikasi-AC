@@ -66,10 +66,10 @@ const SalesDashboard = () => {
   }
 
   return (
-    <div className="dashboard-container fade-in">
+    <div className="dashboard-container">
       <TopHeader title="Dashboard Bisnis" subtitle="Ringkasan Performa Arctic Clarity" />
 
-      <div className="page-content" style={{ paddingBottom: '100px' }}>
+      <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
         {/* Urgent Alerts */}
         {stats.pendingOrders > 0 && (
           <div 
