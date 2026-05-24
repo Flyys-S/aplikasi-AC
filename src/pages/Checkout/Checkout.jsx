@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Phone, User, CreditCard, Upload, Loader2, CheckCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -24,15 +24,21 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    const savedCart = localStorage.getItem('arctic_cart');
-    if (savedCart) {
-      const parsedCart = JSON.parse(savedCart);
-      if (parsedCart.length === 0) navigate('/catalog');
-      setCart(parsedCart);
-    } else {
-      navigate('/catalog');
-    }
-  }, []);
+    const timer = setTimeout(() => {
+      const savedCart = localStorage.getItem('arctic_cart');
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        if (parsedCart.length === 0) {
+          navigate('/catalog');
+        } else {
+          setCart(parsedCart);
+        }
+      } else {
+        navigate('/catalog');
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   const generateUniqueId = () => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {

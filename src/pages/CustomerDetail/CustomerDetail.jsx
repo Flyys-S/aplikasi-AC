@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Phone, MapPin, Mail, ShoppingBag, Wrench, Loader2, Calendar, ChevronRight } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -18,11 +18,7 @@ const CustomerDetail = () => {
   const [serviceJobs, setServiceJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchCustomerData();
-  }, [id]);
-
-  const fetchCustomerData = async () => {
+  const fetchCustomerData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -42,7 +38,14 @@ const CustomerDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchCustomerData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [id, fetchCustomerData]);
 
   if (loading) {
     return <PageLoader text="Memuat profil pelanggan..." />;

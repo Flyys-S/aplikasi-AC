@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Loader2, Package, Filter } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -17,11 +17,7 @@ const Inventory = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -36,7 +32,14 @@ const Inventory = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchProducts]);
 
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

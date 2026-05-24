@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, Plus, Minus, Trash2, ShoppingCart, Loader2, User, CheckCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -15,23 +15,16 @@ const NewTransaction = () => {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(true);
   
   const [selectedCustomer, setSelectedCustomer] = useState('');
   const [cart, setCart] = useState([]);
-  const [paymentMethod, setPaymentMethod] = useState('Tunai');
-  const [notes, setNotes] = useState('');
+  const [paymentMethod] = useState('Tunai');
+  const [notes] = useState('');
   const [productSearch, setProductSearch] = useState('');
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    fetchInitialData();
-  }, []);
-
-  const fetchInitialData = async () => {
+  const fetchInitialData = useCallback(async () => {
     try {
-      setLoading(true);
       const [prodRes, custRes] = await Promise.all([
         supabase.from('products').select('*').order('brand'),
         supabase.from('customers').select('*').order('name')
@@ -44,10 +37,15 @@ const NewTransaction = () => {
       setCustomers(custRes.data || []);
     } catch (error) {
       console.error('Error fetching data:', error.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchInitialData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchInitialData]);
 
   const addToCart = (product) => {
     const existing = cart.find(i => i.product_id === product.id);
@@ -147,7 +145,6 @@ const NewTransaction = () => {
 
       setCart([]);
       toast.success('Transaksi berhasil disimpan!');
-      setSuccess(true);
       navigate(`/transactions/${txn.id}`);
     } catch (error) {
       console.error('Transaction error:', error.message);

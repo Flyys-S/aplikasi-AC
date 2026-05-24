@@ -1,4 +1,3 @@
-﻿import React, { useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { Navigate, Link } from 'react-router-dom'
 import PageLoader from '../../components/PageLoader'

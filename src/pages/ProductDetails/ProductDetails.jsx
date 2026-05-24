@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2, Camera, Loader2, Save, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -13,15 +13,9 @@ import './ProductDetails.css';
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
-
-  useEffect(() => {
-    if (id && id !== 'new') {
-      fetchProduct();
-    } else if (id === 'new') {
-      setProduct({
+  const [product, setProduct] = useState(() => {
+    if (id === 'new') {
+      return {
         name: '',
         brand: '',
         capacity_pk: '1.0',
@@ -30,12 +24,14 @@ const ProductDetails = () => {
         description: '',
         status: 'available',
         image_url: null
-      });
-      setLoading(false);
+      };
     }
-  }, [id]);
+    return null;
+  });
+  const [loading, setLoading] = useState(id !== 'new');
+  const [uploading, setUploading] = useState(false);
 
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -52,7 +48,16 @@ const ProductDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate]);
+
+  useEffect(() => {
+    if (id && id !== 'new') {
+      const timer = setTimeout(() => {
+        fetchProduct();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [id, fetchProduct]);
 
   const generateUniqueId = () => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {

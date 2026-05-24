@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Users, Package, Activity, ShoppingBag, ChevronRight, Loader2, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -23,7 +23,7 @@ const SalesDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -52,11 +52,14 @@ const SalesDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchDashboardData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchDashboardData]);
 
   if (loading) {
     return <PageLoader text="Memuat dashboard..." />;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, PenTool, CheckCircle, Clock, User, Plus, Loader2, Wrench } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
@@ -29,11 +29,7 @@ const ServiceMaintenance = () => {
     notes: ''
   });
 
-  useEffect(() => {
-    fetchInitialData();
-  }, [user]);
-
-  const fetchInitialData = async () => {
+  const fetchInitialData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -75,7 +71,14 @@ const ServiceMaintenance = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, isAdmin]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchInitialData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchInitialData]);
 
   const handleCreateJob = async () => {
     if (!newJob.customer_id || !newJob.technician_id) {

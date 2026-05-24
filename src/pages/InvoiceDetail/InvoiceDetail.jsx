@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Share2, Printer, Loader2, Download } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -11,11 +11,7 @@ const InvoiceDetail = () => {
   const [txn, setTxn] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchTransaction();
-  }, [id]);
-
-  const fetchTransaction = async () => {
+  const fetchTransaction = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -38,7 +34,14 @@ const InvoiceDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchTransaction();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [id, fetchTransaction]);
 
   const handleShare = async () => {
     if (navigator.share) {

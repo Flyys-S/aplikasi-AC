@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronRight, ShoppingBag, Globe, Store, Search, Loader2 } from 'lucide-react';
 import { formatRupiah, formatTanggalJam } from '../../lib/formatters';
@@ -16,11 +16,7 @@ const Transactions = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -38,7 +34,14 @@ const Transactions = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchTransactions();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchTransactions]);
 
 
 

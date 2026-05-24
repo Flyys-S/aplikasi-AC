@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -24,15 +24,7 @@ const Catalog = () => {
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('arctic_cart', JSON.stringify(cart));
-  }, [cart]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -47,7 +39,18 @@ const Catalog = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchProducts]);
+
+  useEffect(() => {
+    localStorage.setItem('arctic_cart', JSON.stringify(cart));
+  }, [cart]);
 
   const addToCart = (product) => {
     const existing = cart.find(item => item.id === product.id);

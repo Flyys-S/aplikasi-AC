@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ShoppingBag, Eye, CheckCircle, XCircle, Clock, MapPin, Phone, Loader2, Image as ImageIcon, User } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatAngka, formatRupiah, formatTanggalJam } from '../../lib/formatters';
@@ -13,17 +12,11 @@ import Navigation from '../../components/Navigation';
 import Button from '../../components/Button';
 
 const OnlineOrders = () => {
-  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(null);
-  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -46,7 +39,14 @@ const OnlineOrders = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchOrders();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchOrders]);
 
   const approveOrder = async (order) => {
     try {
