@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Eye, CheckCircle, XCircle, Clock, MapPin, Phone, Loader2, Image as ImageIcon, User } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
-import BottomNavigation from '../../components/BottomNavigation';
+import Navigation from '../../components/Navigation';
 import Button from '../../components/Button';
 
 const OnlineOrders = () => {
@@ -180,7 +180,7 @@ const OnlineOrders = () => {
         )}
       </div>
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   );
 };

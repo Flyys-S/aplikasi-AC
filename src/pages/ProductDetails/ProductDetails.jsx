@@ -1,11 +1,11 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2, Camera, Loader2, Save, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import toast from 'react-hot-toast';
 import PageLoader from '../../components/PageLoader';
 import TopHeader from '../../components/TopHeader';
-import BottomNavigation from '../../components/BottomNavigation';
+import Navigation from '../../components/Navigation';
 import Button from '../../components/Button';
 import StatusChip from '../../components/StatusChip';
 import './ProductDetails.css';
@@ -237,7 +237,7 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   );
 };

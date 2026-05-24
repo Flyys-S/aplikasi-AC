@@ -1,11 +1,11 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, PenTool, CheckCircle, Clock, User, Plus, Loader2, Wrench } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
-import BottomNavigation from '../../components/BottomNavigation';
+import Navigation from '../../components/Navigation';
 import Button from '../../components/Button';
 import toast from 'react-hot-toast';
 import '../SalesDashboard/SalesDashboard.css';
@@ -265,7 +265,7 @@ const ServiceMaintenance = () => {
         </section>
       </div>
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   );
 };

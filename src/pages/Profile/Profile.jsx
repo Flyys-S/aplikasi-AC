@@ -1,9 +1,9 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { User, Shield, LogOut, ChevronRight, Settings, Info, Moon, Sun } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import TopHeader from '../../components/TopHeader'
-import BottomNavigation from '../../components/BottomNavigation'
+import Navigation from '../../components/Navigation';
 
 const Profile = () => {
   const navigate = useNavigate()
@@ -115,7 +115,7 @@ const Profile = () => {
         {/* Settings Menu List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           
-          {/* ðŸŒ“ DARK MODE SETTING ROW (Awwwards-Tier Premium Switch) */}
+          {/* 🌓 DARK MODE SETTING ROW (Awwwards-Tier Premium Switch) */}
           <div 
             className="card-elevation" 
             onClick={toggleTheme}
@@ -234,7 +234,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   )
 }

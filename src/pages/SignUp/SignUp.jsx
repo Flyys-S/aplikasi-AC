@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, User, Phone, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -19,7 +19,7 @@ const SignUp = () => {
     setError(null);
 
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -108,13 +108,13 @@ const SignUp = () => {
           <InputField 
             label="Password" 
             type="password"
-            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" 
+            placeholder="••••••••" 
             icon={Lock}
             value={formData.password}
             onChange={(e) => setFormData({...formData, password: e.target.value})}
           />
 
-          <Button type="submit" fullWidth onClick={handleSignUp} className="mt-4">
+          <Button type="submit" fullWidth className="mt-4">
             {isLoading ? 'Mendaftar...' : 'Daftar Sekarang'}
           </Button>
         </form>

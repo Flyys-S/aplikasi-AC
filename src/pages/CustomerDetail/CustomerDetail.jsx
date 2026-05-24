@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Phone, MapPin, Mail, ShoppingBag, Wrench, Loader2, Calendar, ChevronRight } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -7,7 +7,7 @@ import { getStatusLabel } from '../../lib/statusUtils';
 import PageLoader from '../../components/PageLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
-import BottomNavigation from '../../components/BottomNavigation';
+import Navigation from '../../components/Navigation';
 import './CustomerDetail.css';
 
 const CustomerDetail = () => {
@@ -166,7 +166,7 @@ const CustomerDetail = () => {
         </div>
       </div>
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   );
 };

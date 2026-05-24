@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Loader2, Package, Filter } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -6,7 +6,7 @@ import { formatRupiah } from '../../lib/formatters';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
-import BottomNavigation from '../../components/BottomNavigation';
+import Navigation from '../../components/Navigation';
 import ProductCard from '../../components/ProductCard';
 import '../SalesDashboard/SalesDashboard.css';
 import '../Inventory/Inventory.css';
@@ -101,7 +101,7 @@ const Inventory = () => {
         )}
       </div>
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   );
 };

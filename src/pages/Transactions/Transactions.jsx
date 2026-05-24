@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronRight, ShoppingBag, Globe, Store, Search, Loader2 } from 'lucide-react';
 import { formatRupiah, formatTanggalJam } from '../../lib/formatters';
@@ -7,7 +7,7 @@ import { getStatusLabel } from '../../lib/statusUtils';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
-import BottomNavigation from '../../components/BottomNavigation';
+import Navigation from '../../components/Navigation';
 import './Transactions.css';
 
 const Transactions = () => {
@@ -139,7 +139,7 @@ const Transactions = () => {
         )}
       </div>
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   );
 };

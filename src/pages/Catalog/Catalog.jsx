@@ -1,10 +1,10 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
 import TopHeader from '../../components/TopHeader';
-import BottomNavigation from '../../components/BottomNavigation';
+import Navigation from '../../components/Navigation';
 import ProductCard from '../../components/ProductCard';
 import Button from '../../components/Button';
 import InlineLoader from '../../components/InlineLoader';
@@ -212,7 +212,7 @@ const Catalog = () => {
         </div>
       )}
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   );
 };

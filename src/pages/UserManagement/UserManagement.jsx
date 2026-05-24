@@ -1,8 +1,8 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Users, Shield, User as UserIcon, Check, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TopHeader from '../../components/TopHeader';
-import BottomNavigation from '../../components/BottomNavigation';
+import Navigation from '../../components/Navigation';
 import { useProfiles } from '../../hooks/useSupabase';
 import '../SalesDashboard/SalesDashboard.css';
 import './UserManagement.css';
@@ -81,7 +81,7 @@ const UserManagement = () => {
         </div>
       </div>
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   );
 };

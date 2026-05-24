@@ -1,10 +1,10 @@
-﻿import React, { useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Plus, Phone, MapPin, ChevronRight, Users } from 'lucide-react'
 import InlineLoader from '../../components/InlineLoader'
 import EmptyState from '../../components/EmptyState'
 import TopHeader from '../../components/TopHeader'
-import BottomNavigation from '../../components/BottomNavigation'
+import Navigation from '../../components/Navigation';
 import CustomerModal from '../../components/CustomerModal'
 import { useCustomers } from '../../hooks/useSupabase'
 import '../SalesDashboard/SalesDashboard.css'
@@ -76,7 +76,7 @@ const Customers = () => {
         />
       )}
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   )
 }

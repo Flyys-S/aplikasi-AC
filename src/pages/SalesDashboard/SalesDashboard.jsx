@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Users, Package, Activity, ShoppingBag, ChevronRight, Loader2, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -8,7 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import PageLoader from '../../components/PageLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
-import BottomNavigation from '../../components/BottomNavigation';
+import Navigation from '../../components/Navigation';
 import '../SalesDashboard/SalesDashboard.css';
 
 const SalesDashboard = () => {
@@ -153,7 +153,7 @@ const SalesDashboard = () => {
                   </div>
                   <div style={{ flex: 1 }}>
                     <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
-                    <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>{formatTanggalJam(txn.created_at)} Â· {txn.payment_method}</span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>{formatTanggalJam(txn.created_at)} · {txn.payment_method}</span>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
@@ -176,7 +176,7 @@ const SalesDashboard = () => {
         </section>
       </div>
 
-      <BottomNavigation />
+      <Navigation />
     </div>
   );
 };
