@@ -1,62 +1,97 @@
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  z-index: 2000;
+/* HTML5 Native Dialog & Backdrop Styles */
+.native-modal {
+  border: none;
+  background: transparent;
+  max-width: 540px;
+  width: calc(100% - var(--gutter) * 2);
+  margin: auto; /* natively centers dialog horizontally & vertically */
+  outline: none;
+  overflow: visible;
+  padding: 8px; /* outer shell padding */
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-hover);
+  transition: var(--transition-premium);
+}
+
+/* Glassmorphism Ice Backdrop Blur */
+.native-modal::backdrop {
+  background: rgba(0, 50, 150, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+/* 🎬 Entry Transitions using @starting-style */
+@starting-style {
+  .native-modal {
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+  }
+  .native-modal::backdrop {
+    opacity: 0;
+  }
+}
+
+/* Outer Shell Nested Doppelrand Layout */
+.modal-sheet-inner {
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  animation: fadeIn 0.2s ease;
-}
-
-.modal-sheet {
-  width: 100%;
-  max-width: 560px;
+  flex-direction: column;
   background: var(--color-surface-container-lowest);
-  border-radius: 24px 24px 0 0;
-  animation: slideUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  max-height: 90vh;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: calc(var(--radius-lg) - 8px); /* concentric mathematical rounding */
+  max-height: 85vh;
   overflow-y: auto;
+  position: relative;
+  scrollbar-width: thin;
 }
 
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+.modal-sheet-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--shadow-inner-highlight);
+  pointer-events: none;
 }
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px var(--gutter) 16px;
+  padding: 20px var(--gutter) 16px;
   border-bottom: 1px solid var(--color-surface-container);
   position: sticky;
   top: 0;
   background: var(--color-surface-container-lowest);
+  z-index: 10;
 }
 
 .modal-header h3 {
-  font-size: 18px;
+  font-size: 17px;
+  font-weight: 700;
   margin: 0;
+  color: var(--color-on-surface);
 }
 
 .modal-close-btn {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: none;
-  background: var(--color-surface-container);
+  background: var(--color-surface-container-low);
   color: var(--color-on-surface-variant);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition-premium);
 }
 
 .modal-close-btn:hover {
   background: var(--color-surface-container-high);
+  color: var(--color-primary);
+  transform: rotate(90deg);
 }
 
 .modal-body {
@@ -73,77 +108,130 @@
 }
 
 .form-group label {
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
   color: var(--color-on-surface);
+  letter-spacing: 0.01em;
+  padding-left: 2px;
 }
 
+/* Glassmorphic Ice-light input fields inside Modal */
 .modal-input {
-  padding: 12px 16px;
-  border: 1.5px solid var(--color-outline-variant);
+  padding: 12px 14px;
+  border: 1px solid var(--color-outline-variant);
   border-radius: var(--radius-md);
   font-family: var(--font-body);
   font-size: 15px;
   color: var(--color-on-surface);
   background: var(--color-surface-container-lowest);
   outline: none;
-  transition: all 0.25s ease;
+  transition: var(--transition-premium);
+  position: relative;
 }
 
 .modal-input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.12), var(--shadow-diffused);
+  transform: translateY(-1px);
 }
 
+/* ✍️ Elastik Textarea with field-sizing: content support */
 .modal-textarea {
   resize: vertical;
   min-height: 80px;
+  field-sizing: content; /* Automatically scales text area height based on content */
+}
+
+/* ⚠️ Smart Validation styles inside dialog */
+.modal-input:user-invalid {
+  border-color: var(--color-error);
+}
+
+.modal-input:user-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.12);
 }
 
 .modal-footer {
   display: flex;
   gap: var(--space-sm);
-  padding: var(--space-md) var(--gutter) calc(var(--space-md) + env(safe-area-inset-bottom));
+  padding: var(--space-md) var(--gutter);
   border-top: 1px solid var(--color-surface-container);
+  background: var(--color-surface-container-low);
 }
 
+/* Buttons in-modal modernizations */
 .btn-primary {
   flex: 1;
-  padding: 14px;
+  padding: 12px 20px;
   background: var(--color-primary);
-  color: white;
+  color: var(--color-on-primary);
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 85, 255, 0.2);
+  transition: var(--transition-premium);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-dark);
+  box-shadow: 0 6px 20px rgba(0, 85, 255, 0.3);
   transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-secondary {
-  padding: 14px 20px;
-  background: var(--color-surface-container);
+  padding: 12px 20px;
+  background: var(--color-surface-container-high);
   color: var(--color-on-surface-variant);
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition-premium);
 }
 
 .btn-secondary:hover {
-  background: var(--color-surface-container-high);
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-surface);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* 📱 Responsive Mobile Sheet slide up */
+@media (max-width: 768px) {
+  .native-modal {
+    width: 100%;
+    margin-bottom: 0;
+    margin-top: auto; /* pins dialog to bottom natively */
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 0;
+  }
+  
+  .modal-sheet-inner {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-height: 90vh;
+  }
+  
+  @starting-style {
+    .native-modal {
+      transform: translateY(100%);
+    }
+  }
 }

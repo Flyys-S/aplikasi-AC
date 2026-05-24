@@ -9,10 +9,13 @@
 .input-label {
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--color-on-surface);
+  letter-spacing: 0.02em;
+  padding-left: 2px;
 }
 
+/* Translucent Island Input Wrapper */
 .input-wrapper {
   position: relative;
   display: flex;
@@ -20,49 +23,73 @@
   background-color: var(--color-surface-container-lowest);
   border: 1px solid var(--color-outline-variant);
   border-radius: var(--radius-md);
-  transition: all 0.3s ease;
+  transition: var(--transition-premium);
   overflow: hidden;
+}
+
+/* Outer Shell Nested Highlight Inner-Bezel */
+.input-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--shadow-inner-highlight);
+  pointer-events: none;
 }
 
 .input-wrapper:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.12), var(--shadow-diffused);
   transform: translateY(-1px);
 }
 
 .input-icon {
-  margin-left: 16px;
+  margin-left: 14px;
   color: var(--color-on-surface-variant);
-  transition: color 0.3s ease;
+  transition: var(--transition-premium);
 }
 
 .input-wrapper:focus-within .input-icon {
   color: var(--color-primary);
+  transform: scale(1.05);
 }
 
+/* Pure Native Input Field Styling */
 .input-field {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 14px 16px;
+  padding: 12px 14px;
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 15px;
   color: var(--color-on-surface);
   outline: none;
   width: 100%;
+  transition: var(--transition-premium);
 }
 
 .input-field::placeholder {
   color: var(--color-outline);
+  font-size: 14px;
 }
 
-/* Error State */
+/* Elegant Accent-Color Sync */
+.input-field:focus {
+  accent-color: var(--color-primary);
+}
+
+/* ⚠️ Smart Validation: Native User Invalid Interaction states */
+.input-field:user-invalid {
+  color: var(--color-error);
+}
+
+/* When parent wrapper contains invalid state */
 .input-wrapper.has-error {
   border-color: var(--color-error);
 }
 
 .input-wrapper.has-error:focus-within {
-  box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.15);
+  box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.12), var(--shadow-diffused);
 }
 
 .input-wrapper.has-error .input-icon {
@@ -70,8 +97,11 @@
 }
 
 .input-error-msg {
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
   color: var(--color-error);
-  margin-top: 4px;
-  animation: fadeIn 0.3s ease-out forwards;
+  margin-top: 2px;
+  padding-left: 4px;
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }

@@ -1,47 +1,53 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap');
 
 :root {
-  /* Colors - Arctic Clarity */
-  --color-surface: #f9f9ff;
-  --color-surface-dim: #cfdaf2;
-  --color-surface-bright: #f9f9ff;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f0f3ff;
-  --color-surface-container: #e7eeff;
-  --color-surface-container-high: #dee8ff;
-  --color-surface-container-highest: #d8e3fb;
+  /* Colors - Arctic Ice Light Premium */
+  color-scheme: light;
   
-  --color-on-surface: #111c2d;
-  --color-on-surface-variant: #434656;
+  /* OKLCH Colors - Pristine Ice & Ocean Blue */
+  --color-background: oklch(98.5% 0.006 230); /* Pure ice white background */
+  --color-surface: oklch(99.2% 0.003 230);
+  --color-surface-dim: oklch(92% 0.015 230);
+  --color-surface-bright: oklch(99.5% 0.002 230);
   
-  --color-primary: #0055ff; /* Use primary-container as main primary */
-  --color-primary-dark: #0041c8; /* Using primary as dark variant */
-  --color-on-primary: #ffffff;
-  --color-on-primary-container: #e3e6ff;
+  --color-surface-container-lowest: oklch(100% 0 0); /* Pure solid white */
+  --color-surface-container-low: oklch(97.5% 0.008 230);
+  --color-surface-container: oklch(96% 0.012 230);
+  --color-surface-container-high: oklch(94% 0.016 230);
+  --color-surface-container-highest: oklch(91.5% 0.02 230);
   
-  --color-secondary: #71e0ff; /* Using secondary-container as main secondary accent */
-  --color-secondary-dark: #00687c;
-  --color-on-secondary: #006276;
+  --color-on-surface: oklch(20% 0.03 240); /* Deep royal navy */
+  --color-on-surface-variant: oklch(45% 0.02 240);
   
-  --color-tertiary: #485156;
-  --color-background: #f9f9ff;
-  --color-on-background: #111c2d;
+  --color-primary: oklch(55% 0.22 250); /* Premium Royal Arctic Blue */
+  --color-primary-dark: oklch(42% 0.20 250);
+  --color-on-primary: oklch(100% 0 0);
+  --color-on-primary-container: oklch(96% 0.02 250);
   
-  --color-error: #ba1a1a;
-  --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
+  --color-secondary: oklch(80% 0.12 210); /* Sleek soft cyan */
+  --color-secondary-dark: oklch(40% 0.10 210);
+  --color-on-secondary: oklch(30% 0.08 210);
+  
+  --color-tertiary: oklch(50% 0.01 240);
+  --color-background-fallback: #f9f9ff;
+  --color-on-background: oklch(20% 0.03 240);
+  
+  --color-error: oklch(58% 0.20 25);
+  --color-on-error: oklch(100% 0 0);
+  --color-error-container: oklch(92% 0.05 25);
 
-  --color-outline: #737688;
-  --color-outline-variant: #c3c5d9;
+  --color-outline: oklch(65% 0.015 240);
+  --color-outline-variant: oklch(88% 0.01 240);
 
   /* Typography */
   --font-headline: 'Manrope', sans-serif;
   --font-body: 'Inter', sans-serif;
   
-  /* Shapes */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* Shapes & Concentric Radius Tokens */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
   --radius-full: 9999px;
   
   /* Spacing */
@@ -51,6 +57,12 @@
   --space-lg: 32px;
   --space-xl: 48px;
   --gutter: 24px;
+  
+  /* Haptic Premium Depth Tokens */
+  --shadow-diffused: 0 12px 36px rgba(0, 85, 255, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+  --shadow-hover: 0 20px 48px rgba(0, 85, 255, 0.06), 0 2px 6px rgba(0, 85, 255, 0.02);
+  --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  --transition-premium: all 0.6s ease-[cubic-bezier(0.25, 1, 0.5, 1)];
 }
 
 * {
@@ -65,12 +77,36 @@ body {
   color: var(--color-on-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  scrollbar-color: var(--color-outline-variant) transparent;
+  scrollbar-width: thin;
+}
+
+/* Elegant Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-headline);
   color: var(--color-on-surface);
   margin-bottom: var(--space-sm);
+  text-wrap: balance; /* Awwwards premium typography wrapping */
+}
+
+p, span, li, a {
+  text-wrap: pretty; /* Prevents awkward single-word orphans */
 }
 
 a {
@@ -82,42 +118,51 @@ ul {
   list-style: none;
 }
 
-/* Animations & Micro-interactions */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse-glow {
-  0% { box-shadow: 0 0 0 0 rgba(0, 85, 255, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(0, 85, 255, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 85, 255, 0); }
+/* Dynamic Entrance Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); filter: blur(2px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 
 .fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeInUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
-/* Base utility classes */
+/* Micro-interaction & Texture classes */
 .glass-panel {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-diffused);
 }
 
+/* Double-Bezel Concentric Shell Architecture */
 .card-elevation {
   background: var(--color-surface-container-lowest);
-  border: 1px solid var(--color-surface-container);
-  box-shadow: 0 4px 20px rgba(0, 85, 255, 0.04);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid var(--color-outline-variant);
+  box-shadow: var(--shadow-diffused);
+  border-radius: var(--radius-lg);
+  position: relative;
+  transition: var(--transition-premium);
+  will-change: transform;
+}
+
+.card-elevation::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--shadow-inner-highlight);
+  pointer-events: none;
 }
 
 .card-elevation:hover {
-  box-shadow: 0 8px 30px rgba(0, 85, 255, 0.08);
+  box-shadow: var(--shadow-hover);
   transform: translateY(-2px);
 }
 
+/* Main Container Styles */
 .app-container {
   max-width: 1280px;
   margin: 0 auto;
@@ -128,11 +173,11 @@ ul {
 
 .page-content {
   padding: var(--space-md) var(--gutter);
-  padding-bottom: 80px; /* space for mobile nav */
+  padding-bottom: 96px; /* space for bottom nav on mobile */
   flex: 1;
 }
 
-/* Responsive grid */
+/* Responsive Grid with Double-Bezel layout styles */
 .grid {
   display: grid;
   gap: var(--gutter);
@@ -145,5 +190,16 @@ ul {
 @media (max-width: 768px) {
   .grid-cols-2, .grid-cols-3, .grid-cols-4 {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Desktop Main Container Alignment for Sidebar Nav */
+@media (min-width: 769px) {
+  .dashboard-container {
+    padding-left: 260px; /* leaves perfect room for Left Sidebar Nav */
+    transition: var(--transition-premium);
+  }
+  .page-content {
+    padding-bottom: var(--space-lg); /* remove mobile bottom spacing on desktop */
   }
 }
