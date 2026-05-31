@@ -20,7 +20,7 @@ const Sidebar = () => {
 
   const navItems = [
     { to: '/dashboard', label: 'Beranda', icon: LayoutDashboard },
-    { to: '/catalog', label: 'Katalog', icon: BookOpen },
+    { to: '/', label: 'Katalog', icon: BookOpen },
     ...(isAdmin ? [{ to: '/inventory', label: 'Stok', icon: Package }] : []),
     { to: '/transactions', label: 'Transaksi', icon: ShoppingBag },
     ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),
@@ -47,6 +47,7 @@ const Sidebar = () => {
               <NavLink
                 key={index}
                 to={item.to}
+                end={item.to === '/'}
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
               >
                 <div className="icon-wrapper">

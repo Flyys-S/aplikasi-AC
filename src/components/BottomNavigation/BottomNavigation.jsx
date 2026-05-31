@@ -10,7 +10,7 @@ const BottomNavigation = () => {
 
   const navItems = [
     { to: '/dashboard', label: 'Beranda', icon: LayoutDashboard },
-    { to: '/catalog', label: 'Katalog', icon: BookOpen },
+    { to: '/', label: 'Katalog', icon: BookOpen },
     ...(isAdmin ? [{ to: '/inventory', label: 'Stok', icon: Package }] : []),
     { to: '/transactions', label: 'Transaksi', icon: ShoppingBag },
     ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),
@@ -25,6 +25,7 @@ const BottomNavigation = () => {
           <NavLink
             key={index}
             to={item.to}
+            end={item.to === '/'}
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
           >
             <IconComponent size={22} />
