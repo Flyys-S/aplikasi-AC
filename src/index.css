@@ -298,3 +298,111 @@ ul {
     padding-bottom: var(--space-lg); /* remove mobile bottom spacing on desktop */
   }
 }
+
+/* ─── Standardized UI Utility Elements ─── */
+
+/* Back navigation button — used across detail pages */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.back-btn:hover {
+  background: var(--color-surface-container-high);
+  color: var(--color-primary);
+}
+
+/* Circular icon-only button — for nav actions, share, print */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  background: var(--color-surface-container-high);
+  color: var(--color-primary);
+}
+
+/* Small square button for quantity increment/decrement */
+.qty-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-outline-variant);
+  background: transparent;
+  color: var(--color-on-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.qty-btn:hover {
+  background: var(--color-surface-container);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Inline text-style link button — for "Transaksi Baru", "Lihat Semua" */
+.link-btn {
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s ease;
+}
+
+.link-btn:hover {
+  opacity: 0.75;
+}
+
+/* Inline remove/delete text button */
+.remove-btn {
+  border: none;
+  background: none;
+  color: var(--color-error);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.remove-btn:hover {
+  background: var(--color-error-container);
+}
+
+/* Spacing utility helpers (minimal set) */
+.mt-4 { margin-top: var(--space-md); }
+.mt-6 { margin-top: var(--space-lg); }
+.mb-4 { margin-bottom: var(--space-md); }
+.mb-5 { margin-bottom: 20px; }

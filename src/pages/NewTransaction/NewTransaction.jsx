@@ -164,8 +164,8 @@ const NewTransaction = () => {
       <TopHeader title="Transaksi Baru" subtitle="Input Penjualan Langsung" />
 
       <div className="page-content fade-in" style={{ paddingBottom: '120px' }}>
-        <button onClick={() => navigate(-1)} className="back-btn" style={{ marginBottom: '20px' }}>
-          <ArrowLeft size={24} /> Kembali
+        <button onClick={() => navigate(-1)} className="back-btn mb-5">
+          <ArrowLeft size={18} /> Kembali
         </button>
 
         <div className="pos-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '20px' }}>
@@ -230,13 +230,13 @@ const NewTransaction = () => {
                     <div key={item.product_id} style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #f5f5f5' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                         <span style={{ fontSize: '13px', fontWeight: '500' }}>{item.brand} {item.name}</span>
-                        <button onClick={() => setCart(cart.filter(i => i.product_id !== item.product_id))} style={{ border: 'none', background: 'none', color: '#ff4444' }}><Trash2 size={14} /></button>
+                        <button className="remove-btn" onClick={() => setCart(cart.filter(i => i.product_id !== item.product_id))}><Trash2 size={14} /></button>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <button onClick={() => updateQty(item.product_id, -1)} style={{ width: '24px', height: '24px', borderRadius: '4px', border: '1px solid #ddd', background: 'none' }}><Minus size={12} /></button>
+                          <button className="qty-btn" onClick={() => updateQty(item.product_id, -1)}><Minus size={12} /></button>
                           <span style={{ fontSize: '14px' }}>{item.quantity}</span>
-                          <button onClick={() => updateQty(item.product_id, 1)} style={{ width: '24px', height: '24px', borderRadius: '4px', border: '1px solid #ddd', background: 'none' }}><Plus size={12} /></button>
+                          <button className="qty-btn" onClick={() => updateQty(item.product_id, 1)}><Plus size={12} /></button>
                         </div>
                         <span style={{ fontSize: '13px', fontWeight: 'bold' }}>{formatAngka(item.subtotal)}</span>
                       </div>

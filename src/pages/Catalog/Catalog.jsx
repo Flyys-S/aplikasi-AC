@@ -309,7 +309,7 @@ const Catalog = () => {
           <div className="cart-drawer fade-in-right" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '400px', backgroundColor: 'white', height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div className="cart-header" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee' }}>
               <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}><ShoppingCart size={20} /> Keranjang Saya</h3>
-              <button onClick={() => setIsCartOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><X /></button>
+              <button className="icon-btn" onClick={() => setIsCartOpen(false)}><X size={20} /></button>
             </div>
 
             <div className="cart-items" style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
@@ -326,11 +326,11 @@ const Catalog = () => {
                       <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '14px', margin: 0 }}>{formatRupiah(item.price)}</p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ddd', borderRadius: '6px' }}>
-                          <button onClick={() => updateQuantity(item.id, -1)} style={{ border: 'none', background: 'none', padding: '4px 8px' }}><Minus size={14} /></button>
+                          <button className="qty-btn" onClick={() => updateQuantity(item.id, -1)}><Minus size={12} /></button>
                           <span style={{ fontSize: '14px', minWidth: '20px', textAlign: 'center' }}>{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, 1)} style={{ border: 'none', background: 'none', padding: '4px 8px' }}><Plus size={14} /></button>
+                          <button className="qty-btn" onClick={() => updateQuantity(item.id, 1)}><Plus size={12} /></button>
                         </div>
-                        <button onClick={() => removeFromCart(item.id)} style={{ border: 'none', background: 'none', color: '#ff4444', fontSize: '12px' }}>Hapus</button>
+                        <button className="remove-btn" onClick={() => removeFromCart(item.id)}>Hapus</button>
                       </div>
                     </div>
                   </div>

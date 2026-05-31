@@ -58,8 +58,8 @@ const CustomerDetail = () => {
       <TopHeader title="Profil Pelanggan" subtitle="Detail & Riwayat Aktivitas" />
 
       <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
-        <button onClick={() => navigate(-1)} className="back-btn" style={{ marginBottom: '20px' }}>
-          <ArrowLeft size={24} /> Kembali
+        <button onClick={() => navigate(-1)} className="back-btn mb-5">
+          <ArrowLeft size={18} /> Kembali
         </button>
 
         {/* Profile Card */}
@@ -102,8 +102,8 @@ const CustomerDetail = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ fontSize: '18px', margin: 0 }}>Riwayat Transaksi</h3>
               <button 
+                className="link-btn"
                 onClick={() => navigate('/transactions/new')}
-                style={{ border: 'none', background: 'none', color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '14px' }}
               >
                 + Transaksi Baru
               </button>

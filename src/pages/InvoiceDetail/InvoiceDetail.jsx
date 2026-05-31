@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Share2, Printer, Loader2, Download } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Share2, Printer, Loader2, Download, PlusCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah, formatAngka, formatTanggal } from '../../lib/formatters';
+import Button from '../../components/Button';
 import './InvoiceDetail.css';
 
 const InvoiceDetail = () => {
@@ -55,11 +56,9 @@ const InvoiceDetail = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-        <div style={{ textAlign: 'center' }}>
-          <Loader2 className="spinner" size={32} />
-          <p style={{ marginTop: '12px', color: '#666' }}>Memuat invoice...</p>
-        </div>
+      <div className="invoice-loading">
+        <Loader2 className="spinner" size={32} />
+        <p>Memuat invoice...</p>
       </div>
     );
   }
@@ -69,13 +68,13 @@ const InvoiceDetail = () => {
   return (
     <div className="invoice-container fade-in">
       <div className="invoice-nav">
-        <button className="back-btn" onClick={() => navigate('/transactions')}>
-          <ArrowLeft size={22} />
+        <button className="icon-btn" onClick={() => navigate('/transactions')}>
+          <ArrowLeft size={20} />
         </button>
         <h2 style={{ fontSize: '18px', fontWeight: 'bold' }}>Detail Invoice</h2>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button className="back-btn" onClick={handleShare}><Share2 size={20} /></button>
-          <button className="back-btn" onClick={() => window.print()}><Printer size={20} /></button>
+          <button className="icon-btn" onClick={handleShare}><Share2 size={18} /></button>
+          <button className="icon-btn" onClick={() => window.print()}><Printer size={18} /></button>
         </div>
       </div>
 
@@ -152,12 +151,12 @@ const InvoiceDetail = () => {
       </div>
 
       <div className="invoice-actions-footer">
-        <button className="btn-secondary" onClick={() => navigate('/transactions')}>
+        <Button variant="outline" onClick={() => navigate('/transactions')}>
           Tutup
-        </button>
-        <button className="btn-primary" onClick={() => navigate('/transactions/new')}>
+        </Button>
+        <Button icon={PlusCircle} onClick={() => navigate('/transactions/new')}>
           Transaksi Baru
-        </button>
+        </Button>
       </div>
     </div>
   );

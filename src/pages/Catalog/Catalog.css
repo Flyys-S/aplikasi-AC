@@ -279,10 +279,9 @@
   height: 520px; /* Taller height to showcase the gorgeous interior design and 3D text */
   box-shadow: var(--shadow-diffused);
   border: 1px solid var(--color-outline-variant);
-  perspective: 1000px; /* Perspective container for 3D tilt effects */
+  perspective: 1000px; 
 }
 
-/* Semi-dark vignette overlay on the carousel so that the centered 3D white text pops out perfectly */
 .hero-carousel-container::after {
   content: '';
   position: absolute;

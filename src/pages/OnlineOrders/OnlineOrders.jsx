@@ -161,8 +161,7 @@ const OnlineOrders = () => {
                         </Button>
                         <Button 
                           size="small" 
-                          variant="outline" 
-                          style={{ color: '#ff4444', borderColor: '#ff4444' }}
+                          variant="danger" 
                           onClick={() => rejectOrder(order.id)}
                           disabled={processing === order.id}
                         >

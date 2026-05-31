@@ -153,8 +153,8 @@ const Checkout = () => {
       <TopHeader title="Checkout" subtitle="Selesaikan Pesanan Anda" />
       
       <div className="page-content fade-in" style={{ paddingBottom: '120px' }}>
-        <button onClick={() => navigate(-1)} className="back-btn" style={{ marginBottom: '20px' }}>
-          <ChevronLeft size={24} /> Kembali
+        <button onClick={() => navigate(-1)} className="back-btn mb-5">
+          <ChevronLeft size={18} /> Kembali
         </button>
 
         <section className="card-elevation" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'white' }}>
