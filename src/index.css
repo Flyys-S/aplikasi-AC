@@ -50,6 +50,11 @@
   --radius-xl: 32px;
   --radius-full: 9999px;
   
+  /* Glassmorphism Global Tokens */
+  --color-glass-bg: rgba(255, 255, 255, 0.45);
+  --color-glass-border: rgba(255, 255, 255, 0.5);
+  --color-overlay-bg: rgba(20, 20, 25, 0.5);
+  
   /* Spacing */
   --space-unit: 4px;
   --space-sm: 8px;
@@ -99,6 +104,11 @@
   --color-outline: oklch(30% 0.01 240);
   --color-outline-variant: oklch(18% 0.012 240); /* Fine glass frosty border line */
 
+  /* Glassmorphism Global Tokens */
+  --color-glass-bg: rgba(22, 22, 28, 0.65);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --color-overlay-bg: rgba(10, 10, 12, 0.7);
+
   /* Shadows tuned for OLED dark depth & premium ice glow */
   --shadow-diffused: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 20px rgba(0, 85, 255, 0.03);
   --shadow-hover: 0 24px 64px rgba(0, 0, 0, 0.9), 0 0 28px rgba(0, 85, 255, 0.06);
@@ -138,6 +148,10 @@
     --color-outline: oklch(30% 0.01 240);
     --color-outline-variant: oklch(18% 0.012 240);
     
+    --color-glass-bg: rgba(22, 22, 28, 0.65);
+    --color-glass-border: rgba(255, 255, 255, 0.08);
+    --color-overlay-bg: rgba(10, 10, 12, 0.7);
+
     --shadow-diffused: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 20px rgba(0, 85, 255, 0.03);
     --shadow-hover: 0 24px 64px rgba(0, 0, 0, 0.9), 0 0 28px rgba(0, 85, 255, 0.06);
     --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.06);
@@ -209,23 +223,23 @@ ul {
 
 /* Micro-interaction & Texture classes */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--color-glass-border);
   box-shadow: var(--shadow-diffused);
   transition: var(--transition-premium);
 }
 
 :root[data-theme='dark'] .glass-panel {
-  background: rgba(18, 22, 33, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-glass-bg);
+  border: 1px solid var(--color-glass-border);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) .glass-panel {
-    background: rgba(18, 22, 33, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-glass-bg);
+    border: 1px solid var(--color-glass-border);
   }
 }
 
@@ -443,8 +457,8 @@ ul {
 }
 
 :root[data-theme='dark'] .mms-modal-card {
-  background: rgba(24, 28, 41, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-glass-bg);
+  border: 1px solid var(--color-glass-border);
   box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.5);
 }
 
