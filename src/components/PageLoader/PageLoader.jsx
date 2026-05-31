@@ -1,17 +1,16 @@
-﻿import React from 'react';
-import { Loader2 } from 'lucide-react';
+import React from 'react';
 
 /**
  * Dipakai untuk loading full-page (return awal komponen)
  */
-const PageLoader = ({ text = 'Memuat...' }) => (
+const PageLoader = ({ text = 'Memuat sistem...' }) => (
   <div
     className="dashboard-container fade-in"
-    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}
+    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--color-background)' }}
   >
-    <div style={{ textAlign: 'center' }}>
-      <Loader2 className="spinner" size={32} color="var(--color-primary)" />
-      {text && <p style={{ marginTop: '12px', color: '#999', fontSize: '14px' }}>{text}</p>}
+    <div className="mms-loader-wrapper">
+      <div className="mms-spinner-ring"></div>
+      {text && <p className="mms-loader-text">{text}</p>}
     </div>
   </div>
 );

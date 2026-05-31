@@ -1,13 +1,14 @@
-﻿import React from 'react';
-import { Loader2 } from 'lucide-react';
+import React from 'react';
 
 /**
  * Dipakai di dalam halaman (bukan full-page)
  */
 const InlineLoader = ({ text = 'Memuat data...' }) => (
-  <div style={{ textAlign: 'center', padding: '40px' }}>
-    <Loader2 className="spinner" size={32} color="var(--color-primary)" />
-    {text && <p style={{ color: '#999', marginTop: '8px', fontSize: '14px' }}>{text}</p>}
+  <div style={{ display: 'flex', justifyContent: 'center', padding: '40px', width: '100%' }}>
+    <div className="mms-loader-wrapper">
+      <div className="mms-spinner-ring" style={{ width: '36px', height: '36px' }}></div>
+      {text && <p className="mms-loader-text" style={{ fontSize: '13px', marginTop: '12px' }}>{text}</p>}
+    </div>
   </div>
 );
 
