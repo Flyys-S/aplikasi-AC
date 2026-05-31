@@ -302,15 +302,32 @@ ul {
 
 /* Desktop Main Container Alignment for Sidebar Nav */
 @media (min-width: 769px) {
+  html, body {
+    overflow: hidden;
+    height: 100vh;
+  }
   .dashboard-container {
     padding-left: 260px; /* leaves perfect room for Left Sidebar Nav */
     transition: var(--transition-premium);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
   .dashboard-container.guest-layout {
     padding-left: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .dashboard-container.guest-layout .page-content {
+    height: auto !important;
+    overflow: visible !important;
   }
   .page-content {
     padding-bottom: var(--space-lg); /* remove mobile bottom spacing on desktop */
+    overflow-y: auto;
+    height: calc(100vh - 80px); /* Leaves space for header */
+    flex: 1;
   }
 }
 
