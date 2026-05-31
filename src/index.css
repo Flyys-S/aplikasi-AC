@@ -69,24 +69,24 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
   
-  /* OKLCH Dark Colors - OLED Deep Premium Navy & Frosty Blue */
-  --color-background: oklch(13% 0.012 245); /* Softened deep premium navy-black */
-  --color-surface: oklch(16% 0.014 245); /* Sleek professional dark container */
-  --color-surface-dim: oklch(9% 0.01 245);
-  --color-surface-bright: oklch(20% 0.016 245);
+  /* OKLCH Dark Colors - Premium Modern Carbon Charcoal & Frosty Blue */
+  --color-background: oklch(12% 0.005 240); /* Beautiful sophisticated carbon charcoal-black */
+  --color-surface: oklch(15% 0.008 240); /* Slightly lighter carbon tray */
+  --color-surface-dim: oklch(9% 0.004 240);
+  --color-surface-bright: oklch(19% 0.01 240);
   
-  --color-surface-container-lowest: oklch(12% 0.012 245); /* Deep card background */
-  --color-surface-container-low: oklch(15% 0.014 245);
-  --color-surface-container: oklch(17% 0.016 245);
-  --color-surface-container-high: oklch(20% 0.018 245);
-  --color-surface-container-highest: oklch(23% 0.02 245);
+  --color-surface-container-lowest: oklch(11% 0.006 240); /* Slate card background */
+  --color-surface-container-low: oklch(14% 0.008 240);
+  --color-surface-container: oklch(16% 0.009 240);
+  --color-surface-container-high: oklch(19% 0.01 240);
+  --color-surface-container-highest: oklch(22% 0.012 240);
   
   --color-on-surface: oklch(98% 0.005 230); /* Pristine white text */
-  --color-on-surface-variant: oklch(84% 0.012 230); /* Highly readable frosty white text */
+  --color-on-surface-variant: oklch(84% 0.008 230); /* Highly readable frosty white text */
   
   --color-primary: oklch(72% 0.16 235); /* Glowing electric frosty ice-blue */
   --color-primary-dark: oklch(58% 0.18 235);
-  --color-on-primary: oklch(13% 0.012 245);
+  --color-on-primary: oklch(12% 0.005 240);
   --color-on-primary-container: oklch(93% 0.015 235);
   
   --color-secondary: oklch(78% 0.11 200); /* Soft premium ice-cyan */
@@ -96,36 +96,36 @@
   --color-tertiary: oklch(65% 0.01 240);
   --color-on-background: oklch(98% 0.005 230);
   
-  --color-outline: oklch(34% 0.025 245);
-  --color-outline-variant: oklch(20% 0.03 245); /* Fine glass frosty border line */
+  --color-outline: oklch(30% 0.01 240);
+  --color-outline-variant: oklch(18% 0.012 240); /* Fine glass frosty border line */
 
   /* Shadows tuned for OLED dark depth & premium ice glow */
-  --shadow-diffused: 0 16px 48px rgba(0, 0, 0, 0.65), 0 0 20px rgba(0, 85, 255, 0.04);
-  --shadow-hover: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 28px rgba(0, 85, 255, 0.08);
-  --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  --shadow-diffused: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 20px rgba(0, 85, 255, 0.03);
+  --shadow-hover: 0 24px 64px rgba(0, 0, 0, 0.9), 0 0 28px rgba(0, 85, 255, 0.06);
+  --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.06);
 }
 
 /* Respect OS preference if user has not explicitly set a preference override */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-    --color-background: oklch(13% 0.012 245);
-    --color-surface: oklch(16% 0.014 245);
-    --color-surface-dim: oklch(9% 0.01 245);
-    --color-surface-bright: oklch(20% 0.016 245);
+    --color-background: oklch(12% 0.005 240);
+    --color-surface: oklch(15% 0.008 240);
+    --color-surface-dim: oklch(9% 0.004 240);
+    --color-surface-bright: oklch(19% 0.01 240);
     
-    --color-surface-container-lowest: oklch(12% 0.012 245);
-    --color-surface-container-low: oklch(15% 0.014 245);
-    --color-surface-container: oklch(17% 0.016 245);
-    --color-surface-container-high: oklch(20% 0.018 245);
-    --color-surface-container-highest: oklch(23% 0.02 245);
+    --color-surface-container-lowest: oklch(11% 0.006 240);
+    --color-surface-container-low: oklch(14% 0.008 240);
+    --color-surface-container: oklch(16% 0.009 240);
+    --color-surface-container-high: oklch(19% 0.01 240);
+    --color-surface-container-highest: oklch(22% 0.012 240);
     
     --color-on-surface: oklch(98% 0.005 230);
-    --color-on-surface-variant: oklch(84% 0.012 230);
+    --color-on-surface-variant: oklch(84% 0.008 230);
     
     --color-primary: oklch(72% 0.16 235);
     --color-primary-dark: oklch(58% 0.18 235);
-    --color-on-primary: oklch(13% 0.012 245);
+    --color-on-primary: oklch(12% 0.005 240);
     --color-on-primary-container: oklch(93% 0.015 235);
     
     --color-secondary: oklch(78% 0.11 200);
@@ -135,12 +135,12 @@
     --color-tertiary: oklch(65% 0.01 240);
     --color-on-background: oklch(98% 0.005 230);
     
-    --color-outline: oklch(34% 0.025 245);
-    --color-outline-variant: oklch(20% 0.03 245);
+    --color-outline: oklch(30% 0.01 240);
+    --color-outline-variant: oklch(18% 0.012 240);
     
-    --shadow-diffused: 0 16px 48px rgba(0, 0, 0, 0.65), 0 0 20px rgba(0, 85, 255, 0.04);
-    --shadow-hover: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 28px rgba(0, 85, 255, 0.08);
-    --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    --shadow-diffused: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 20px rgba(0, 85, 255, 0.03);
+    --shadow-hover: 0 24px 64px rgba(0, 0, 0, 0.9), 0 0 28px rgba(0, 85, 255, 0.06);
+    --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.06);
   }
 }
 
