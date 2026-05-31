@@ -97,17 +97,21 @@ export const DataProvider = ({ children }) => {
     }
   }, [servicesLoaded, servicesCache]);
 
+  const clearCache = useCallback(() => {
+    setProductsCache([]);
+    setTransactionsCache([]);
+    setServicesCache([]);
+    setProductsLoaded(false);
+    setTransactionsLoaded(false);
+    setServicesLoaded(false);
+  }, []);
+
   // Clear memory cache upon sign out
   useEffect(() => {
     if (!user) {
-      setProductsCache([]);
-      setTransactionsCache([]);
-      setServicesCache([]);
-      setProductsLoaded(false);
-      setTransactionsLoaded(false);
-      setServicesLoaded(false);
+      clearCache();
     }
-  }, [user, setProductsCache, setTransactionsCache, setServicesCache, setProductsLoaded, setTransactionsLoaded, setServicesLoaded]);
+  }, [user, clearCache]);
 
   // 4. WebSocket Mock Event Listener for Instantly Syncing Status across tabs/components
   const broadcastStatusUpdate = useCallback((entityType, id, newStatus) => {
