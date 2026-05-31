@@ -15,7 +15,7 @@
 }
 
 :root[data-theme='dark'] .company-profile-hero {
-  background: rgba(14, 18, 28, 0.55);
+  background: var(--color-surface-container-low);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -228,7 +228,7 @@
 }
 
 :root[data-theme='dark'] .catalog-header {
-  background: rgba(14, 18, 28, 0.65);
+  background: var(--color-surface-container);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -425,7 +425,7 @@
 }
 
 :root[data-theme='dark'] .hero-statement-card {
-  background: rgba(14, 18, 28, 0.55);
+  background: var(--color-surface-container-low);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -575,7 +575,7 @@
 .quick-view-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(14, 18, 28, 0.6);
+  background: rgba(15, 15, 20, 0.65);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 1100;
