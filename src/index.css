@@ -75,16 +75,17 @@
   color-scheme: dark;
   
   /* OKLCH Dark Colors - Premium Modern Carbon Charcoal & Frosty Blue */
-  --color-background: oklch(12% 0.005 240); /* Beautiful sophisticated carbon charcoal-black */
-  --color-surface: oklch(15% 0.008 240); /* Slightly lighter carbon tray */
-  --color-surface-dim: oklch(9% 0.004 240);
-  --color-surface-bright: oklch(19% 0.01 240);
+  --color-background: oklch(9% 0.004 240); /* Deeper premium carbon background so sidebar/header blend flatly */
+  --color-surface: oklch(9% 0.004 240); /* Sidebar & header match background flatly */
+  --color-surface-dim: oklch(7% 0.003 240);
+  --color-surface-bright: oklch(14% 0.008 240);
   
-  --color-surface-container-lowest: oklch(11% 0.006 240); /* Slate card background */
+  /* Nested islands/cards rise above the deep flat layout tray */
+  --color-surface-container-lowest: oklch(12% 0.007 240); /* Nested card background starts here */
   --color-surface-container-low: oklch(14% 0.008 240);
   --color-surface-container: oklch(16% 0.009 240);
-  --color-surface-container-high: oklch(19% 0.01 240);
-  --color-surface-container-highest: oklch(22% 0.012 240);
+  --color-surface-container-high: oklch(18% 0.01 240);
+  --color-surface-container-highest: oklch(21% 0.012 240);
   
   --color-on-surface: oklch(98% 0.005 230); /* Pristine white text */
   --color-on-surface-variant: oklch(84% 0.008 230); /* Highly readable frosty white text */
@@ -101,12 +102,12 @@
   --color-tertiary: oklch(65% 0.01 240);
   --color-on-background: oklch(98% 0.005 230);
   
-  --color-outline: oklch(30% 0.01 240);
-  --color-outline-variant: oklch(18% 0.012 240); /* Fine glass frosty border line */
+  --color-outline: oklch(24% 0.01 240);
+  --color-outline-variant: oklch(16% 0.012 240); /* Fine glass frosty border line */
 
   /* Glassmorphism Global Tokens */
-  --color-glass-bg: rgba(22, 22, 28, 0.65);
-  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --color-glass-bg: rgba(22, 22, 28, 0.45); /* Highly transparent blending background */
+  --color-glass-border: rgba(255, 255, 255, 0.06);
   --color-overlay-bg: rgba(10, 10, 12, 0.7);
 
   /* Shadows tuned for OLED dark depth & premium ice glow */
@@ -119,16 +120,16 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-    --color-background: oklch(12% 0.005 240);
-    --color-surface: oklch(15% 0.008 240);
-    --color-surface-dim: oklch(9% 0.004 240);
-    --color-surface-bright: oklch(19% 0.01 240);
+    --color-background: oklch(9% 0.004 240);
+    --color-surface: oklch(9% 0.004 240);
+    --color-surface-dim: oklch(7% 0.003 240);
+    --color-surface-bright: oklch(14% 0.008 240);
     
-    --color-surface-container-lowest: oklch(11% 0.006 240);
+    --color-surface-container-lowest: oklch(12% 0.007 240);
     --color-surface-container-low: oklch(14% 0.008 240);
     --color-surface-container: oklch(16% 0.009 240);
-    --color-surface-container-high: oklch(19% 0.01 240);
-    --color-surface-container-highest: oklch(22% 0.012 240);
+    --color-surface-container-high: oklch(18% 0.01 240);
+    --color-surface-container-highest: oklch(21% 0.012 240);
     
     --color-on-surface: oklch(98% 0.005 230);
     --color-on-surface-variant: oklch(84% 0.008 230);
@@ -145,11 +146,11 @@
     --color-tertiary: oklch(65% 0.01 240);
     --color-on-background: oklch(98% 0.005 230);
     
-    --color-outline: oklch(30% 0.01 240);
-    --color-outline-variant: oklch(18% 0.012 240);
+    --color-outline: oklch(24% 0.01 240);
+    --color-outline-variant: oklch(16% 0.012 240);
     
-    --color-glass-bg: rgba(22, 22, 28, 0.65);
-    --color-glass-border: rgba(255, 255, 255, 0.08);
+    --color-glass-bg: rgba(22, 22, 28, 0.45);
+    --color-glass-border: rgba(255, 255, 255, 0.06);
     --color-overlay-bg: rgba(10, 10, 12, 0.7);
 
     --shadow-diffused: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 20px rgba(0, 85, 255, 0.03);
