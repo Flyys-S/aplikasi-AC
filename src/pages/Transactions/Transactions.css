@@ -9,9 +9,17 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
+  background: var(--color-glass-bg);
+  border: 1px solid var(--color-glass-border);
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all 0.25s ease;
+}
+
+.txn-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-primary);
 }
 
 .txn-icon {
@@ -66,7 +74,7 @@
 
 .txn-status {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 2px 8px;
   border-radius: var(--radius-full);
 }
@@ -74,14 +82,17 @@
 .status-success {
   background: rgba(0, 135, 86, 0.1);
   color: #008756;
+  border: 1px solid rgba(0, 135, 86, 0.2);
 }
 
 .status-warning {
   background: rgba(245, 166, 35, 0.1);
   color: #b57a00;
+  border: 1px solid rgba(245, 166, 35, 0.2);
 }
 
 .status-error {
   background: rgba(186, 26, 26, 0.1);
   color: var(--color-error);
+  border: 1px solid rgba(186, 26, 26, 0.2);
 }

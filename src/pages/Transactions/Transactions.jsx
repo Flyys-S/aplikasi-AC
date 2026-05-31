@@ -63,7 +63,7 @@ const Transactions = () => {
       </TopHeader>
 
       <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
-        <div className="search-input-wrapper card-elevation" style={{ marginBottom: '20px', backgroundColor: 'white', borderRadius: '12px', padding: '0 12px' }}>
+        <div className="search-input-wrapper card-elevation" style={{ marginBottom: '20px', backgroundColor: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', borderRadius: '12px', padding: '0 12px' }}>
           <Search size={18} color="#999" />
           <input 
             type="text" 
@@ -88,7 +88,8 @@ const Transactions = () => {
                   style={{ 
                     padding: '16px', 
                     borderRadius: '16px', 
-                    backgroundColor: 'white', 
+                    backgroundColor: 'var(--color-glass-bg)', 
+                    border: '1px solid var(--color-glass-border)',
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: '16px',
@@ -100,7 +101,7 @@ const Transactions = () => {
                     height: '44px', 
                     borderRadius: '12px', 
                     backgroundColor: txn.is_online ? 'rgba(0, 85, 255, 0.1)' : 'rgba(107, 114, 128, 0.1)', 
-                    color: txn.is_online ? 'var(--color-primary)' : '#666',
+                    color: txn.is_online ? 'var(--color-primary)' : '#888',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -110,13 +111,13 @@ const Transactions = () => {
 
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
+                      <span style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--color-on-surface)' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
                       <span style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--color-primary)' }}>
                         {formatRupiah(txn.total_amount)}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '12px', color: '#999' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>
                         {formatTanggalJam(txn.created_at)}
                       </span>
                       <span style={{ 
@@ -126,7 +127,8 @@ const Transactions = () => {
                         borderRadius: '6px', 
                         backgroundColor: status.bg, 
                         color: status.color,
-                        textTransform: 'uppercase'
+                        textTransform: 'uppercase',
+                        border: `1px solid ${status.color}33`
                       }}>
                         {status.label}
                       </span>
