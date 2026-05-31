@@ -1,44 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap');
 
 :root {
-  /* Colors - Arctic Ice Light Premium */
+  /* Colors - Soft Arctic Slate Light Premium */
   color-scheme: light;
   
-  /* OKLCH Colors - Pristine Ice & Ocean Blue */
-  --color-background: oklch(98.5% 0.006 230); /* Pure ice white background */
-  --color-surface: oklch(99.2% 0.003 230);
-  --color-surface-dim: oklch(92% 0.015 230);
-  --color-surface-bright: oklch(99.5% 0.002 230);
+  /* OKLCH Colors - Soft Platinum Slate & High Contrast Ocean Navy */
+  --color-background: oklch(95.5% 0.008 230); /* Cool platinum soft background (extremely easy on eyes) */
+  --color-surface: oklch(97.5% 0.005 230); /* Off-white surface tray */
+  --color-surface-dim: oklch(91% 0.010 230);
+  --color-surface-bright: oklch(98.5% 0.003 230);
   
-  --color-surface-container-lowest: oklch(100% 0 0); /* Pure solid white */
-  --color-surface-container-low: oklch(97.5% 0.008 230);
-  --color-surface-container: oklch(96% 0.012 230);
-  --color-surface-container-high: oklch(94% 0.016 230);
-  --color-surface-container-highest: oklch(91.5% 0.02 230);
+  --color-surface-container-lowest: oklch(100% 0 0); /* Pure crisp white cards that pop against soft platinum */
+  --color-surface-container-low: oklch(97% 0.007 230);
+  --color-surface-container: oklch(95% 0.009 230);
+  --color-surface-container-high: oklch(93% 0.011 230);
+  --color-surface-container-highest: oklch(90.5% 0.013 230);
   
-  --color-on-surface: oklch(20% 0.03 240); /* Deep royal navy */
-  --color-on-surface-variant: oklch(45% 0.02 240);
+  --color-on-surface: oklch(18% 0.024 240); /* Deep premium slate navy (rich and sharp contrast) */
+  --color-on-surface-variant: oklch(38% 0.020 240); /* Softer slate variant for subtext */
   
-  --color-primary: oklch(55% 0.22 250); /* Premium Royal Arctic Blue */
-  --color-primary-dark: oklch(42% 0.20 250);
+  --color-primary: oklch(52% 0.20 250); /* Ultra Premium Arctic Blue Accent */
+  --color-primary-dark: oklch(40% 0.18 250);
   --color-on-primary: oklch(100% 0 0);
-  --color-on-primary-container: oklch(96% 0.02 250);
+  --color-on-primary-container: oklch(95% 0.02 250);
   
-  --color-secondary: oklch(80% 0.12 210); /* Sleek soft cyan */
-  --color-secondary-dark: oklch(40% 0.10 210);
-  --color-on-secondary: oklch(30% 0.08 210);
+  --color-secondary: oklch(76% 0.12 210); /* Soft modern ice-cyan */
+  --color-secondary-dark: oklch(36% 0.10 210);
+  --color-on-secondary: oklch(24% 0.08 210);
   
-  --color-tertiary: oklch(50% 0.01 240);
-  --color-background-fallback: #f9f9ff;
-  --color-on-background: oklch(20% 0.03 240);
+  --color-tertiary: oklch(46% 0.015 240);
+  --color-background-fallback: #f4f6fa;
+  --color-on-background: oklch(18% 0.024 240);
   
-  --color-error: oklch(58% 0.20 25);
+  --color-error: oklch(55% 0.20 25);
   --color-on-error: oklch(100% 0 0);
-  --color-error-container: oklch(92% 0.05 25);
-
-  --color-outline: oklch(65% 0.015 240);
-  --color-outline-variant: oklch(88% 0.01 240);
-
+  --color-error-container: oklch(91% 0.05 25);
+ 
+  --color-outline: oklch(58% 0.02 240);
+  --color-outline-variant: oklch(86% 0.015 240); /* Soft premium hair-line separators */
+ 
   /* Typography */
   --font-headline: 'Manrope', sans-serif;
   --font-body: 'Inter', sans-serif;
@@ -51,9 +51,9 @@
   --radius-full: 9999px;
   
   /* Glassmorphism Global Tokens */
-  --color-glass-bg: rgba(255, 255, 255, 0.45);
-  --color-glass-border: rgba(255, 255, 255, 0.5);
-  --color-overlay-bg: rgba(20, 20, 25, 0.5);
+  --color-glass-bg: rgba(255, 255, 255, 0.65); /* Rich soft glass backdrop */
+  --color-glass-border: rgba(255, 255, 255, 0.4);
+  --color-overlay-bg: rgba(15, 15, 20, 0.4);
   
   /* Spacing */
   --space-unit: 4px;
@@ -64,9 +64,9 @@
   --gutter: 24px;
   
   /* Haptic Premium Depth Tokens */
-  --shadow-diffused: 0 12px 36px rgba(0, 85, 255, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
-  --shadow-hover: 0 20px 48px rgba(0, 85, 255, 0.06), 0 2px 6px rgba(0, 85, 255, 0.02);
-  --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  --shadow-diffused: 0 12px 36px rgba(0, 40, 100, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-hover: 0 20px 48px rgba(0, 40, 100, 0.08), 0 2px 6px rgba(0, 40, 100, 0.03);
+  --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.7);
   --transition-premium: all 0.6s ease-[cubic-bezier(0.25, 1, 0.5, 1)];
 }
 
