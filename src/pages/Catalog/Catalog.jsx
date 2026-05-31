@@ -47,6 +47,8 @@ const Catalog = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  const baseUrl = import.meta.env.BASE_URL || '/';
+
   const carouselImages = [
     { src: `${baseUrl}hero_living_room.png`, caption: 'Kesejukan Premium Hunian Modern' },
     { src: `${baseUrl}technician_service.png`, caption: 'Layanan Pemasangan & Pemeliharaan Profesional' },
@@ -126,8 +128,6 @@ const Catalog = () => {
   const scrollToCatalog = () => {
     catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  const baseUrl = import.meta.env.BASE_URL || '/';
 
   return (
     <div className={`dashboard-container ${!user ? 'guest-layout' : ''}`}>
