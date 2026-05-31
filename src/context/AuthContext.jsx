@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 
@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(() => localStorage.getItem('supabase_user_role') || null)
   const [loading, setLoading] = useState(true)
 
-  const fetchUserRole = async (userId) => {
+  const fetchUserRole = useCallback(async (userId) => {
     const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('Timeout fetching role')), 5000)
     );
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, []);
 
   useEffect(() => {
     const checkInitialSession = async () => {
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       if (subscription) subscription.unsubscribe()
     }
-  }, [])
+  }, [fetchUserRole])
 
   const signInWithGoogle = async () => {
     try {
