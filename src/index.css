@@ -70,23 +70,23 @@
   color-scheme: dark;
   
   /* OKLCH Dark Colors - OLED Deep Premium Navy & Frosty Blue */
-  --color-background: oklch(10% 0.015 245); /* Rich premium black-blue */
-  --color-surface: oklch(13% 0.018 245); /* Sleek container dark surface */
-  --color-surface-dim: oklch(8% 0.01 245);
-  --color-surface-bright: oklch(18% 0.02 245);
+  --color-background: oklch(13% 0.012 245); /* Softened deep premium navy-black */
+  --color-surface: oklch(16% 0.014 245); /* Sleek professional dark container */
+  --color-surface-dim: oklch(9% 0.01 245);
+  --color-surface-bright: oklch(20% 0.016 245);
   
-  --color-surface-container-lowest: oklch(11% 0.015 245); /* Deep card background */
-  --color-surface-container-low: oklch(14% 0.018 245);
-  --color-surface-container: oklch(16% 0.02 245);
-  --color-surface-container-high: oklch(19% 0.022 245);
-  --color-surface-container-highest: oklch(22% 0.025 245);
+  --color-surface-container-lowest: oklch(12% 0.012 245); /* Deep card background */
+  --color-surface-container-low: oklch(15% 0.014 245);
+  --color-surface-container: oklch(17% 0.016 245);
+  --color-surface-container-high: oklch(20% 0.018 245);
+  --color-surface-container-highest: oklch(23% 0.02 245);
   
   --color-on-surface: oklch(98% 0.005 230); /* Pristine white text */
   --color-on-surface-variant: oklch(84% 0.012 230); /* Highly readable frosty white text */
   
   --color-primary: oklch(72% 0.16 235); /* Glowing electric frosty ice-blue */
   --color-primary-dark: oklch(58% 0.18 235);
-  --color-on-primary: oklch(10% 0.015 245);
+  --color-on-primary: oklch(13% 0.012 245);
   --color-on-primary-container: oklch(93% 0.015 235);
   
   --color-secondary: oklch(78% 0.11 200); /* Soft premium ice-cyan */
@@ -109,23 +109,23 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-    --color-background: oklch(10% 0.015 245);
-    --color-surface: oklch(13% 0.018 245);
-    --color-surface-dim: oklch(8% 0.01 245);
-    --color-surface-bright: oklch(18% 0.02 245);
+    --color-background: oklch(13% 0.012 245);
+    --color-surface: oklch(16% 0.014 245);
+    --color-surface-dim: oklch(9% 0.01 245);
+    --color-surface-bright: oklch(20% 0.016 245);
     
-    --color-surface-container-lowest: oklch(11% 0.015 245);
-    --color-surface-container-low: oklch(14% 0.018 245);
-    --color-surface-container: oklch(16% 0.02 245);
-    --color-surface-container-high: oklch(19% 0.022 245);
-    --color-surface-container-highest: oklch(22% 0.025 245);
+    --color-surface-container-lowest: oklch(12% 0.012 245);
+    --color-surface-container-low: oklch(15% 0.014 245);
+    --color-surface-container: oklch(17% 0.016 245);
+    --color-surface-container-high: oklch(20% 0.018 245);
+    --color-surface-container-highest: oklch(23% 0.02 245);
     
     --color-on-surface: oklch(98% 0.005 230);
     --color-on-surface-variant: oklch(84% 0.012 230);
     
     --color-primary: oklch(72% 0.16 235);
     --color-primary-dark: oklch(58% 0.18 235);
-    --color-on-primary: oklch(10% 0.015 245);
+    --color-on-primary: oklch(13% 0.012 245);
     --color-on-primary-container: oklch(93% 0.015 235);
     
     --color-secondary: oklch(78% 0.11 200);
