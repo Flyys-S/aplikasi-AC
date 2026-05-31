@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Users, Package, Activity, ShoppingBag, ChevronRight, Loader2, DollarSign } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
 import { formatRupiahCompact, formatTanggalJam } from '../../lib/formatters';
 import { getStatusLabel } from '../../lib/statusUtils';
 import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
 import PageLoader from '../../components/PageLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
@@ -14,6 +14,7 @@ import '../SalesDashboard/SalesDashboard.css';
 const SalesDashboard = () => {
   const navigate = useNavigate();
   const { role, user } = useAuth();
+  const { getTransactions, getServices } = useData();
   const [stats, setStats] = useState({
     totalSales: 0,
     unitsSold: 0,
@@ -31,52 +32,41 @@ const SalesDashboard = () => {
       
       // Admin dashboard data
       if (role === 'admin') {
-        const [txnRes, jobRes, pendingRes, activityRes] = await Promise.all([
-          supabase.from('transactions').select('total_amount, transaction_items(quantity)').eq('status', 'completed'),
-          supabase.from('service_jobs').select('id', { count: 'exact' }),
-          supabase.from('transactions').select('id', { count: 'exact', head: true }).eq('status', 'pending_verification'),
-          supabase.from('transactions').select('*, customers(name)').order('created_at', { ascending: false }).limit(5)
+        const [txns, jobs] = await Promise.all([
+          getTransactions(),
+          getServices()
         ]);
 
-        const totalSales = txnRes.data?.reduce((sum, t) => sum + (t.total_amount || 0), 0) || 0;
-        const unitsSold = txnRes.data?.reduce((sum, t) => {
+        const completedTxns = txns.filter(t => t.status === 'completed');
+        const totalSales = completedTxns.reduce((sum, t) => sum + (t.total_amount || 0), 0) || 0;
+        const unitsSold = completedTxns.reduce((sum, t) => {
           const itemQty = t.transaction_items?.reduce((s, i) => s + (i.quantity || 0), 0) || 0;
           return sum + itemQty;
         }, 0) || 0;
 
+        const pendingOrders = txns.filter(t => t.status === 'pending_verification').length;
+        const recentActivity = [...txns].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+
         setStats({
           totalSales,
           unitsSold,
-          serviceCount: jobRes.count || 0,
-          pendingOrders: pendingRes.count || 0,
-          recentActivity: activityRes.data || [],
+          serviceCount: jobs.length || 0,
+          pendingOrders,
+          recentActivity,
           technicianJobs: [],
           customerOrders: []
         });
       } else if (role === 'technician') {
-        // Fetch specific active jobs assigned to this technician
-        const { data: jobs, error } = await supabase
-          .from('service_jobs')
-          .select('*, customers(name, phone, address)')
-          .order('scheduled_date', { ascending: true })
-          .limit(10);
-          
-        if (error) throw error;
+        const jobs = await getServices();
         setStats(prev => ({
           ...prev,
-          technicianJobs: jobs || []
+          technicianJobs: jobs.slice(0, 10)
         }));
       } else {
-        // Customer / default view
-        const { data: myTxns } = await supabase
-          .from('transactions')
-          .select('*, transaction_items(*)')
-          .order('created_at', { ascending: false })
-          .limit(4);
-          
+        const txns = await getTransactions();
         setStats(prev => ({
           ...prev,
-          customerOrders: myTxns || []
+          customerOrders: txns.slice(0, 4)
         }));
       }
     } catch (error) {
@@ -84,7 +74,7 @@ const SalesDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [role]);
+  }, [role, getTransactions, getServices]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
