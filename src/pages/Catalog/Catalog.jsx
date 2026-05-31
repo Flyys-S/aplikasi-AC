@@ -44,6 +44,24 @@ const Catalog = () => {
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const carouselImages = [
+    { src: `${baseUrl}hero_living_room.png`, caption: 'Kesejukan Premium Hunian Modern' },
+    { src: `${baseUrl}technician_service.png`, caption: 'Layanan Pemasangan & Pemeliharaan Profesional' },
+    { src: `${baseUrl}premium_ac_unit.png`, caption: 'Solusi Hemat Energi Ramah Lingkungan' }
+  ];
+
+  // Auto-scroll slide indicators
+  useEffect(() => {
+    if (user) return;
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % carouselImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [user]);
+
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -168,74 +186,71 @@ const Catalog = () => {
 
       <div className="page-content fade-in">
         {!user && (
-          <section className="company-profile-hero glass-panel fade-in" style={{ marginBottom: '40px' }}>
-            {/* Premium Animated Sliding Image Carousel Section with 3D Parallax Name Overlay */}
-            <div 
-              ref={containerRef}
-              className="hero-carousel-container"
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              <div className="hero-carousel-track">
-                <div className="carousel-slide">
-                  <img src={`${baseUrl}hero_living_room.png`} alt="Premium Living Room" />
-                  <div className="carousel-caption-subtle">
-                    <p>Kesejukan Premium Hunian Modern</p>
-                  </div>
-                </div>
-                <div className="carousel-slide">
-                  <img src={`${baseUrl}technician_service.png`} alt="Technician Service" />
-                  <div className="carousel-caption-subtle">
-                    <p>Layanan Pemasangan & Pemeliharaan Profesional</p>
-                  </div>
-                </div>
-                <div className="carousel-slide">
-                  <img src={`${baseUrl}premium_ac_unit.png`} alt="Premium AC Unit" />
-                  <div className="carousel-caption-subtle">
-                    <p>Solusi Hemat Energi Ramah Lingkungan</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Massive 3D Parallax Title centered over scrolling carousel */}
-              <div className="hero-3d-overlay">
-                <h1 
-                  className="hero-3d-title"
-                  style={{
-                    transform: `perspective(1000px) rotateY(${tilt.x}deg) rotateX(${tilt.y}deg) translateZ(40px)`,
-                    transition: 'transform 0.08s ease-out'
-                  }}
-                >
-                  PT. MITRA MAJU SEJATI
-                </h1>
-                <span className="hero-3d-badge">COMFORT & QUALITY CO.</span>
-              </div>
-            </div>
-
-            <div className="hero-profile-info glass-panel card-elevation">
-              <h2>Profil Perusahaan</h2>
-              <p>
-                PT. MITRA MAJU SEJATI adalah penyedia solusi tata udara premium berstandar internasional. 
-                Kami menghadirkan unit pendingin udara 100% orisinal dengan garansi resmi, 
-                serta layanan pemasangan dan perawatan terpadu oleh teknisi bersertifikat.
+          <section className="premium-split-hero fade-in">
+            {/* Left Side: Brand statements & CTA */}
+            <div className="hero-statement-card glass-panel">
+              <div className="hero-brand-badge">COMFORT & QUALITY CO.</div>
+              <h1 className="hero-premium-title">
+                PT. MITRA MAJU SEJATI
+              </h1>
+              <p className="hero-premium-subtitle">
+                Penyedia solusi tata udara premium berstandar internasional. Kami menghadirkan unit pendingin udara 100% orisinal dengan garansi resmi, serta layanan pemasangan & perawatan terintegrasi oleh teknisi bersertifikat.
               </p>
               
-              <div className="hero-auth-actions">
-                <p>Silakan masuk atau daftar untuk memesan produk dari katalog kami</p>
-                <div className="hero-auth-buttons">
-                  <Button variant="outline" onClick={() => navigate('/login')}>
-                    Masuk ke Akun
-                  </Button>
-                  <Button onClick={() => navigate('/signup')}>
-                    Daftar Sekarang
-                  </Button>
-                </div>
+              <div className="hero-premium-actions">
+                <Button variant="primary" onClick={() => navigate('/signup')} style={{ padding: '14px 28px', fontSize: '15px' }}>
+                  Daftar Akun Baru
+                </Button>
+                <Button variant="outline" onClick={() => navigate('/login')} style={{ padding: '14px 28px', fontSize: '15px' }}>
+                  Masuk ke Sistem
+                </Button>
+              </div>
+
+              <div className="hero-interactive-anchor" onClick={scrollToCatalog}>
+                <span>Jelajahi Katalog AC</span>
+                <span className="anchor-arrow">↓</span>
               </div>
             </div>
-            
-            <button className="explore-catalog-btn" onClick={scrollToCatalog}>
-              Jelajahi Katalog AC 👇
-            </button>
+
+            {/* Right Side: Interactive Sliding Image Carousel */}
+            <div 
+              ref={containerRef}
+              className="hero-carousel-container-new card-elevation"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{
+                transform: `perspective(1000px) rotateY(${tilt.x}deg) rotateX(${tilt.y}deg)`,
+                transition: 'transform 0.1s ease-out'
+              }}
+            >
+              <div 
+                className="hero-carousel-track-new"
+                style={{
+                  transform: `translateX(-${currentSlide * 100}%)`,
+                  transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+              >
+                {carouselImages.map((image, index) => (
+                  <div key={index} className="carousel-slide-new">
+                    <img src={image.src} alt={image.caption} />
+                    <div className="carousel-caption-subtle-new">
+                      <p>{image.caption}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Slider Dots */}
+              <div className="carousel-dots-container">
+                {carouselImages.map((_, index) => (
+                  <button 
+                    key={index} 
+                    className={`carousel-dot ${currentSlide === index ? 'active' : ''}`}
+                    onClick={() => setCurrentSlide(index)}
+                  />
+                ))}
+              </div>
+            </div>
           </section>
         )}
 
@@ -265,7 +280,13 @@ const Catalog = () => {
                     price={formatRupiah(product.price)}
                     specs={[`${product.capacity_pk} PK`, product.stock > 0 ? 'Ready Stock' : 'Indent']}
                     status={product.stock > 0 ? 'Tersedia' : 'Habis'}
-                    onClick={() => user && navigate(`/inventory/${product.id}`)}
+                    onClick={() => {
+                      if (user) {
+                        navigate(`/inventory/${product.id}`);
+                      } else {
+                        setSelectedProduct(product);
+                      }
+                    }}
                   />
                   {user && (
                     <button 
@@ -349,6 +370,65 @@ const Catalog = () => {
                 </Button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Guest Quick View Modal */}
+      {selectedProduct && (
+        <div className="quick-view-overlay" onClick={() => setSelectedProduct(null)}>
+          <div className="quick-view-modal glass-panel fade-in-scale" onClick={e => e.stopPropagation()}>
+            <button className="quick-view-close" onClick={() => setSelectedProduct(null)}>
+              <X size={20} />
+            </button>
+            <div className="quick-view-content">
+              <div className="quick-view-image-pane">
+                {selectedProduct.image_url ? (
+                  <img src={selectedProduct.image_url} alt={selectedProduct.name} />
+                ) : (
+                  <div className="quick-view-image-placeholder">No Image</div>
+                )}
+              </div>
+              <div className="quick-view-details-pane">
+                <span className="details-brand-badge">{selectedProduct.brand}</span>
+                <h2 className="details-title">{selectedProduct.name}</h2>
+                <div className="details-price-row">
+                  <span className="details-price-label">Harga Retail</span>
+                  <span className="details-price">{formatRupiah(selectedProduct.price)}</span>
+                </div>
+
+                <div className="details-specs-section">
+                  <h3>Spesifikasi Unit AC</h3>
+                  <div className="specs-grid">
+                    <div className="spec-item">
+                      <span className="spec-label">Kapasitas PK</span>
+                      <span className="spec-value">{selectedProduct.capacity_pk} PK</span>
+                    </div>
+                    <div className="spec-item">
+                      <span className="spec-label">Daya Listrik</span>
+                      <span className="spec-value">{selectedProduct.power_watt || 'TBA'} Watt</span>
+                    </div>
+                    <div className="spec-item">
+                      <span className="spec-label">Pendinginan</span>
+                      <span className="spec-value">{selectedProduct.cooling_capacity_btu ? `${selectedProduct.cooling_capacity_btu} BTU` : 'TBA'}</span>
+                    </div>
+                    <div className="spec-item">
+                      <span className="spec-label">Status Ketersediaan</span>
+                      <span className={`spec-value status-badge ${selectedProduct.stock > 0 ? 'instock' : 'outofstock'}`}>
+                        {selectedProduct.stock > 0 ? `Ready Stock (${selectedProduct.stock} unit)` : 'Indent / Habis'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="details-cta-section">
+                  <p>Anda harus masuk ke sistem untuk melakukan pemesanan dan menjadwalkan instalasi AC.</p>
+                  <Button fullWidth onClick={() => navigate('/login')}>
+                    Masuk untuk Memesan
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
