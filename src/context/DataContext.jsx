@@ -107,7 +107,7 @@ export const DataProvider = ({ children }) => {
       setTransactionsLoaded(false);
       setServicesLoaded(false);
     }
-  }, [user]);
+  }, [user, setProductsCache, setTransactionsCache, setServicesCache, setProductsLoaded, setTransactionsLoaded, setServicesLoaded]);
 
   // 4. WebSocket Mock Event Listener for Instantly Syncing Status across tabs/components
   const broadcastStatusUpdate = useCallback((entityType, id, newStatus) => {
