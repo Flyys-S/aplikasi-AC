@@ -1,30 +1,270 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
+import { formatTanggalJam } from '../../lib/formatters';
+import { User, Mail, Shield, Calendar, Moon, Sun, Save, LogOut, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import TopHeader from '../../components/TopHeader';
+import Navigation from '../../components/Navigation';
+import Button from '../../components/Button/Button';
 import './Profile.css';
-import avatarImg from '../../assets/user_avatar.png'; // placeholder avatar
 
 const UserProfile = () => {
-  const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
+  const { user, role, signOut } = useAuth();
+  const [profileData, setProfileData] = useState({
+    fullName: '',
+    email: '',
+    role: '',
+    createdAt: ''
   });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  // Theme states: 'light' or 'dark'
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
   useEffect(() => {
-    document.body.classList.toggle('dark-mode', isDark);
-    localStorage.setItem('darkMode', JSON.stringify(isDark));
-  }, [isDark]);
-  const toggleDarkMode = () => setIsDark(prev => !prev);
+    const fetchUserProfile = async () => {
+      if (!user) return;
+      try {
+        setLoading(true);
+        // Fetch from profiles table
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+          // Fallback to Auth metadata
+          setProfileData({
+            fullName: user.user_metadata?.full_name || '',
+            email: user.email || '',
+            role: role || 'visitor',
+            createdAt: user.created_at || ''
+          });
+        } else if (data) {
+          setProfileData({
+            fullName: data.full_name || '',
+            email: data.email || user.email || '',
+            role: data.role || role || 'visitor',
+            createdAt: data.created_at || user.created_at || ''
+          });
+        }
+      } catch (err) {
+        console.error('Profile fetch failed:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user, role]);
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (!user) return;
+    try {
+      setSaving(true);
+      const { error } = await supabase
+        .from('profiles')
+        .update({ full_name: profileData.fullName })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      toast.success('Profil berhasil diperbarui!');
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      toast.error('Gagal memperbarui profil: ' + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    toast.success(`Mode ${newTheme === 'dark' ? 'Gelap' : 'Terang'} diaktifkan`);
+  };
+
+  const handleLogout = async () => {
+    if (window.confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
+      await signOut();
+    }
+  };
+
+  const getInitials = (name) => {
+    if (!name) return '?';
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  };
+
   return (
-    <div className="dashboard-container user-profile">
-      <button className="dark-mode-toggle btn" onClick={toggleDarkMode} aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>{isDark ? '🌙' : '☀️'}</button>
-      <div className="user-header glass">
-        <div className="avatar" style={{ backgroundImage: `url(${avatarImg})` }}></div>
-        <h2 className="user-name">Nama Pengguna</h2>
-        <p className="user-email">user@example.com</p>
+    <div className="dashboard-container">
+      <TopHeader title="Profil Saya" subtitle="Kelola informasi akun dan pengaturan aplikasi" />
+
+      <div className="page-content fade-in profile-page-content">
+        {loading ? (
+          <div className="profile-loading">
+            <Loader2 className="animate-spin" size={32} color="var(--color-primary)" />
+            <p>Memuat profil pengguna...</p>
+          </div>
+        ) : (
+          <div className="profile-grid">
+            {/* Left Card - User Card */}
+            <div className="profile-card glass-panel text-center">
+              <div className="avatar-wrapper">
+                <div className="profile-avatar">
+                  {getInitials(profileData.fullName || profileData.email)}
+                </div>
+                <div className={`role-tag-badge role-${profileData.role}`}>
+                  <Shield size={12} />
+                  <span>{profileData.role.toUpperCase()}</span>
+                </div>
+              </div>
+
+              <h2 className="profile-display-name">{profileData.fullName || 'Tanpa Nama'}</h2>
+              <p className="profile-display-email">{profileData.email}</p>
+
+              <div className="profile-meta-list">
+                <div className="meta-item">
+                  <Calendar size={16} className="meta-icon" />
+                  <div className="meta-details">
+                    <span className="meta-label">Bergabung Sejak</span>
+                    <span className="meta-value">{formatTanggalJam(profileData.createdAt)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="profile-card-footer">
+                <Button
+                  variant="outline-danger"
+                  className="w-full justify-center"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={16} style={{ marginRight: '8px' }} />
+                  Keluar dari Akun
+                </Button>
+              </div>
+            </div>
+
+            {/* Right Card - Form and Settings */}
+            <div className="profile-details-column">
+              {/* Profile Form */}
+              <div className="profile-card glass-panel">
+                <h3 className="card-section-title">Informasi Pribadi</h3>
+                <form onSubmit={handleSave} className="profile-form">
+                  <div className="form-group">
+                    <label htmlFor="fullName">Nama Lengkap</label>
+                    <div className="input-with-icon">
+                      <User size={18} className="input-icon" />
+                      <input
+                        type="text"
+                        id="fullName"
+                        value={profileData.fullName}
+                        onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
+                        placeholder="Masukkan nama lengkap"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="email">Alamat Email</label>
+                    <div className="input-with-icon disabled-input">
+                      <Mail size={18} className="input-icon" />
+                      <input
+                        type="email"
+                        id="email"
+                        value={profileData.email}
+                        disabled
+                        placeholder="email@example.com"
+                      />
+                    </div>
+                    <span className="input-help">Email akun tidak dapat diubah</span>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="role">Akses Sistem</label>
+                    <div className="input-with-icon disabled-input">
+                      <Shield size={18} className="input-icon" />
+                      <input
+                        type="text"
+                        id="role"
+                        value={profileData.role.toUpperCase()}
+                        disabled
+                      />
+                    </div>
+                    <span className="input-help">Hubungi administrator untuk mengubah level akses</span>
+                  </div>
+
+                  <div className="form-actions">
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      disabled={saving}
+                      className="save-profile-btn"
+                    >
+                      {saving ? (
+                        <>
+                          <Loader2 className="animate-spin" size={16} style={{ marginRight: '8px' }} />
+                          Menyimpan...
+                        </>
+                      ) : (
+                        <>
+                          <Save size={16} style={{ marginRight: '8px' }} />
+                          Simpan Perubahan
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Theme Settings */}
+              <div className="profile-card glass-panel">
+                <h3 className="card-section-title">Preferensi Tampilan</h3>
+                <p className="card-section-desc">Pilih tema visual yang paling nyaman bagi Anda.</p>
+                <div className="theme-selector-grid">
+                  <button
+                    type="button"
+                    className={`theme-option-card ${theme === 'light' ? 'theme-active' : ''}`}
+                    onClick={() => handleThemeChange('light')}
+                  >
+                    <Sun size={24} className="theme-option-icon text-amber-500" />
+                    <div className="theme-option-details">
+                      <span className="theme-title">Mode Terang</span>
+                      <span className="theme-desc">Tampilan bersih & kontras tinggi</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`theme-option-card ${theme === 'dark' ? 'theme-active' : ''}`}
+                    onClick={() => handleThemeChange('dark')}
+                  >
+                    <Moon size={24} className="theme-option-icon text-indigo-400" />
+                    <div className="theme-option-details">
+                      <span className="theme-title">Mode Gelap</span>
+                      <span className="theme-desc">Nyaman untuk mata di tempat redup</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-        <h1 className="section-title">User Profile</h1>
-      <div className="user-details glass">
-        {/* Add more user details or settings here */}
-        <p>Ini adalah halaman profil pengguna. Anda dapat menambahkan formulir pengaturan di sini.</p>
-      </div>
+
+      <Navigation />
     </div>
   );
 };
