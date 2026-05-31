@@ -13,13 +13,15 @@ import '../SalesDashboard/SalesDashboard.css';
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
-  useAuth(); // subscribe to auth context changes
+  const { role, user } = useAuth();
   const [stats, setStats] = useState({
     totalSales: 0,
     unitsSold: 0,
     serviceCount: 0,
     pendingOrders: 0,
-    recentActivity: []
+    recentActivity: [],
+    technicianJobs: [],
+    customerOrders: []
   });
   const [loading, setLoading] = useState(true);
 
@@ -27,32 +29,62 @@ const SalesDashboard = () => {
     try {
       setLoading(true);
       
-      const [txnRes, jobRes, pendingRes, activityRes] = await Promise.all([
-        supabase.from('transactions').select('total_amount, transaction_items(quantity)').eq('status', 'completed'),
-        supabase.from('service_jobs').select('id', { count: 'exact' }),
-        supabase.from('transactions').select('id', { count: 'exact', head: true }).eq('status', 'pending_verification'),
-        supabase.from('transactions').select('*, customers(name)').order('created_at', { ascending: false }).limit(5)
-      ]);
+      // Admin dashboard data
+      if (role === 'admin') {
+        const [txnRes, jobRes, pendingRes, activityRes] = await Promise.all([
+          supabase.from('transactions').select('total_amount, transaction_items(quantity)').eq('status', 'completed'),
+          supabase.from('service_jobs').select('id', { count: 'exact' }),
+          supabase.from('transactions').select('id', { count: 'exact', head: true }).eq('status', 'pending_verification'),
+          supabase.from('transactions').select('*, customers(name)').order('created_at', { ascending: false }).limit(5)
+        ]);
 
-      const totalSales = txnRes.data?.reduce((sum, t) => sum + (t.total_amount || 0), 0) || 0;
-      const unitsSold = txnRes.data?.reduce((sum, t) => {
-        const itemQty = t.transaction_items?.reduce((s, i) => s + (i.quantity || 0), 0) || 0;
-        return sum + itemQty;
-      }, 0) || 0;
+        const totalSales = txnRes.data?.reduce((sum, t) => sum + (t.total_amount || 0), 0) || 0;
+        const unitsSold = txnRes.data?.reduce((sum, t) => {
+          const itemQty = t.transaction_items?.reduce((s, i) => s + (i.quantity || 0), 0) || 0;
+          return sum + itemQty;
+        }, 0) || 0;
 
-      setStats({
-        totalSales,
-        unitsSold,
-        serviceCount: jobRes.count || 0,
-        pendingOrders: pendingRes.count || 0,
-        recentActivity: activityRes.data || []
-      });
+        setStats({
+          totalSales,
+          unitsSold,
+          serviceCount: jobRes.count || 0,
+          pendingOrders: pendingRes.count || 0,
+          recentActivity: activityRes.data || [],
+          technicianJobs: [],
+          customerOrders: []
+        });
+      } else if (role === 'technician') {
+        // Fetch specific active jobs assigned to this technician
+        const { data: jobs, error } = await supabase
+          .from('service_jobs')
+          .select('*, customers(name, phone, address)')
+          .order('scheduled_date', { ascending: true })
+          .limit(10);
+          
+        if (error) throw error;
+        setStats(prev => ({
+          ...prev,
+          technicianJobs: jobs || []
+        }));
+      } else {
+        // Customer / default view
+        const { data: myTxns } = await supabase
+          .from('transactions')
+          .select('*, transaction_items(*)')
+          .order('created_at', { ascending: false })
+          .limit(4);
+          
+        setStats(prev => ({
+          ...prev,
+          customerOrders: myTxns || []
+        }));
+      }
     } catch (error) {
       console.error('Error fetching dashboard stats:', error.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [role]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -65,118 +97,207 @@ const SalesDashboard = () => {
     return <PageLoader text="Memuat dashboard..." />;
   }
 
+  const userDisplayName = user?.email?.split('@')[0]?.toUpperCase() || 'PENGGUNA';
+  const roleTitle = role === 'admin' ? '🛡️ Administrator' : role === 'technician' ? '🔧 Teknisi Lapangan' : '👤 Customer Premium';
+
   return (
     <div className="dashboard-container">
-      <TopHeader title="Dashboard Bisnis" subtitle="Ringkasan Performa PT. MITRA MAJU SEJATI" />
+      <TopHeader title="Sistem MMS" subtitle={`Sesi Aktif: ${roleTitle}`} />
 
-      <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
-        {/* Urgent Alerts */}
-        {stats.pendingOrders > 0 && (
-          <div 
-            className="card-elevation fade-in" 
-            onClick={() => navigate('/online-orders')}
-            style={{ 
-              padding: '16px', 
-              backgroundColor: 'rgba(245, 166, 35, 0.08)', 
-              border: '1px solid rgba(245, 166, 35, 0.25)', 
-              borderRadius: '16px', 
-              marginBottom: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              cursor: 'pointer'
-            }}
-          >
-            <div style={{ backgroundColor: '#f5a623', color: 'white', padding: '8px', borderRadius: '12px' }}>
-              <ShoppingBag size={20} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <p style={{ margin: 0, fontWeight: 'bold', fontSize: '14px', color: '#e67e22' }}>
-                {stats.pendingOrders} Pesanan Menunggu Verifikasi
-              </p>
-              <p style={{ margin: 0, fontSize: '12px', color: '#f39c12' }}>Segera cek bukti transfer pelanggan</p>
-            </div>
-            <ChevronRight size={20} color="#f39c12" />
+      <div className="page-content fade-in" style={{ paddingBottom: '100px', paddingLeft: '24px', paddingRight: '24px' }}>
+        
+        {/* Dynamic Premium Welcoming Glassmorphic Header Card */}
+        <div className="welcoming-card glass-panel fade-in">
+          <div className="welcome-inner">
+            <span className="welcome-greet">Selamat Datang Kembali,</span>
+            <h2 className="welcome-name">{userDisplayName}</h2>
+            <p className="welcome-desc">Solusi pendingin udara & instalasi tepercaya untuk kenyamanan terbaik Anda.</p>
           </div>
+          <div className="welcome-decor-orb">❄️</div>
+        </div>
+
+        {/* 1. ADMIN DASHBOARD VIEW */}
+        {role === 'admin' && (
+          <>
+            {/* Urgent Alerts */}
+            {stats.pendingOrders > 0 && (
+              <div 
+                className="urgent-alert-card card-elevation fade-in" 
+                onClick={() => navigate('/online-orders')}
+              >
+                <div className="alert-icon-wrapper">
+                  <ShoppingBag size={20} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p className="alert-title">
+                    {stats.pendingOrders} Pesanan Menunggu Verifikasi
+                  </p>
+                  <p className="alert-subtitle">Segera periksa bukti transfer transaksi baru pelanggan.</p>
+                </div>
+                <ChevronRight size={20} className="alert-chevron" />
+              </div>
+            )}
+
+            {/* Primary Stats HSL Gradient Grid */}
+            <section className="dashboard-stats-grid">
+              <div className="stat-card-gradient sales-grad">
+                <div className="stat-card-header">
+                  <DollarSign size={24} className="stat-icon-light" />
+                  <TrendingUp size={20} />
+                </div>
+                <span className="stat-card-label">Total Pendapatan</span>
+                <span className="stat-card-value">
+                  {formatRupiahCompact(stats.totalSales)}
+                </span>
+              </div>
+
+              <div className="stat-card-gradient units-grad">
+                <div className="stat-card-header">
+                  <Package size={24} className="stat-icon-light" />
+                </div>
+                <span className="stat-card-label">Unit Terjual</span>
+                <span className="stat-card-value">
+                  {stats.unitsSold} Unit
+                </span>
+              </div>
+
+              <div className="stat-card-gradient service-grad">
+                <div className="stat-card-header">
+                  <Activity size={24} className="stat-icon-light" />
+                </div>
+                <span className="stat-card-label">Total Layanan Servis</span>
+                <span className="stat-card-value">{stats.serviceCount} Servis</span>
+              </div>
+            </section>
+
+            {/* Recent Transactions list */}
+            <section className="recent-activity" style={{ marginTop: '32px' }}>
+              <div className="section-header">
+                <h3 className="section-title">Transaksi Terkini</h3>
+                <span className="link-text" onClick={() => navigate('/transactions')}>Lihat Semua</span>
+              </div>
+              <div className="activity-list card-elevation">
+                {stats.recentActivity.length > 0 ? (
+                  stats.recentActivity.map((txn) => (
+                    <div 
+                      key={txn.id} 
+                      className="activity-item-mms" 
+                      onClick={() => navigate(`/transactions/${txn.id}`)}
+                    >
+                      <div className="activity-icon-container">
+                        <ShoppingBag size={18} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <span className="activity-cust-name">{txn.customers?.name || 'Pelanggan Umum'}</span>
+                        <span className="activity-meta">{formatTanggalJam(txn.created_at)} · {txn.payment_method}</span>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <span className="activity-amount">
+                          {formatRupiahCompact(txn.total_amount)}
+                        </span>
+                        <span className={`activity-status-badge ${txn.status}`}>
+                          {getStatusLabel(txn.status).label.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <EmptyState icon={Activity} text="Belum ada aktivitas transaksi hari ini." />
+                )}
+              </div>
+            </section>
+          </>
         )}
 
-        {/* Primary Stats Grid */}
-        <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-              <DollarSign size={24} style={{ opacity: 0.8 }} />
-              <TrendingUp size={20} />
+        {/* 2. TECHNICIAN DASHBOARD VIEW */}
+        {role === 'technician' && (
+          <section className="technician-section fade-in">
+            <div className="section-header" style={{ marginTop: '24px' }}>
+              <h3 className="section-title">Jadwal Tugas Maintenance Hari Ini</h3>
+              <span className="link-text" onClick={() => navigate('/service')}>Lihat Semua Tugas</span>
             </div>
-            <span style={{ fontSize: '12px', opacity: 0.8, display: 'block' }}>Total Pendapatan</span>
-            <span style={{ fontSize: '20px', fontWeight: 'bold', display: 'block' }}>
-              {formatRupiahCompact(stats.totalSales)}
-            </span>
-          </div>
-
-          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'var(--color-surface-container-lowest)', border: '1px solid var(--color-outline-variant)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-              <Package size={24} color="var(--color-primary)" />
+            
+            <div className="technician-jobs-grid">
+              {stats.technicianJobs.length > 0 ? (
+                stats.technicianJobs.map((job) => (
+                  <div key={job.id} className="job-card-mms glass-panel" onClick={() => navigate('/service')}>
+                    <div className="job-card-header">
+                      <span className="job-date">📅 {new Date(job.scheduled_date).toLocaleDateString('id-ID')}</span>
+                      <span className={`job-status-chip ${job.status}`}>{job.status?.replace('_', ' ')?.toUpperCase()}</span>
+                    </div>
+                    <h4 className="job-customer-name">{job.customers?.name || 'Pelanggan'}</h4>
+                    <p className="job-address">📍 {job.customers?.address || 'Alamat tidak tertera'}</p>
+                    <div className="job-description-block">
+                      <strong>Keluhan / Tugas:</strong>
+                      <p>{job.description || 'Pembersihan AC rutin berkala.'}</p>
+                    </div>
+                    <button className="job-action-btn-mms">
+                      Update Pekerjaan
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <EmptyState icon={Activity} text="Tidak ada penugasan pemeliharaan untuk Anda hari ini." />
+              )}
             </div>
-            <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', display: 'block' }}>Unit Terjual</span>
-            <span style={{ fontSize: '20px', fontWeight: 'bold', display: 'block', color: 'var(--color-on-surface)' }}>
-              {stats.unitsSold} Unit
-            </span>
-          </div>
+          </section>
+        )}
 
-          <div className="card-elevation" style={{ padding: '20px', borderRadius: '20px', backgroundColor: 'var(--color-surface-container-lowest)', gridColumn: 'span 2', border: '1px solid var(--color-outline-variant)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div style={{ padding: '12px', borderRadius: '16px', backgroundColor: 'rgba(0,135,86,0.1)', color: '#008756' }}>
-                <Activity size={24} />
+        {/* 3. CUSTOMER / DEFAULT DASHBOARD VIEW */}
+        {role !== 'admin' && role !== 'technician' && (
+          <section className="customer-section fade-in">
+            {/* Promo Carousel Banner */}
+            <div className="customer-promo-banner glass-panel">
+              <div className="promo-details">
+                <span className="promo-badge-tag">PROMO BULAN INI</span>
+                <h3>Dapatkan Diskon Servis Berkala 15%</h3>
+                <p>Jaga kesegaran AC rumah Anda dengan pembersihan rutin bersama teknisi handal kami.</p>
+                <button className="promo-btn" onClick={() => navigate('/service')}>Ajukan Servis Sekarang</button>
               </div>
-              <div>
-                <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', display: 'block' }}>Total Pekerjaan Servis</span>
-                <span style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>{stats.serviceCount} Servis</span>
+              <div className="promo-icon-bg">❄️</div>
+            </div>
+
+            {/* Quick Action Navigation Buttons */}
+            <div className="quick-actions-grid" style={{ marginTop: '24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="quick-action-button glass-panel" onClick={() => navigate('/catalog')}>
+                <span className="qa-icon">🛍️</span>
+                <h4>Katalog AC</h4>
+                <p>Lihat & beli unit AC baru</p>
+              </div>
+              <div className="quick-action-button glass-panel" onClick={() => navigate('/service')}>
+                <span className="qa-icon">🔧</span>
+                <h4>Ajukan Servis</h4>
+                <p>Jadwalkan teknisi AC</p>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Recent Transactions */}
-        <section className="recent-activity">
-          <div className="section-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, color: 'var(--color-on-surface)' }}>Transaksi Terkini</h3>
-            <span className="link-text" onClick={() => navigate('/transactions')} style={{ color: 'var(--color-primary)', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}>Lihat Semua</span>
-          </div>
-          <div className="activity-list card-elevation" style={{ backgroundColor: 'var(--color-surface-container-lowest)', borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--color-outline-variant)' }}>
-            {stats.recentActivity.length > 0 ? (
-              stats.recentActivity.map((txn) => (
-                <div 
-                  key={txn.id} 
-                  className="activity-item" 
-                  onClick={() => navigate(`/transactions/${txn.id}`)}
-                  style={{ padding: '16px', borderBottom: '1px solid var(--color-outline-variant)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
-                >
-                  <div style={{ backgroundColor: txn.is_online ? 'rgba(0, 85, 255, 0.08)' : 'rgba(107, 114, 128, 0.08)', padding: '10px', borderRadius: '12px' }}>
-                    <ShoppingBag size={18} color={txn.is_online ? 'var(--color-primary)' : 'var(--color-on-surface-variant)'} />
+            {/* Order status tracking cards */}
+            <div className="section-header" style={{ marginTop: '36px' }}>
+              <h3 className="section-title">Riwayat Pesanan Saya</h3>
+              <span className="link-text" onClick={() => navigate('/transactions')}>Selengkapnya</span>
+            </div>
+
+            <div className="customer-orders-list">
+              {stats.customerOrders.length > 0 ? (
+                stats.customerOrders.map(order => (
+                  <div key={order.id} className="customer-order-card glass-panel" onClick={() => navigate(`/transactions/${order.id}`)}>
+                    <div className="order-header-row">
+                      <span className="order-id">ID: #{order.id.slice(0, 8)}</span>
+                      <span className={`order-status-badge ${order.status}`}>{getStatusLabel(order.status).label}</span>
+                    </div>
+                    <div className="order-details-row">
+                      <span className="order-price">{formatRupiahCompact(order.total_amount)}</span>
+                      <span className="order-date">{new Date(order.created_at).toLocaleDateString('id-ID')}</span>
+                    </div>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>{txn.customers?.name || 'Pelanggan Umum'}</span>
-                    <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>{formatTanggalJam(txn.created_at)} · {txn.payment_method}</span>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-                      {formatRupiahCompact(txn.total_amount)}
-                    </span>
-                    <span style={{ 
-                      fontSize: '10px', 
-                      fontWeight: 'bold', 
-                      color: getStatusLabel(txn.status).color
-                    }}>
-                      {getStatusLabel(txn.status).label.toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <EmptyState icon={Activity} text="Belum ada aktivitas hari ini." />
-            )}
-          </div>
-        </section>
+                ))
+              ) : (
+                <EmptyState icon={Package} text="Anda belum memiliki pemesanan terdaftar saat ini." />
+              )}
+            </div>
+          </section>
+        )}
+
       </div>
 
       <Navigation />
@@ -185,5 +306,3 @@ const SalesDashboard = () => {
 };
 
 export default SalesDashboard;
-
-
