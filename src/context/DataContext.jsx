@@ -109,7 +109,10 @@ export const DataProvider = ({ children }) => {
   // Clear memory cache upon sign out
   useEffect(() => {
     if (!user) {
-      clearCache();
+      const timer = setTimeout(() => {
+        clearCache();
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [user, clearCache]);
 
