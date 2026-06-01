@@ -605,3 +605,28 @@ ul {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
+
+/* 📱 Premium Responsive Mobile UI Adaptations */
+@media (max-width: 768px) {
+  :root {
+    --gutter: 16px !important;
+  }
+  .page-content {
+    padding: var(--space-sm) var(--gutter) 92px var(--gutter) !important;
+  }
+  h2 {
+    font-size: 22px !important;
+  }
+  .welcoming-card {
+    padding: 20px !important;
+    border-radius: 18px !important;
+    margin-bottom: 20px !important;
+  }
+  .welcome-name {
+    font-size: 24px !important;
+  }
+  .welcome-desc {
+    max-width: 100% !important;
+    font-size: 12px !important;
+  }
+}
