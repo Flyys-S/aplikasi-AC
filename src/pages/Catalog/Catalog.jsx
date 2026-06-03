@@ -425,7 +425,7 @@ const Catalog = () => {
                   {user ? (
                     <Button 
                       fullWidth 
-                      onClick={(e) => {
+                      onClick={() => {
                         addToCart(selectedProduct);
                         setSelectedProduct(null);
                       }}
