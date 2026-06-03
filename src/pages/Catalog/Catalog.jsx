@@ -374,8 +374,7 @@ const Catalog = () => {
                   Checkout Sekarang
                 </Button>
               </div>
-            </div>
-          )}
+            )}
           </div>
         </div>
       )}
