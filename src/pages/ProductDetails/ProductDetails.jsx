@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2, Camera, Loader2, Save, Trash2, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2, Camera, Loader2, Save, Trash2, Plus, Minus, Tag, Package, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import toast from 'react-hot-toast';
 import PageLoader from '../../components/PageLoader';
@@ -8,6 +8,7 @@ import TopHeader from '../../components/TopHeader';
 import Navigation from '../../components/Navigation';
 import Button from '../../components/Button';
 import StatusChip from '../../components/StatusChip';
+import InputField from '../../components/InputField';
 import './ProductDetails.css';
 
 const ProductDetails = () => {
@@ -135,14 +136,15 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className="product-detail-container fade-in">
+    <div className="dashboard-container product-detail-container fade-in">
       <TopHeader title={id === 'new' ? 'Tambah Produk' : 'Detail Produk'} onBack={() => navigate('/inventory')}>
         <button className="icon-btn" onClick={() => navigate('/inventory')}>
           <ArrowLeft size={20} />
         </button>
       </TopHeader>
 
-      <div className="product-hero">
+      <div className="page-content" style={{ overflowY: 'auto', paddingBottom: '40px' }}>
+        <div className="product-hero">
         <div className="product-hero-image" style={{ position: 'relative' }}>
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -171,28 +173,33 @@ const ProductDetails = () => {
           </div>
         </div>
 
-        <div className="editable-info">
-          <input 
-            className="h1-input" 
-            value={product.name} 
+        <div className="editable-info card-elevation" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: 'var(--color-on-surface)' }}>Informasi Utama Produk</h3>
+          
+          <InputField 
+            label="Nama Produk"
+            placeholder="Contoh: Inverter 1 PK, Standard AC, dll."
+            value={product.name || ''}
             onChange={(e) => setProduct({...product, name: e.target.value})}
-            placeholder="Nama Produk (contoh: Inverter 1 PK)"
+            icon={Tag}
           />
-          <input 
-            className="brand-input" 
-            value={product.brand} 
+          
+          <InputField 
+            label="Merk"
+            placeholder="Contoh: Daikin, Panasonic, Sharp, dll."
+            value={product.brand || ''}
             onChange={(e) => setProduct({...product, brand: e.target.value})}
-            placeholder="Merk (contoh: Daikin)"
+            icon={Package}
           />
-          <div className="price-input-wrapper">
-            <span>Rp</span>
-            <input 
-              type="number"
-              className="price-input" 
-              value={product.price} 
-              onChange={(e) => setProduct({...product, price: parseInt(e.target.value)})}
-            />
-          </div>
+          
+          <InputField 
+            label="Harga Retail (Rupiah)"
+            type="number"
+            placeholder="Masukkan harga dalam rupiah"
+            value={product.price || ''}
+            onChange={(e) => setProduct({...product, price: parseInt(e.target.value) || 0})}
+            icon={DollarSign}
+          />
         </div>
 
         <div className="spec-grid">
@@ -309,11 +316,11 @@ const ProductDetails = () => {
           />
         </div>
 
-        <div className="action-buttons" style={{ marginTop: '30px' }}>
-          <Button variant="outline" icon={Trash2} onClick={() => navigate('/inventory')}>
+        <div className="action-buttons" style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+          <Button variant="outline" icon={Trash2} onClick={() => navigate('/inventory')} style={{ flex: 1 }}>
             Batal
           </Button>
-          <Button icon={Save} onClick={handleSave}>
+          <Button icon={Save} onClick={handleSave} style={{ flex: 1 }}>
             Simpan Produk
           </Button>
         </div>

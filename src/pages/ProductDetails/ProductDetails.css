@@ -183,18 +183,9 @@
 .action-buttons {
   display: flex;
   gap: var(--space-sm);
-  position: fixed;
-  bottom: 72px;
-  left: 0;
-  right: 0;
-  padding: var(--space-sm) var(--gutter);
-  background: rgba(249, 249, 255, 0.9);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid var(--color-surface-container);
-}
-
-.action-buttons .btn {
-  flex: 1;
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--color-outline-variant);
+  margin-top: var(--space-lg);
 }
 
 /* Editable Inputs */
