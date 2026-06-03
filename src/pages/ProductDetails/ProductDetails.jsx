@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2, Camera, Loader2, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2, Camera, Loader2, Save, Trash2, Plus, Minus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import toast from 'react-hot-toast';
 import PageLoader from '../../components/PageLoader';
@@ -212,13 +212,90 @@ const ProductDetails = () => {
           </div>
           <div className="spec-item card-elevation">
             <Zap size={20} className="spec-icon-main" />
-            <span className="spec-label">Stok</span>
-            <input 
-              type="number" 
-              value={product.stock} 
-              onChange={(e) => setProduct({...product, stock: parseInt(e.target.value)})}
-              className="spec-input-inline"
-            />
+            <span className="spec-label">Stok Saat Ini</span>
+            <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-primary)', marginTop: '4px' }}>
+              {product.stock || 0} <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--color-on-surface-variant)' }}>unit</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="product-description card-elevation" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: 'var(--color-on-surface)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Zap size={18} className="spec-icon-main" /> Kelola & Tambah Stok
+          </h3>
+          <p style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', margin: 0 }}>
+            Gunakan tombol di bawah untuk menambah atau mengurangi jumlah stok secara cepat dan presisi.
+          </p>
+          
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', marginTop: '4px' }}>
+            {/* Step adjustment */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--color-surface-container-low)', padding: '6px 12px', borderRadius: '12px', border: '1px solid var(--color-outline-variant)' }}>
+              <button 
+                type="button" 
+                className="qty-btn" 
+                onClick={() => setProduct(prev => ({ ...prev, stock: Math.max(0, (prev.stock || 0) - 1) }))}
+                style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <Minus size={14} />
+              </button>
+              
+              <input 
+                type="number" 
+                value={product.stock || 0} 
+                onChange={(e) => {
+                  const val = parseInt(e.target.value);
+                  setProduct(prev => ({ ...prev, stock: isNaN(val) ? 0 : Math.max(0, val) }));
+                }}
+                className="spec-input-inline"
+                style={{ 
+                  textAlign: 'center', 
+                  fontWeight: '800', 
+                  fontSize: '18px', 
+                  width: '60px', 
+                  border: 'none',
+                  background: 'transparent',
+                  outline: 'none',
+                  color: 'var(--color-on-surface)' 
+                }}
+              />
+              
+              <button 
+                type="button" 
+                className="qty-btn" 
+                onClick={() => setProduct(prev => ({ ...prev, stock: (prev.stock || 0) + 1 }))}
+                style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+
+            {/* Quick add triggers */}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                className="qty-btn"
+                onClick={() => setProduct(prev => ({ ...prev, stock: (prev.stock || 0) + 5 }))}
+                style={{ fontSize: '13px', padding: '0 12px', height: '36px', width: 'auto', borderRadius: '8px', fontWeight: '600' }}
+              >
+                +5
+              </button>
+              <button
+                type="button"
+                className="qty-btn"
+                onClick={() => setProduct(prev => ({ ...prev, stock: (prev.stock || 0) + 10 }))}
+                style={{ fontSize: '13px', padding: '0 12px', height: '36px', width: 'auto', borderRadius: '8px', fontWeight: '600' }}
+              >
+                +10
+              </button>
+              <button
+                type="button"
+                className="qty-btn"
+                onClick={() => setProduct(prev => ({ ...prev, stock: (prev.stock || 0) + 50 }))}
+                style={{ fontSize: '13px', padding: '0 12px', height: '36px', width: 'auto', borderRadius: '8px', fontWeight: '600' }}
+              >
+                +50
+              </button>
+            </div>
           </div>
         </div>
 
