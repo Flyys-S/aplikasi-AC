@@ -316,8 +316,8 @@ ul {
   }
   .dashboard-container.guest-layout {
     padding-left: 0 !important;
-    height: auto !important;
-    overflow: visible !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
   }
   .dashboard-container.guest-layout .page-content {
     height: auto !important;
