@@ -325,6 +325,7 @@ const ProductDetails = () => {
           </Button>
         </div>
       </div>
+      </div>
 
       <Navigation />
     </div>
