@@ -218,7 +218,7 @@
   align-items: center;
 }
 
-.input-icon {
+.input-with-icon .input-icon {
   position: absolute;
   left: 14px;
   color: var(--color-on-surface-variant);
