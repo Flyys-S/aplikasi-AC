@@ -15,7 +15,7 @@ import './Catalog.css';
 
 const Catalog = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const catalogSectionRef = useRef(null);
   const containerRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -281,7 +281,7 @@ const Catalog = () => {
                     specs={[`${product.capacity_pk} PK`, product.stock > 0 ? 'Ready Stock' : 'Indent']}
                     status={product.stock > 0 ? 'Tersedia' : 'Habis'}
                     onClick={() => {
-                      if (user) {
+                      if (user && isAdmin) {
                         navigate(`/inventory/${product.id}`);
                       } else {
                         setSelectedProduct(product);
@@ -422,10 +422,24 @@ const Catalog = () => {
                 </div>
 
                 <div className="details-cta-section">
-                  <p>Anda harus masuk ke sistem untuk melakukan pemesanan dan menjadwalkan instalasi AC.</p>
-                  <Button fullWidth onClick={() => navigate('/login')}>
-                    Masuk untuk Memesan
-                  </Button>
+                  {user ? (
+                    <Button 
+                      fullWidth 
+                      onClick={(e) => {
+                        addToCart(selectedProduct);
+                        setSelectedProduct(null);
+                      }}
+                    >
+                      Tambah ke Keranjang
+                    </Button>
+                  ) : (
+                    <>
+                      <p>Anda harus masuk ke sistem untuk melakukan pemesanan dan menjadwalkan instalasi AC.</p>
+                      <Button fullWidth onClick={() => navigate('/login')}>
+                        Masuk untuk Memesan
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

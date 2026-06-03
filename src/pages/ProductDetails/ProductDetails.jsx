@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2, Camera, Loader2, Save, Trash2, Plus, Minus, Tag, Package, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { formatRupiah } from '../../lib/formatters';
 import toast from 'react-hot-toast';
 import PageLoader from '../../components/PageLoader';
 import TopHeader from '../../components/TopHeader';
@@ -14,6 +16,7 @@ import './ProductDetails.css';
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [product, setProduct] = useState(() => {
     if (id === 'new') {
       return {
@@ -59,6 +62,13 @@ const ProductDetails = () => {
       return () => clearTimeout(timer);
     }
   }, [id, fetchProduct]);
+
+  useEffect(() => {
+    if (!isAdmin && id === 'new') {
+      toast.error('Akses ditolak: Hanya admin yang dapat menambah produk baru.');
+      navigate('/inventory');
+    }
+  }, [isAdmin, id, navigate]);
 
   const generateUniqueId = () => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -133,6 +143,91 @@ const ProductDetails = () => {
 
   if (loading) {
     return <PageLoader text="Memuat informasi produk..." />;
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="dashboard-container product-detail-container fade-in">
+        <TopHeader title="Detail Produk" onBack={() => navigate('/inventory')}>
+          <button className="icon-btn" onClick={() => navigate('/inventory')}>
+            <ArrowLeft size={20} />
+          </button>
+        </TopHeader>
+
+        <div className="page-content" style={{ overflowY: 'auto', paddingBottom: '40px' }}>
+          <div className="product-hero">
+            <div className="product-hero-image">
+              {product.image_url ? (
+                <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <div className="hero-placeholder">
+                  <Thermometer size={64} strokeWidth={1} color="var(--color-primary)" />
+                  <span>Tidak ada gambar</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="product-detail-body">
+            <div className="product-detail-header">
+              <StatusChip 
+                status={product.stock > 0 ? 'Tersedia' : 'Habis'} 
+                type={product.stock > 0 ? 'success' : 'error'} 
+              />
+              <div className="rating-row">
+                <Star size={14} fill="#F5A623" stroke="#F5A623" />
+                <span>Unit Baru</span>
+              </div>
+            </div>
+
+            {/* Read-Only Info Card */}
+            <div className="card-elevation" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <span className="spec-label" style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: '700', textTransform: 'uppercase' }}>
+                {product.brand || 'No Brand'}
+              </span>
+              <h1 className="product-detail-title" style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 8px 0' }}>
+                {product.name || 'Unnamed Product'}
+              </h1>
+              <div className="product-detail-price" style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-primary)' }}>
+                {formatRupiah(product.price || 0)}
+              </div>
+            </div>
+
+            <div className="spec-grid">
+              <div className="spec-item card-elevation">
+                <Thermometer size={20} className="spec-icon-main" />
+                <span className="spec-label">Kapasitas PK</span>
+                <span className="spec-value" style={{ marginTop: '4px' }}>
+                  {product.capacity_pk} PK
+                </span>
+              </div>
+              <div className="spec-item card-elevation">
+                <Zap size={20} className="spec-icon-main" />
+                <span className="spec-label">Stok Tersedia</span>
+                <span className="spec-value" style={{ marginTop: '4px', color: product.stock > 0 ? 'inherit' : 'var(--color-error)' }}>
+                  {product.stock || 0} unit
+                </span>
+              </div>
+            </div>
+
+            <div className="product-description card-elevation" style={{ padding: '20px' }}>
+              <h3>Deskripsi</h3>
+              <p style={{ margin: 0, fontSize: '14px', lineHeight: '1.7', color: 'var(--color-on-surface-variant)', whiteSpace: 'pre-wrap' }}>
+                {product.description || 'Tidak ada deskripsi untuk produk ini.'}
+              </p>
+            </div>
+
+            <div className="action-buttons" style={{ marginTop: '24px' }}>
+              <Button onClick={() => navigate(-1)} style={{ flex: 1 }}>
+                Kembali
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <Navigation />
+      </div>
+    );
   }
 
   return (

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Loader2, Package, Filter } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
+import { useAuth } from '../../context/AuthContext';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
@@ -13,6 +14,7 @@ import '../Inventory/Inventory.css';
 
 const Inventory = () => {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,14 +56,19 @@ const Inventory = () => {
 
   return (
     <div className="dashboard-container">
-      <TopHeader title="Inventori" subtitle="Kelola Stok Produk AC">
-        <div 
-          className="icon-btn" 
-          style={{ backgroundColor: 'var(--color-primary)', color: 'white', cursor: 'pointer' }}
-          onClick={() => navigate('/inventory/new')}
-        >
-          <Plus size={20} />
-        </div>
+      <TopHeader 
+        title="Inventori" 
+        subtitle={isAdmin ? "Kelola Stok Produk AC" : "Daftar Stok Produk AC"}
+      >
+        {isAdmin && (
+          <div 
+            className="icon-btn" 
+            style={{ backgroundColor: 'var(--color-primary)', color: 'white', cursor: 'pointer' }}
+            onClick={() => navigate('/inventory/new')}
+          >
+            <Plus size={20} />
+          </div>
+        )}
       </TopHeader>
 
       <div className="page-content fade-in">
