@@ -326,30 +326,35 @@ const Catalog = () => {
 
       {/* Cart Sidebar/Drawer */}
       {isCartOpen && (
-        <div className="cart-overlay" onClick={() => setIsCartOpen(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
-          <div className="cart-drawer fade-in-right" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '400px', backgroundColor: 'white', height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <div className="cart-header" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee' }}>
-              <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}><ShoppingCart size={20} /> Keranjang Saya</h3>
+        <div className="cart-overlay" onClick={() => setIsCartOpen(false)}>
+          <div className="cart-drawer" onClick={e => e.stopPropagation()}>
+            <div className="cart-header">
+              <h3><ShoppingCart size={20} className="spec-icon-main" /> Keranjang Saya</h3>
               <button className="icon-btn" onClick={() => setIsCartOpen(false)}><X size={20} /></button>
             </div>
 
-            <div className="cart-items" style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+            <div className="cart-items">
               {cart.length === 0 ? (
                 <EmptyState icon={ShoppingCart} text="Keranjang masih kosong." />
               ) : (
                 cart.map(item => (
-                  <div key={item.id} style={{ display: 'flex', gap: '12px', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #f5f5f5' }}>
-                    <div style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#f9f9f9' }}>
-                      {item.image_url ? <img src={item.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} color="#ccc" /></div>}
+                  <div key={item.id} className="cart-item-card">
+                    <div className="cart-item-image">
+                      {item.image_url ? (
+                        <img src={item.image_url} alt={`${item.brand} ${item.name}`} />
+                      ) : (
+                        <X size={20} color="var(--color-outline)" />
+                      )}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <h4 style={{ fontSize: '14px', margin: '0 0 4px 0' }}>{item.brand} {item.name}</h4>
-                      <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '14px', margin: 0 }}>{formatRupiah(item.price)}</p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ddd', borderRadius: '6px' }}>
-                          <button className="qty-btn" onClick={() => updateQuantity(item.id, -1)}><Minus size={12} /></button>
-                          <span style={{ fontSize: '14px', minWidth: '20px', textAlign: 'center' }}>{item.quantity}</span>
-                          <button className="qty-btn" onClick={() => updateQuantity(item.id, 1)}><Plus size={12} /></button>
+                    <div className="cart-item-info">
+                      <h4>{item.brand} {item.name}</h4>
+                      <p className="cart-item-price">{formatRupiah(item.price)}</p>
+                      
+                      <div className="cart-item-controls">
+                        <div className="cart-item-qty">
+                          <button className="qty-btn" onClick={() => updateQuantity(item.id, -1)} style={{ border: 'none', background: 'transparent' }}><Minus size={12} /></button>
+                          <span>{item.quantity}</span>
+                          <button className="qty-btn" onClick={() => updateQuantity(item.id, 1)} style={{ border: 'none', background: 'transparent' }}><Plus size={12} /></button>
                         </div>
                         <button className="remove-btn" onClick={() => removeFromCart(item.id)}>Hapus</button>
                       </div>
@@ -360,16 +365,17 @@ const Catalog = () => {
             </div>
 
             {cart.length > 0 && (
-              <div className="cart-footer" style={{ padding: '20px', borderTop: '1px solid #eee', backgroundColor: '#f9f9f9' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                  <span style={{ fontWeight: '500' }}>Total Estimasi</span>
-                  <span style={{ fontWeight: 'bold', color: 'var(--color-primary)', fontSize: '18px' }}>{formatRupiah(totalPrice)}</span>
+              <div className="cart-footer">
+                <div className="cart-summary-row">
+                  <span className="cart-summary-label">Total Estimasi</span>
+                  <span className="cart-summary-value">{formatRupiah(totalPrice)}</span>
                 </div>
                 <Button fullWidth icon={CreditCard} onClick={() => navigate('/checkout')}>
                   Checkout Sekarang
                 </Button>
               </div>
-            )}
+            </div>
+          )}
           </div>
         </div>
       )}
