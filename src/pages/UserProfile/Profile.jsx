@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { supabase } from '../../lib/supabase';
 import { formatTanggalJam } from '../../lib/formatters';
 import { User, Mail, Shield, Calendar, Moon, Sun, Save, LogOut, Loader2 } from 'lucide-react';
@@ -10,7 +12,9 @@ import Button from '../../components/Button/Button';
 import './Profile.css';
 
 const UserProfile = () => {
+  const navigate = useNavigate();
   const { user, role, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [profileData, setProfileData] = useState({
     fullName: '',
     email: '',
@@ -19,11 +23,6 @@ const UserProfile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  // Theme states: 'light' or 'dark'
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
-  });
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -86,14 +85,17 @@ const UserProfile = () => {
 
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
     toast.success(`Mode ${newTheme === 'dark' ? 'Gelap' : 'Terang'} diaktifkan`);
   };
 
   const handleLogout = async () => {
     if (window.confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
-      await signOut();
+      const cleanUrl = window.location.origin + import.meta.env.BASE_URL;
+      window.history.replaceState(null, '', cleanUrl);
+      navigate('/', { replace: true });
+      setTimeout(() => {
+        signOut();
+      }, 100);
     }
   };
 

@@ -7,6 +7,39 @@ const AuthContext = createContext({})
 
 export const useAuth = () => useContext(AuthContext)
 
+const cleanAuthUrlParams = () => {
+  try {
+    const url = new URL(window.location.href)
+    let changed = false
+    
+    // Clear auth query params
+    const paramsToDelete = ['code', 'state', 'error', 'error_code', 'error_description']
+    paramsToDelete.forEach(param => {
+      if (url.searchParams.has(param)) {
+        url.searchParams.delete(param)
+        changed = true
+      }
+    })
+
+    // Clear empty or trailing hash
+    if (window.location.hash === '#' || window.location.hash === '#/' || window.location.hash === '') {
+      if (window.location.href.endsWith('#') || window.location.href.endsWith('#/')) {
+        url.hash = ''
+        changed = true
+      }
+    }
+
+    if (changed) {
+      const cleanUrl = url.searchParams.toString()
+        ? `${url.pathname}?${url.searchParams.toString()}${url.hash}`
+        : `${url.pathname}${url.hash}`
+      window.history.replaceState(null, '', cleanUrl)
+    }
+  } catch (err) {
+    console.error('Failed to clean URL auth params:', err)
+  }
+}
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [role, setRole] = useState(() => localStorage.getItem('supabase_user_role') || null)
@@ -20,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const rolePromise = supabase.rpc('get_user_role', { user_id: userId });
       const { data, error } = await Promise.race([rolePromise, timeoutPromise]);
-      
+
       if (error) {
         console.error('Error fetching user role via RPC:', error)
         const cachedRole = localStorage.getItem('supabase_user_role')
@@ -47,13 +80,24 @@ export const AuthProvider = ({ children }) => {
     const checkInitialSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession()
-        
+
         if (session?.user) {
           setUser(session.user)
           await fetchUserRole(session.user.id)
+          cleanAuthUrlParams()
         } else {
+          // Handle error query params from failed OAuth sign-in
+          const params = new URLSearchParams(window.location.search)
+          const errorMsg = params.get('error_description') || params.get('error')
+          if (errorMsg) {
+            console.error('Auth error in query params:', errorMsg)
+            toast.error('Gagal login: ' + decodeURIComponent(errorMsg).replace(/\+/g, ' '))
+            cleanAuthUrlParams()
+          }
           if (window.location.hash.includes('error=')) {
             console.error('Auth error in hash:', window.location.hash)
+            // Clear hash
+            window.history.replaceState(null, '', window.location.pathname)
           }
           setLoading(false)
         }
@@ -67,10 +111,11 @@ export const AuthProvider = ({ children }) => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state change event:', event, session?.user?.email)
-      
+
       if (session?.user) {
         setUser(session.user)
         await fetchUserRole(session.user.id)
+        cleanAuthUrlParams()
       } else {
         setUser(null)
         setRole(null)
@@ -87,7 +132,7 @@ export const AuthProvider = ({ children }) => {
   const signInWithGoogle = async () => {
     try {
       const baseUrl = window.location.origin + import.meta.env.BASE_URL
-      
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -113,14 +158,14 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      role, 
+    <AuthContext.Provider value={{
+      user,
+      role,
       isAdmin: role === 'admin',
       isTechnician: role === 'technician',
-      loading, 
-      signInWithGoogle, 
-      signOut 
+      loading,
+      signInWithGoogle,
+      signOut
     }}>
       {children}
     </AuthContext.Provider>

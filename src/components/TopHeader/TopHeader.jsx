@@ -1,15 +1,22 @@
-﻿import { useNavigate } from 'react-router-dom';
-import { LogOut, Bell, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { LogOut, Bell, ArrowLeft, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import './TopHeader.css';
 
 const TopHeader = ({ title, subtitle, onBack, children }) => {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     if (window.confirm('Apakah Anda yakin ingin keluar?')) {
-      await signOut();
+      const cleanUrl = window.location.origin + import.meta.env.BASE_URL;
+      window.history.replaceState(null, '', cleanUrl);
+      navigate('/', { replace: true });
+      setTimeout(() => {
+        signOut();
+      }, 100);
     }
   };
 
@@ -32,6 +39,15 @@ const TopHeader = ({ title, subtitle, onBack, children }) => {
       
       <div className="header-actions">
         {children}
+        <button 
+          className="icon-btn theme-toggle-btn" 
+          onClick={toggleTheme} 
+          title={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
+          style={{ marginRight: '8px' }}
+        >
+          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+        
         <div className="icon-btn notification-btn">
           <Bell size={20} />
           <span className="badge"></span>

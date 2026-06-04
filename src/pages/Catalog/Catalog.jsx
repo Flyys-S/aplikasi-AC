@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package } from 'lucide-react';
+import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package, Sun, Moon } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import TopHeader from '../../components/TopHeader';
 import Navigation from '../../components/Navigation';
 import ProductCard from '../../components/ProductCard';
@@ -16,12 +17,13 @@ import './Catalog.css';
 const Catalog = () => {
   const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const catalogSectionRef = useRef(null);
   const containerRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Parallax 3D tilt state
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
@@ -36,7 +38,7 @@ const Catalog = () => {
   const handleMouseLeave = () => {
     setTilt({ x: 0, y: 0 });
   };
-  
+
   // Cart State
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem('arctic_cart');
@@ -95,7 +97,7 @@ const Catalog = () => {
   const addToCart = (product) => {
     const existing = cart.find(item => item.id === product.id);
     if (existing) {
-      setCart(cart.map(item => 
+      setCart(cart.map(item =>
         item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
       ));
     } else {
@@ -134,25 +136,73 @@ const Catalog = () => {
       <header className="catalog-header glass-panel fade-in">
         <div className="catalog-header-left">
           <span className="logo-icon">❄️</span>
-          <span className="catalog-header-brand">PT. MITRA MAJU SEJATI</span>
+          <span className="catalog-header-brand">MITRA MAJU SEJATI</span>
         </div>
         <div className="catalog-header-right">
           {!user ? (
-            <div className="guest-actions">
-              <Button size="small" variant="outline" onClick={() => navigate('/login')}>
+            <div className="guest-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                className="icon-btn cart-btn-header"
+                style={{
+                  backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)',
+                  color: cart.length > 0 ? 'white' : 'inherit',
+                  position: 'relative',
+                  cursor: 'pointer'
+                }}
+                onClick={() => navigate('/login')}
+              >
+                <ShoppingCart size={20} />
+                {cart.length > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-5px',
+                    right: '-5px',
+                    backgroundColor: '#ff4444',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '18px',
+                    height: '18px',
+                    fontSize: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 'bold'
+                  }}>
+                    {cart.reduce((a, b) => a + b.quantity, 0)}
+                  </span>
+                )}
+              </div>
+              <button
+                className="icon-btn theme-toggle-btn"
+                onClick={toggleTheme}
+                title={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+
+              <span style={{ borderLeft: '1px solid var(--color-outline-variant)', height: '24px', margin: '0 6px' }}></span>
+
+              <Button size="small" variant="outline" onClick={() => navigate('/login')} style={{ minWidth: '80px', height: '30px' }}>
                 Masuk
               </Button>
-              <Button size="small" onClick={() => navigate('/signup')}>
+              <Button size="small" onClick={() => navigate('/signup')} style={{ minWidth: '80px', height: '30px' }}>
                 Daftar
               </Button>
             </div>
           ) : (
-            <div className="catalog-header-actions">
-              <div 
-                className="icon-btn cart-btn-header" 
-                style={{ 
-                  backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)', 
-                  color: cart.length > 0 ? 'white' : 'inherit', 
+            <div className="catalog-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button
+                className="icon-btn theme-toggle-btn"
+                onClick={toggleTheme}
+                title={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+              <div
+                className="icon-btn cart-btn-header"
+                style={{
+                  backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)',
+                  color: cart.length > 0 ? 'white' : 'inherit',
                   position: 'relative',
                   cursor: 'pointer'
                 }}
@@ -160,20 +210,20 @@ const Catalog = () => {
               >
                 <ShoppingCart size={20} />
                 {cart.length > 0 && (
-                  <span style={{ 
-                    position: 'absolute', 
-                    top: '-5px', 
-                    right: '-5px', 
-                    backgroundColor: '#ff4444', 
-                    color: 'white', 
-                    borderRadius: '50%', 
-                    width: '18px', 
-                    height: '18px', 
-                    fontSize: '10px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    fontWeight: 'bold' 
+                  <span style={{
+                    position: 'absolute',
+                    top: '-5px',
+                    right: '-5px',
+                    backgroundColor: '#ff4444',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '18px',
+                    height: '18px',
+                    fontSize: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 'bold'
                   }}>
                     {cart.reduce((a, b) => a + b.quantity, 0)}
                   </span>
@@ -191,12 +241,12 @@ const Catalog = () => {
             <div className="hero-statement-card glass-panel">
               <div className="hero-brand-badge">COMFORT & QUALITY CO.</div>
               <h1 className="hero-premium-title">
-                PT. MITRA MAJU SEJATI
+                MITRA MAJU SEJATI
               </h1>
               <p className="hero-premium-subtitle">
                 Penyedia solusi tata udara premium berstandar internasional. Kami menghadirkan unit pendingin udara 100% orisinal dengan garansi resmi, serta layanan pemasangan & perawatan terintegrasi oleh teknisi bersertifikat.
               </p>
-              
+
               <div className="hero-premium-actions">
                 <Button variant="primary" onClick={() => navigate('/signup')} style={{ padding: '14px 28px', fontSize: '15px' }}>
                   Daftar Akun Baru
@@ -213,7 +263,7 @@ const Catalog = () => {
             </div>
 
             {/* Right Side: Interactive Sliding Image Carousel */}
-            <div 
+            <div
               ref={containerRef}
               className="hero-carousel-container-new card-elevation"
               onMouseMove={handleMouseMove}
@@ -223,10 +273,10 @@ const Catalog = () => {
                 transition: 'transform 0.1s ease-out'
               }}
             >
-              <div 
+              <div
                 className="hero-carousel-track-new"
                 style={{
-                  transform: `translateX(-${currentSlide * 100}%)`,
+                  transform: `translateX(-${(currentSlide * 100) / carouselImages.length}%)`,
                   transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
                 }}
               >
@@ -243,8 +293,8 @@ const Catalog = () => {
               {/* Slider Dots */}
               <div className="carousel-dots-container">
                 {carouselImages.map((_, index) => (
-                  <button 
-                    key={index} 
+                  <button
+                    key={index}
                     className={`carousel-dot ${currentSlide === index ? 'active' : ''}`}
                     onClick={() => setCurrentSlide(index)}
                   />
@@ -257,9 +307,9 @@ const Catalog = () => {
         <div ref={catalogSectionRef} className="search-filter-bar">
           <div className="search-input-wrapper card-elevation">
             <Search size={18} className="search-icon" />
-            <input 
-              type="text" 
-              placeholder="Cari merk atau tipe AC..." 
+            <input
+              type="text"
+              placeholder="Cari merk atau tipe AC..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input"
@@ -274,7 +324,7 @@ const Catalog = () => {
             {filteredProducts.length > 0 ? (
               filteredProducts.map(product => (
                 <div key={product.id} style={{ position: 'relative' }}>
-                  <ProductCard 
+                  <ProductCard
                     image={product.image_url}
                     title={`${product.brand} ${product.name}`}
                     price={formatRupiah(product.price)}
@@ -289,7 +339,7 @@ const Catalog = () => {
                     }}
                   />
                   {user && (
-                    <button 
+                    <button
                       className="add-to-cart-btn"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -349,7 +399,7 @@ const Catalog = () => {
                     <div className="cart-item-info">
                       <h4>{item.brand} {item.name}</h4>
                       <p className="cart-item-price">{formatRupiah(item.price)}</p>
-                      
+
                       <div className="cart-item-controls">
                         <div className="cart-item-qty">
                           <button className="qty-btn" onClick={() => updateQuantity(item.id, -1)} style={{ border: 'none', background: 'transparent' }}><Minus size={12} /></button>
@@ -428,8 +478,8 @@ const Catalog = () => {
 
                 <div className="details-cta-section">
                   {user ? (
-                    <Button 
-                      fullWidth 
+                    <Button
+                      fullWidth
                       onClick={() => {
                         addToCart(selectedProduct);
                         setSelectedProduct(null);

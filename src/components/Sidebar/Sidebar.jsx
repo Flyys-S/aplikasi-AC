@@ -13,7 +13,12 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     setShowConfirm(false)
-    await signOut()
+    const cleanUrl = window.location.origin + import.meta.env.BASE_URL
+    window.history.replaceState(null, '', cleanUrl)
+    navigate('/', { replace: true })
+    setTimeout(() => {
+      signOut()
+    }, 100)
   }
 
   const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'A'

@@ -630,3 +630,37 @@ ul {
     font-size: 12px !important;
   }
 }
+
+/* ☀️/🌙 Premium Theme Toggle Button styling */
+.theme-toggle-btn {
+  border: 1px solid var(--color-outline-variant) !important;
+  background: var(--color-surface-container-low) !important;
+  color: var(--color-on-surface-variant) !important;
+  transition: var(--transition-premium) !important;
+  border-radius: var(--radius-md) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--color-surface-container-high) !important;
+  color: var(--color-primary) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.theme-toggle-btn svg {
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.theme-toggle-btn:hover svg {
+  transform: rotate(35deg) scale(1.15);
+}
+

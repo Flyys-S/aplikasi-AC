@@ -161,7 +161,7 @@
 }
 
 /* Buttons in-modal modernizations */
-.btn-primary {
+.modal-footer .btn-primary {
   flex: 1;
   padding: 12px 20px;
   background: var(--color-primary);
@@ -176,23 +176,23 @@
   transition: var(--transition-premium);
 }
 
-.btn-primary:hover:not(:disabled) {
+.modal-footer .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-dark);
   box-shadow: 0 6px 20px rgba(0, 85, 255, 0.3);
   transform: translateY(-1px);
 }
 
-.btn-primary:active:not(:disabled) {
+.modal-footer .btn-primary:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
 }
 
-.btn-primary:disabled {
+.modal-footer .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   box-shadow: none;
 }
 
-.btn-secondary {
+.modal-footer .btn-secondary {
   padding: 12px 20px;
   background: var(--color-surface-container-high);
   color: var(--color-on-surface-variant);
@@ -205,12 +205,12 @@
   transition: var(--transition-premium);
 }
 
-.btn-secondary:hover {
+.modal-footer .btn-secondary:hover {
   background: var(--color-surface-container-highest);
   color: var(--color-on-surface);
 }
 
-.btn-secondary:active {
+.modal-footer .btn-secondary:active {
   transform: scale(0.98);
 }
 
