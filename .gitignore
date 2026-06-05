@@ -25,3 +25,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary test/inspection scripts
+inspect_*.js
+test_*.js
+check_*.js
+get_*.js

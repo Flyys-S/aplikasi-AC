@@ -117,7 +117,7 @@ CREATE TRIGGER trg_log_status_change
 
 -- 1. Helper function get_my_role() untuk mencegah infinite recursion RLS profiles
 CREATE OR REPLACE FUNCTION get_my_role()
-RETURNS VARCHAR AS $$
+RETURNS text AS $$
   SELECT role FROM public.profiles WHERE id = auth.uid();
 $$ LANGUAGE sql SECURITY DEFINER;
 
