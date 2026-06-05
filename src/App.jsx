@@ -24,6 +24,8 @@ import SignUp from './pages/SignUp'
 import UserManagement from './pages/UserManagement'
 import CompanyProfile from './pages/CompanyProfile'
 import UserProfile from './pages/UserProfile/Profile.jsx'
+import TechnicianDashboard from './pages/TechnicianDashboard'
+import VisitorDashboard from './pages/VisitorDashboard'
 
 import './App.css'
 
@@ -40,20 +42,23 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/company" element={<CompanyProfile />} />
+              {/* Visitor Dashboard — public route, self-manages auth check */}
+              <Route path="/visitor-home" element={<VisitorDashboard />} />
 
               {/* Protected */}
-              <Route path="/dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
-              <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-              <Route path="/online-orders" element={<ProtectedRoute><OnlineOrders /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><SalesDashboard /></ProtectedRoute>} />
+              <Route path="/checkout" element={<ProtectedRoute allowedRoles={['visitor', 'admin', 'technician']}><Checkout /></ProtectedRoute>} />
+              <Route path="/online-orders" element={<ProtectedRoute allowedRoles={['admin']}><OnlineOrders /></ProtectedRoute>} />
               <Route path="/inventory" element={<ProtectedRoute allowedRoles={['admin']}><Inventory /></ProtectedRoute>} />
               <Route path="/inventory/:id" element={<ProtectedRoute allowedRoles={['admin']}><ProductDetails /></ProtectedRoute>} />
-              <Route path="/service" element={<ProtectedRoute><ServiceMaintenance /></ProtectedRoute>} />
-              <Route path="/customers" element={<ProtectedRoute><Customers /></ProtectedRoute>} />
-              <Route path="/customers/:id" element={<ProtectedRoute><CustomerDetail /></ProtectedRoute>} />
-              <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
-              <Route path="/transactions/new" element={<ProtectedRoute><NewTransaction /></ProtectedRoute>} />
-              <Route path="/transactions/:id" element={<ProtectedRoute><InvoiceDetail /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+              <Route path="/service" element={<ProtectedRoute allowedRoles={['admin', 'technician']}><ServiceMaintenance /></ProtectedRoute>} />
+              <Route path="/technician" element={<ProtectedRoute allowedRoles={['technician', 'admin']}><TechnicianDashboard /></ProtectedRoute>} />
+              <Route path="/customers" element={<ProtectedRoute allowedRoles={['admin']}><Customers /></ProtectedRoute>} />
+              <Route path="/customers/:id" element={<ProtectedRoute allowedRoles={['admin']}><CustomerDetail /></ProtectedRoute>} />
+              <Route path="/transactions" element={<ProtectedRoute allowedRoles={['admin']}><Transactions /></ProtectedRoute>} />
+              <Route path="/transactions/new" element={<ProtectedRoute allowedRoles={['admin']}><NewTransaction /></ProtectedRoute>} />
+              <Route path="/transactions/:id" element={<ProtectedRoute allowedRoles={['admin', 'technician', 'visitor']}><InvoiceDetail /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute allowedRoles={['admin', 'technician', 'visitor']}><UserProfile /></ProtectedRoute>} />
               <Route path="/users" element={<ProtectedRoute allowedRoles={['admin']}><UserManagement /></ProtectedRoute>} />
 
               <Route path="*" element={<Navigate to="/" replace />} />

@@ -32,14 +32,41 @@ const ServiceMaintenance = () => {
   const fetchInitialData = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Fetch Jobs
+
+      // ── Fetch Technicians & Customers DULU (dibutuhkan untuk lookup nama) ──
+      let techList = [];
+      let custList = [];
+
+      if (isAdmin) {
+        const { data: techData, error: techError } = await supabase
+          .from('profiles')
+          .select('id, full_name, email, role')
+          .eq('role', 'technician');
+
+        console.log('[ServiceMaintenance] Technicians:', techData, techError);
+        if (techError) toast.error('Gagal memuat teknisi: ' + techError.message);
+        techList = techData || [];
+        setTechnicians(techList);
+
+        const { data: custData, error: custError } = await supabase
+          .from('customers')
+          .select('id, name, phone')
+          .order('name');
+
+        console.log('[ServiceMaintenance] Customers:', custData, custError);
+        if (custError) toast.error('Gagal memuat pelanggan: ' + custError.message);
+        custList = custData || [];
+        setCustomers(custList);
+      }
+
+      // ── Fetch Jobs — TANPA join ke profiles (tidak ada FK terdaftar) ──
+      // Nama pelanggan di-join via customers (FK sudah ada)
+      // Nama teknisi di-resolve manual dari techList di bawah
       let jobsQuery = supabase
         .from('service_jobs')
         .select(`
           *,
-          customers(name, phone),
-          profiles:technician_id(full_name, email)
+          customers(name, phone)
         `)
         .order('scheduled_date', { ascending: false });
 
@@ -49,25 +76,38 @@ const ServiceMaintenance = () => {
 
       const { data: jobsData, error: jobsError } = await jobsQuery;
       if (jobsError) throw jobsError;
-      setJobs(jobsData || []);
 
-      if (isAdmin) {
-        // Fetch Technicians
-        const { data: techData } = await supabase
+      // Enrich setiap job dengan nama teknisi dari techList & nama visitor dari profiles
+      const createdByIds = [...new Set((jobsData || []).map(j => j.created_by).filter(Boolean))];
+      let profilesMap = {};
+      
+      if (createdByIds.length > 0) {
+        const { data: profilesData } = await supabase
           .from('profiles')
           .select('id, full_name, email')
-          .eq('role', 'technician');
-        setTechnicians(techData || []);
-
-        // Fetch Customers
-        const { data: custData } = await supabase
-          .from('customers')
-          .select('id, name')
-          .order('name');
-        setCustomers(custData || []);
+          .in('id', createdByIds);
+        
+        if (profilesData) {
+          profilesData.forEach(p => {
+            profilesMap[p.id] = p;
+          });
+        }
       }
+
+      const enrichedJobs = (jobsData || []).map(job => ({
+        ...job,
+        _technicianName: techList.find(t => t.id === job.technician_id)?.full_name
+          || techList.find(t => t.id === job.technician_id)?.email
+          || null,
+        _creatorName: profilesMap[job.created_by]?.full_name
+          || profilesMap[job.created_by]?.email
+          || null
+      }));
+
+      setJobs(enrichedJobs);
     } catch (error) {
       console.error('Error fetching service data:', error.message);
+      toast.error('Gagal memuat data: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -125,6 +165,24 @@ const ServiceMaintenance = () => {
     }
   };
 
+  const handleAssignTechnician = async (jobId, techId) => {
+    try {
+      setSaving(true);
+      const { error } = await supabase
+        .from('service_jobs')
+        .update({ technician_id: techId || null })
+        .eq('id', jobId);
+      
+      if (error) throw error;
+      toast.success(techId ? 'Teknisi berhasil ditugaskan!' : 'Penugasan teknisi dibatalkan!');
+      fetchInitialData();
+    } catch (error) {
+      toast.error('Gagal memperbarui penugasan: ' + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const getStatusClass = (status) => {
     switch (status) {
       case 'completed': return 'tag-success';
@@ -162,7 +220,10 @@ const ServiceMaintenance = () => {
                   onChange={(e) => setNewJob({...newJob, customer_id: e.target.value})}
                 >
                   <option value="">Pilih Pelanggan</option>
-                  {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {customers.length === 0 && (
+                    <option disabled>⚠️ Belum ada pelanggan / periksa konsol</option>
+                  )}
+                  {customers.map(c => <option key={c.id} value={c.id}>{c.name || c.phone || c.id}</option>)}
                 </select>
               </div>
 
@@ -174,7 +235,10 @@ const ServiceMaintenance = () => {
                   onChange={(e) => setNewJob({...newJob, technician_id: e.target.value})}
                 >
                   <option value="">Pilih Teknisi</option>
-                  {technicians.map(t => <option key={t.id} value={t.id}>{t.full_name || t.email}</option>)}
+                  {technicians.length === 0 && (
+                    <option disabled>⚠️ Belum ada teknisi / periksa konsol</option>
+                  )}
+                  {technicians.map(t => <option key={t.id} value={t.id}>{t.full_name || t.email || t.id}</option>)}
                 </select>
               </div>
 
@@ -230,18 +294,80 @@ const ServiceMaintenance = () => {
                       {job.status === 'completed' ? <CheckCircle size={16} /> : <Wrench size={16} />}
                     </div>
                     <div className="timeline-content card-elevation">
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
                         <div>
-                          <h4>{job.service_type} - {job.customers?.name || 'Pelanggan'}</h4>
-                          <p className="time"><Clock size={12} className="inline-icon" /> {new Date(job.scheduled_date).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-                          <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                            <User size={12} className="inline-icon" /> Teknisi: {job.profiles?.full_name || 'Belum ditunjuk'}
+                          <h4>{job.service_type} - {job.customers?.name || job._creatorName || 'Pelanggan'}</h4>
+                          <p className="time">
+                            <Clock size={12} className="inline-icon" /> {new Date(job.scheduled_date).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' })}
+                          </p>
+                          <p style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginBottom: '8px' }}>
+                            <User size={12} className="inline-icon" /> Teknisi: {job._technicianName || <span style={{ color: '#b57a00', fontWeight: 'bold' }}>Belum ditunjuk</span>}
                           </p>
                         </div>
                         <div className={`status-tag ${getStatusClass(job.status)}`}>
                           {getStatusLabel(job.status)}
                         </div>
                       </div>
+
+                      {/* Detail keluhan & alamat */}
+                      {(job.complaint_description || job.service_address || job.notes) && (
+                        <div style={{
+                          marginTop: '10px',
+                          padding: '10px',
+                          borderRadius: 'var(--radius-sm)',
+                          backgroundColor: 'var(--color-surface-container-low)',
+                          fontSize: '12px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px',
+                          borderLeft: '3px solid var(--color-outline-variant)'
+                        }}>
+                          {job.complaint_description && (
+                            <div>
+                              <strong>Keluhan:</strong> {job.complaint_description}
+                            </div>
+                          )}
+                          {job.service_address && (
+                            <div>
+                              <strong>Alamat:</strong> {job.service_address}
+                            </div>
+                          )}
+                          {job.notes && (
+                            <div style={{ color: 'var(--color-outline)' }}>
+                              <strong>Catatan/Kontak:</strong> {job.notes}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Dropdown penugasan teknisi oleh Admin */}
+                      {isAdmin && (
+                        <div style={{ marginTop: '12px', borderTop: '1px solid var(--color-outline-variant)', paddingTop: '10px' }}>
+                          <label style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--color-on-surface-variant)', display: 'block', marginBottom: '4px' }}>
+                            Tugaskan / Ganti Teknisi:
+                          </label>
+                          <select
+                            className="service-select"
+                            style={{
+                              padding: '6px 10px',
+                              fontSize: '12px',
+                              height: 'auto',
+                              width: '100%',
+                              maxWidth: '220px',
+                              backgroundPosition: 'right 8px center',
+                              backgroundSize: '12px',
+                              paddingRight: '28px'
+                            }}
+                            value={job.technician_id || ''}
+                            onChange={(e) => handleAssignTechnician(job.id, e.target.value)}
+                          >
+                            <option value="">-- Belum Ditugaskan --</option>
+                            {technicians.map(t => (
+                              <option key={t.id} value={t.id}>{t.full_name || t.email}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
 
                       {!isAdmin && job.status !== 'completed' && (
                         <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>

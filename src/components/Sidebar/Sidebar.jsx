@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen, LogOut } from 'lucide-react'
+import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen, LogOut, HardHat } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../Button'
 import './Sidebar.css'
@@ -10,12 +10,13 @@ const Sidebar = () => {
   const navigate = useNavigate()
   const [showConfirm, setShowConfirm] = useState(false)
   const isAdmin = role === 'admin'
+  const isTechnician = role === 'technician'
 
   const handleLogout = async () => {
     setShowConfirm(false)
     const cleanUrl = window.location.origin + import.meta.env.BASE_URL
     window.history.replaceState(null, '', cleanUrl)
-    navigate('/', { replace: true })
+    navigate('./Catalog', { replace: true })
     setTimeout(() => {
       signOut()
     }, 100)
@@ -24,12 +25,13 @@ const Sidebar = () => {
   const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'A'
 
   const navItems = [
-    { to: '/dashboard', label: 'Beranda', icon: LayoutDashboard },
+    ...(isAdmin ? [{ to: '/dashboard', label: 'Beranda', icon: LayoutDashboard }] : []),
     { to: '/', label: 'Katalog', icon: BookOpen },
     ...(isAdmin ? [{ to: '/inventory', label: 'Stok', icon: Package }] : []),
-    { to: '/transactions', label: 'Transaksi', icon: ShoppingBag },
+    ...(!isTechnician ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
     ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),
     { to: '/service', label: 'Servis', icon: Wrench },
+    ...(isTechnician || isAdmin ? [{ to: '/technician', label: 'Tugas Saya', icon: HardHat }] : []),
   ]
 
   return (
@@ -39,7 +41,7 @@ const Sidebar = () => {
           <div className="sidebar-logo">
             <span className="logo-icon">❄️</span>
             <div className="logo-text">
-              <h3>PT. MITRA MAJU SEJATI</h3>
+              <h3>MITRA MAJU SEJATI</h3>
               <span className="logo-badge">{role?.toUpperCase()}</span>
             </div>
           </div>
@@ -87,7 +89,7 @@ const Sidebar = () => {
             </div>
             <h3 className="mms-modal-title">Konfirmasi Keluar</h3>
             <p className="mms-modal-message">
-              Apakah Anda yakin ingin keluar dari sistem tata udara PT. MITRA MAJU SEJATI saat ini?
+              Apakah Anda yakin ingin keluar dari sistem tata udara MITRA MAJU SEJATI saat ini?
             </p>
             <div className="mms-modal-actions">
               <Button variant="outline" onClick={() => setShowConfirm(false)}>

@@ -11,11 +11,11 @@ const CompanyProfile = () => {
         <div className="ambient-orb orb-accent"></div>
         <div className="profile-header-image" style={{ backgroundImage: `url(${headerImg})` }}></div>
         <div className="profile-header-overlay">
-          <h1 className="profile-company-name">PT. MITRA MAJU SEJATI</h1>
+          <h1 className="profile-company-name">MITRA MAJU SEJATI</h1>
         </div>
       </div>
       <div className="profile-intro" style={{ padding: '24px', color: 'var(--color-on-surface)' }}>
-        <p>Selamat datang di sistem retail AC PT. MITRA MAJU SEJATI. Silakan masuk untuk mengakses katalog produk.</p>
+        <p>Selamat datang di sistem retail AC MITRA MAJU SEJATI. Silakan masuk untuk mengakses katalog produk.</p>
       </div>
     </div>
   );

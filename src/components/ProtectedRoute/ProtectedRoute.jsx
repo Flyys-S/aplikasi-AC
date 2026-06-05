@@ -18,10 +18,20 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login" replace />
   }
 
-  // Check if role is allowed (if allowedRoles is specified)
+  // If role is visitor or null, and the route doesn't explicitly allow visitor role, redirect to visitor home
+  if ((role === 'visitor' || role === null) && (!allowedRoles || !allowedRoles.includes('visitor'))) {
+    return <Navigate to="/visitor-home" replace />
+  }
+
+  // If role is technician and trying to access an admin-only page (role not in allowedRoles), redirect to technician dashboard
+  if (role === 'technician' && allowedRoles && !allowedRoles.includes('technician')) {
+    return <Navigate to="/technician" replace />
+  }
+
+  // Check if role is allowed
   if (allowedRoles && !allowedRoles.includes(role)) {
     console.warn(`Access denied for role: ${role}. Required: ${allowedRoles}`)
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/" replace />
   }
 
   return children

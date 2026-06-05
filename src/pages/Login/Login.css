@@ -6,7 +6,8 @@
   padding: 40px var(--gutter);
   background: radial-gradient(circle at top right, var(--color-surface-container-high) 0%, var(--color-background) 60%);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* 🪐 Visual Ambient Light Orbs for premium visual depth */
