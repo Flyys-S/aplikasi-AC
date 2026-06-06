@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen, LogOut, HardHat } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../Button'
@@ -8,9 +8,15 @@ import './Sidebar.css'
 const Sidebar = () => {
   const { role, signOut, user } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [showConfirm, setShowConfirm] = useState(false)
   const isAdmin = role === 'admin'
   const isTechnician = role === 'technician'
+
+  const frontEndRoutes = ['/', '/catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/visitor-home']
+  if (frontEndRoutes.includes(location.pathname)) {
+    return null
+  }
 
   const handleLogout = async () => {
     setShowConfirm(false)

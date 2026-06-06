@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 // Pages
 import Login from './pages/Login'
 import Catalog from './pages/Catalog'
+import FullCatalog from './pages/Catalog/FullCatalog'
 import Checkout from './pages/Checkout'
 import OnlineOrders from './pages/OnlineOrders'
 import SalesDashboard from './pages/SalesDashboard'
@@ -26,6 +27,7 @@ import CompanyProfile from './pages/CompanyProfile'
 import UserProfile from './pages/UserProfile/Profile.jsx'
 import TechnicianDashboard from './pages/TechnicianDashboard'
 import VisitorDashboard from './pages/VisitorDashboard'
+import CalculatorTools from './pages/CalculatorTools'
 
 import './App.css'
 
@@ -39,9 +41,11 @@ function App() {
             <Routes>
               {/* Public */}
               <Route path="/" element={<Catalog />} />
+              <Route path="/catalog" element={<FullCatalog />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/company" element={<CompanyProfile />} />
+              <Route path="/tools" element={<CalculatorTools />} />
               {/* Visitor Dashboard — public route, self-manages auth check */}
               <Route path="/visitor-home" element={<VisitorDashboard />} />
 
