@@ -31,3 +31,19 @@ inspect_*.js
 test_*.js
 check_*.js
 get_*.js
+
+# Package Manager and Cache
+.npm
+.eslintcache
+.parcel-cache
+.cache
+.vite
+.turbo
+
+# System and Agent artifacts
+.gemini
+.agent
+.git
+.github
+*.tmp
+*.temp

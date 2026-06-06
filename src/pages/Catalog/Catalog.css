@@ -1286,5 +1286,128 @@
   }
 }
 
+/* ─── Mobile Responsive Overrides ─── */
+@media (max-width: 768px) {
+  .catalog-header {
+    height: 56px !important;
+    padding: 0 16px !important;
+  }
+  
+  .catalog-header-brand span {
+    font-size: 16px !important;
+  }
+  
+  .catalog-header-actions {
+    gap: 8px !important;
+  }
+  
+  .guest-actions {
+    gap: 6px !important;
+  }
+  
+  .guest-actions button {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+  }
+  
+  .hero-features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  .hero-3d-title {
+    font-size: 32px !important;
+    line-height: 1.2 !important;
+  }
+  
+  .hero-carousel-container {
+    height: 250px !important;
+  }
+  
+  .cart-drawer {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .company-profile-hero {
+    padding: 40px 16px !important;
+  }
+  
+  .hero-premium-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+  
+  .hero-premium-actions button {
+    width: 100% !important;
+  }
+}
+
+/* 🧊 Micro-interactions: Hover and Click (Active) for Clickable Elements */
+
+/* 1. Category Cards */
+.category-card {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.category-card:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 85, 255, 0.12) !important;
+  border-color: var(--color-primary) !important;
+}
+.category-card:active {
+  transform: translateY(-2px) scale(0.97);
+}
+
+/* 2. Brand Filters */
+.brand-filter-btn {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.brand-filter-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+}
+.brand-filter-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* 3. Hero Slide Dots and Promo Dots */
+.carousel-dot, .promo-dot-node {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.carousel-dot:hover, .promo-dot-node:hover {
+  transform: scale(1.3);
+  background: white;
+}
+.carousel-dot:active, .promo-dot-node:active {
+  transform: scale(0.9);
+}
+
+/* 4. Global Buttons & Action Icons in Header */
+.icon-btn, .theme-toggle-btn, .cart-btn-header {
+  transition: all 0.2s ease-in-out !important;
+}
+.icon-btn:hover, .theme-toggle-btn:hover, .cart-btn-header:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 6px 12px rgba(0, 85, 255, 0.1) !important;
+}
+.icon-btn:active, .theme-toggle-btn:active, .cart-btn-header:active {
+  transform: translateY(0) scale(0.94);
+}
+
+/* 5. Custom Button component override */
+button:not(.promo-arrow) {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+button:not(.promo-arrow):hover {
+  transform: translateY(-1px);
+}
+button:not(.promo-arrow):active {
+  transform: translateY(1px) scale(0.97);
+}
+
+
+
 
 
