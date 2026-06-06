@@ -843,106 +843,110 @@ const Catalog = () => {
               )}
             </div>
 
-            <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '80px', display: 'flex', justifyContent: 'center' }}>
-              <Button 
-                onClick={() => navigate('/catalog')} 
-                variant="primary"
-                style={{
-                  padding: '14px 40px',
-                  borderRadius: '16px',
-                  fontSize: '15px',
-                  fontWeight: '800',
-                  boxShadow: '0 8px 24px rgba(0, 85, 255, 0.2)'
-                }}
-              >
-                Lihat Selengkapnya & Filter AC ➜
-              </Button>
-            </div>
+            {!isAdmin && (
+              <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '80px', display: 'flex', justifyContent: 'center' }}>
+                <Button 
+                  onClick={() => navigate('/catalog')} 
+                  variant="primary"
+                  style={{
+                    padding: '14px 40px',
+                    borderRadius: '16px',
+                    fontSize: '15px',
+                    fontWeight: '800',
+                    boxShadow: '0 8px 24px rgba(0, 85, 255, 0.2)'
+                  }}
+                >
+                  Lihat Selengkapnya & Filter AC ➜
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
         {/* 📑 Footer Section (Selka.id Style) */}
-        <footer className="selka-footer" style={{
-          marginTop: '64px',
-          padding: '48px 24px 24px 24px',
-          borderTop: '1px solid var(--color-outline-variant)',
-          background: 'var(--color-surface-container-lowest)',
-          color: 'var(--color-on-surface)',
-          borderRadius: '24px 24px 0 0',
-          fontSize: '13px'
-        }}>
-          <div className="footer-cols" style={{
-            display: 'grid',
-            gridTemplateColumns: '1.2fr 1fr 1fr 1fr',
-            gap: '32px',
-            marginBottom: '32px'
+        {!isAdmin && (
+          <footer className="selka-footer" style={{
+            marginTop: '64px',
+            padding: '48px 24px 24px 24px',
+            borderTop: '1px solid var(--color-outline-variant)',
+            background: 'var(--color-surface-container-lowest)',
+            color: 'var(--color-on-surface)',
+            borderRadius: '24px 24px 0 0',
+            fontSize: '13px'
           }}>
-            {/* Col 1 */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '24px' }}>❄️</span>
-                <span style={{ fontWeight: '900', fontSize: '18px', color: 'var(--color-primary)' }}>MITRA MAJU SEJATI</span>
+            <div className="footer-cols" style={{
+              display: 'grid',
+              gridTemplateColumns: '1.2fr 1fr 1fr 1fr',
+              gap: '32px',
+              marginBottom: '32px'
+            }}>
+              {/* Col 1 */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '24px' }}>❄️</span>
+                  <span style={{ fontWeight: '900', fontSize: '18px', color: 'var(--color-primary)' }}>MITRA MAJU SEJATI</span>
+                </div>
+                <p style={{ fontWeight: '700', marginBottom: '12px' }}>Toko Online E-Commerce Spesialis AC #1</p>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+                  <span style={{ background: 'var(--color-primary)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold' }}>DAIKIN I-SHOP</span>
+                  <span style={{ background: 'var(--color-primary-dark)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold' }}>GREE EXPERT SHOP</span>
+                </div>
+                <p style={{ fontWeight: '800', margin: '0 0 4px 0' }}>PT. MITRA MAJU SEJATI</p>
+                <p style={{ color: 'var(--color-on-surface-variant)', margin: '0 0 12px 0' }}>Melayani daerah Jabodetabek</p>
+                <p style={{ margin: '0 0 4px 0' }}><strong>Mail:</strong> cs@mitramajusejati.id</p>
+                <p style={{ margin: '0 0 20px 0' }}><strong>Whatsapp:</strong> 0851-7411-5770</p>
+                <p style={{ fontWeight: '800', margin: '0 0 4px 0' }}>JAM LAYANAN CS</p>
+                <p style={{ margin: '0 0 2px 0', color: 'var(--color-on-surface-variant)' }}>Senin - Jumat: 08.30 - 16.30</p>
+                <p style={{ margin: 0, color: 'var(--color-on-surface-variant)' }}>Sabtu: 09.30 - 13.30</p>
               </div>
-              <p style={{ fontWeight: '700', marginBottom: '12px' }}>Toko Online E-Commerce Spesialis AC #1</p>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-                <span style={{ background: 'var(--color-primary)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold' }}>DAIKIN I-SHOP</span>
-                <span style={{ background: 'var(--color-primary-dark)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold' }}>GREE EXPERT SHOP</span>
+
+              {/* Col 2 */}
+              <div>
+                <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>RESIDENTIAL AC</h4>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', lineHeight: '2' }}>
+                  {['AC Split', 'AC Multi Split', 'Cuci AC', 'AC Portable', 'Air Curtain', 'Air Cooler'].map(item => (
+                    <li key={item}><a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>{item}</a></li>
+                  ))}
+                </ul>
+                <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>PROYEK AC</h4>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: '2' }}>
+                  {['Informasi Proyek AC', 'AC Floor Standing', 'AC Cassette', 'AC Split Duct', 'AC Ceiling', 'AC VRV / VRF'].map(item => (
+                    <li key={item}><a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>{item}</a></li>
+                  ))}
+                </ul>
               </div>
-              <p style={{ fontWeight: '800', margin: '0 0 4px 0' }}>PT. MITRA MAJU SEJATI</p>
-              <p style={{ color: 'var(--color-on-surface-variant)', margin: '0 0 12px 0' }}>Melayani daerah Jabodetabek</p>
-              <p style={{ margin: '0 0 4px 0' }}><strong>Mail:</strong> cs@mitramajusejati.id</p>
-              <p style={{ margin: '0 0 20px 0' }}><strong>Whatsapp:</strong> 0851-7411-5770</p>
-              <p style={{ fontWeight: '800', margin: '0 0 4px 0' }}>JAM LAYANAN CS</p>
-              <p style={{ margin: '0 0 2px 0', color: 'var(--color-on-surface-variant)' }}>Senin - Jumat: 08.30 - 16.30</p>
-              <p style={{ margin: 0, color: 'var(--color-on-surface-variant)' }}>Sabtu: 09.30 - 13.30</p>
-            </div>
 
-            {/* Col 2 */}
-            <div>
-              <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>RESIDENTIAL AC</h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', lineHeight: '2' }}>
-                {['AC Split', 'AC Multi Split', 'Cuci AC', 'AC Portable', 'Air Curtain', 'Air Cooler'].map(item => (
-                  <li key={item}><a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>{item}</a></li>
-                ))}
-              </ul>
-              <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>PROYEK AC</h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: '2' }}>
-                {['Informasi Proyek AC', 'AC Floor Standing', 'AC Cassette', 'AC Split Duct', 'AC Ceiling', 'AC VRV / VRF'].map(item => (
-                  <li key={item}><a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>{item}</a></li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Col 3 */}
-            <div>
-              <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>INFO PERUSAHAAN</h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', lineHeight: '2' }}>
-                {['Ranking AC', 'Panduan AC 2026', 'Rahasia Kami', 'Tentang Kami', 'Kontak Kami', 'Service Center', 'Syarat & Ketentuan', 'Kebijakan Privasi', 'Lowongan Kerja'].map(item => (
-                  <li key={item}><a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>{item}</a></li>
-                ))}
-              </ul>
-              <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>INFO PEMESANAN</h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: '2' }}>
-                {['Toko AC Terdekat', 'Pilihan Pengiriman', 'Harga Jasa Pasang AC'].map(item => (
-                  <li key={item}><a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>{item}</a></li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Col 4 */}
-            <div>
-              <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>Follow Kami</h4>
-              <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
-                <span style={{ fontSize: '20px', cursor: 'pointer' }}>📸</span>
-                <span style={{ fontSize: '20px', cursor: 'pointer' }}>📺</span>
-                <span style={{ fontSize: '20px', cursor: 'pointer' }}>🎵</span>
+              {/* Col 3 */}
+              <div>
+                <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>INFO PERUSAHAAN</h4>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', lineHeight: '2' }}>
+                  {['Ranking AC', 'Panduan AC 2026', 'Rahasia Kami', 'Tentang Kami', 'Kontak Kami', 'Service Center', 'Syarat & Ketentuan', 'Kebijakan Privasi', 'Lowongan Kerja'].map(item => (
+                    <li key={item}><a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>{item}</a></li>
+                  ))}
+                </ul>
+                <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>INFO PEMESANAN</h4>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: '2' }}>
+                  {['Toko AC Terdekat', 'Pilihan Pengiriman', 'Harga Jasa Pasang AC'].map(item => (
+                    <li key={item}><a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>{item}</a></li>
+                  ))}
+                </ul>
               </div>
-              <p style={{ color: 'var(--color-on-surface-variant)', lineHeight: '1.6' }}>
-                MitraMajuSejati.id © Copyright © 2012-2026 website ini didevelop oleh PT. Mitra Maju Sejati
-              </p>
+
+              {/* Col 4 */}
+              <div>
+                <h4 style={{ fontWeight: '800', marginBottom: '16px', color: 'var(--color-primary)' }}>Follow Kami</h4>
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+                  <span style={{ fontSize: '20px', cursor: 'pointer' }}>📸</span>
+                  <span style={{ fontSize: '20px', cursor: 'pointer' }}>📺</span>
+                  <span style={{ fontSize: '20px', cursor: 'pointer' }}>🎵</span>
+                </div>
+                <p style={{ color: 'var(--color-on-surface-variant)', lineHeight: '1.6' }}>
+                  MitraMajuSejati.id © Copyright © 2012-2026 website ini didevelop oleh PT. Mitra Maju Sejati
+                </p>
+              </div>
             </div>
-          </div>
-        </footer>
+          </footer>
+        )}
       </div>
 
       {/* Cart Sidebar/Drawer */}
