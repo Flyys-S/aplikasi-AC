@@ -806,25 +806,38 @@ const FullCatalog = () => {
                   </div>
                 )}
 
-                <div className="details-cta-section" style={{ marginTop: 'auto' }}>
-                  <p>Klik tombol di bawah ini untuk menambahkan unit ac dengan opsi kustomisasi Anda ke keranjang belanja.</p>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <Button 
-                      fullWidth
-                      icon={ShoppingCart} 
-                      onClick={() => {
-                        addToCart(selectedProduct, {
-                          purchaseType,
-                          pipeGrade,
-                          pipeLength
-                        });
-                        setSelectedProduct(null);
-                      }}
-                    >
-                      Masukkan Keranjang
-                    </Button>
-                    <Button variant="outline" onClick={() => setSelectedProduct(null)}>Batal</Button>
-                  </div>
+                <div className="details-cta-section" style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--color-outline-variant)' }}>
+                  {user ? (
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <Button 
+                        fullWidth
+                        icon={ShoppingCart} 
+                        onClick={() => {
+                          addToCart(selectedProduct, {
+                            purchaseType,
+                            pipeGrade,
+                            pipeLength
+                          });
+                          setSelectedProduct(null);
+                        }}
+                      >
+                        Masukkan Keranjang
+                      </Button>
+                      <Button variant="outline" onClick={() => setSelectedProduct(null)}>Batal</Button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--color-on-surface-variant)', margin: '0 0 8px 0' }}>
+                        Anda harus masuk ke sistem untuk melakukan pemesanan dan menjadwalkan instalasi AC.
+                      </p>
+                      <div style={{ display: 'flex', gap: '12px' }}>
+                        <Button fullWidth onClick={() => navigate('/login')}>
+                          Masuk untuk Memesan
+                        </Button>
+                        <Button variant="outline" onClick={() => setSelectedProduct(null)}>Batal</Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
