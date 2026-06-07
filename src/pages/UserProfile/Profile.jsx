@@ -109,8 +109,10 @@ const UserProfile = () => {
       .toUpperCase();
   };
 
+  const isAdmin = role === 'admin';
+
   return (
-    <div className="dashboard-container">
+    <div className={`dashboard-container${isAdmin ? '' : ' guest-layout'}`}>
       <TopHeader title="Profil Saya" subtitle="Kelola informasi akun dan pengaturan aplikasi" />
 
       <div className="page-content fade-in profile-page-content">

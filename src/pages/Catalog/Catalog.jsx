@@ -1250,52 +1250,66 @@ const Catalog = () => {
       {isCustomerSidebarOpen && (
         <div className="cart-overlay" onClick={() => setIsCustomerSidebarOpen(false)} style={{ zIndex: '2000', justifyContent: 'flex-start' }}>
           <div className="cart-drawer" onClick={e => e.stopPropagation()} style={{ animation: 'slideInLeft 0.4s cubic-bezier(0.25, 1, 0.5, 1)', right: 'auto', left: '0', borderLeft: 'none', borderRight: '1px solid var(--color-outline-variant)' }}>
-            <div className="cart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="cart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-outline-variant)' }}>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span>❄️ Menu Pelanggan</span>
               </h3>
-              <button className="icon-btn" onClick={() => setIsCustomerSidebarOpen(false)}><X size={20} /></button>
+              <button className="icon-btn" onClick={() => setIsCustomerSidebarOpen(false)} style={{ width: '32px', height: '32px', borderRadius: '50%' }}><X size={16} /></button>
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '24px', flex: '1' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '16px', flex: '1' }}>
               <div 
-                className="category-card" 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '16px', cursor: 'pointer', textAlign: 'left' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
                 onClick={() => { setIsCustomerSidebarOpen(false); navigate('/'); }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={{ fontSize: '20px' }}>🛒</span>
-                <span style={{ fontWeight: '800', fontSize: '13px' }}>Katalog AC Utama</span>
+                <span style={{ fontSize: '18px' }}>🏠</span>
+                <span style={{ fontWeight: '600', fontSize: '14px' }}>Beranda</span>
               </div>
 
               <div 
-                className="category-card" 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '16px', cursor: 'pointer', textAlign: 'left' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
+                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/catalog'); }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={{ fontSize: '18px' }}>🛒</span>
+                <span style={{ fontWeight: '600', fontSize: '14px' }}>Katalog AC Utama</span>
+              </div>
+
+              <div 
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
                 onClick={() => { setIsCustomerSidebarOpen(false); navigate('/tools'); }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={{ fontSize: '20px' }}>🧮</span>
-                <span style={{ fontWeight: '800', fontSize: '13px' }}>Kalkulator & Tools</span>
+                <span style={{ fontSize: '18px' }}>🧮</span>
+                <span style={{ fontWeight: '600', fontSize: '14px' }}>Kalkulator & Tools</span>
               </div>
 
               <div 
-                className="category-card" 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '16px', cursor: 'pointer', textAlign: 'left' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
                 onClick={() => { setIsCustomerSidebarOpen(false); navigate('/visitor-home'); }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={{ fontSize: '20px' }}>🔧</span>
-                <span style={{ fontWeight: '800', fontSize: '13px' }}>Layanan Servis AC</span>
+                <span style={{ fontSize: '18px' }}>🔧</span>
+                <span style={{ fontWeight: '600', fontSize: '14px' }}>Layanan Servis AC</span>
               </div>
 
               <div 
-                className="category-card" 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '16px', cursor: 'pointer', textAlign: 'left' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
                 onClick={() => { setIsCustomerSidebarOpen(false); navigate('/profile'); }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                <span style={{ fontSize: '20px' }}>👤</span>
-                <span style={{ fontWeight: '800', fontSize: '13px' }}>Profil Saya</span>
+                <span style={{ fontSize: '18px' }}>👤</span>
+                <span style={{ fontWeight: '600', fontSize: '14px' }}>Profil Saya</span>
               </div>
             </div>
 
-            <div className="cart-footer" style={{ padding: '24px', textAlign: 'center', fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>
+            <div className="cart-footer" style={{ padding: '24px', textAlign: 'center', fontSize: '12px', color: 'var(--color-on-surface-variant)', borderTop: '1px solid var(--color-outline-variant)' }}>
               Mitra Maju Sejati &copy; 2026
             </div>
           </div>
