@@ -15,7 +15,7 @@ import './Catalog.css';
 
 const Catalog = () => {
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, role } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const catalogSectionRef = useRef(null);
   const containerRef = useRef(null);
