@@ -873,6 +873,15 @@
   }
 }
 
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 .cart-header {
   padding: 24px;
   display: flex;

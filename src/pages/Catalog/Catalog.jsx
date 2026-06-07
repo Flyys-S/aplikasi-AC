@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package, Sun, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package, Sun, Moon, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
 import { useAuth } from '../../context/AuthContext';
@@ -87,6 +87,7 @@ const Catalog = () => {
   const [recommendedPK, setRecommendedPK] = useState('');
   const [pkFilter, setPkFilter] = useState('');
   const [brandFilter, setBrandFilter] = useState('');
+  const [isCustomerSidebarOpen, setIsCustomerSidebarOpen] = useState(false);
 
   // Selected Product Customize State
   const [purchaseType, setPurchaseType] = useState('package'); // 'unit' or 'package'
@@ -268,7 +269,25 @@ const Catalog = () => {
   return (
     <div className="dashboard-container guest-layout">
       <header className="catalog-header glass-panel fade-in">
-        <div className="catalog-header-left">
+        <div className="catalog-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {user && (
+            <button 
+              className="icon-btn hamburger-btn-customer" 
+              onClick={() => setIsCustomerSidebarOpen(true)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px',
+                color: 'var(--color-on-surface)'
+              }}
+            >
+              <Menu size={22} />
+            </button>
+          )}
           <span className="logo-icon">❄️</span>
           <span className="catalog-header-brand">MITRA MAJU SEJATI</span>
         </div>
@@ -1226,6 +1245,62 @@ const Catalog = () => {
       )}
 
       {user && <Navigation />}
+
+      {/* 🧊 Customer Sidebar Drawer */}
+      {isCustomerSidebarOpen && (
+        <div className="cart-overlay" onClick={() => setIsCustomerSidebarOpen(false)} style={{ zIndex: '2000', justifyContent: 'flex-start' }}>
+          <div className="cart-drawer" onClick={e => e.stopPropagation()} style={{ animation: 'slideInLeft 0.4s cubic-bezier(0.25, 1, 0.5, 1)', right: 'auto', left: '0', borderLeft: 'none', borderRight: '1px solid var(--color-outline-variant)' }}>
+            <div className="cart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>❄️ Menu Pelanggan</span>
+              </h3>
+              <button className="icon-btn" onClick={() => setIsCustomerSidebarOpen(false)}><X size={20} /></button>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '24px', flex: '1' }}>
+              <div 
+                className="category-card" 
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '16px', cursor: 'pointer', textAlign: 'left' }}
+                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/'); }}
+              >
+                <span style={{ fontSize: '20px' }}>🛒</span>
+                <span style={{ fontWeight: '800', fontSize: '13px' }}>Katalog AC Utama</span>
+              </div>
+
+              <div 
+                className="category-card" 
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '16px', cursor: 'pointer', textAlign: 'left' }}
+                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/tools'); }}
+              >
+                <span style={{ fontSize: '20px' }}>🧮</span>
+                <span style={{ fontWeight: '800', fontSize: '13px' }}>Kalkulator & Tools</span>
+              </div>
+
+              <div 
+                className="category-card" 
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '16px', cursor: 'pointer', textAlign: 'left' }}
+                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/visitor-home'); }}
+              >
+                <span style={{ fontSize: '20px' }}>🔧</span>
+                <span style={{ fontWeight: '800', fontSize: '13px' }}>Layanan Servis AC</span>
+              </div>
+
+              <div 
+                className="category-card" 
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '16px', cursor: 'pointer', textAlign: 'left' }}
+                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/profile'); }}
+              >
+                <span style={{ fontSize: '20px' }}>👤</span>
+                <span style={{ fontWeight: '800', fontSize: '13px' }}>Profil Saya</span>
+              </div>
+            </div>
+
+            <div className="cart-footer" style={{ padding: '24px', textAlign: 'center', fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>
+              Mitra Maju Sejati &copy; 2026
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
