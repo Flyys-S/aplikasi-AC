@@ -181,6 +181,15 @@ body.modal-open {
   height: 100vh !important;
 }
 
+body.modal-open .dashboard-container {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+body.modal-open .page-content {
+  overflow: hidden !important;
+}
+
 /* Elegant Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

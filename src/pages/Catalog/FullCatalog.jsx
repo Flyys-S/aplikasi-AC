@@ -44,15 +44,28 @@ const FullCatalog = () => {
     return savedCart ? JSON.parse(savedCart) : [];
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [purchaseType, setPurchaseType] = useState('package');
+  const [pipeGrade, setPipeGrade] = useState('premium');
+  const [pipeLength, setPipeLength] = useState(3);
+
+  // Reset product customization on selection change
+  useEffect(() => {
+    if (selectedProduct) {
+      setPurchaseType('package');
+      setPipeGrade('premium');
+      setPipeLength(3);
+    }
+  }, [selectedProduct]);
 
   useEffect(() => {
-    if (isCartOpen) {
+    if (isCartOpen || selectedProduct) {
       document.body.classList.add('modal-open');
     } else {
       document.body.classList.remove('modal-open');
     }
     return () => document.body.classList.remove('modal-open');
-  }, [isCartOpen]);
+  }, [isCartOpen, selectedProduct]);
 
   // Sync Cart
   useEffect(() => {
@@ -603,12 +616,16 @@ const FullCatalog = () => {
                         }
                       }}
                     />
-                    {user && (
+                    {!isAdmin && (
                       <button
                         className="add-to-cart-btn"
                         onClick={(e) => {
                           e.stopPropagation();
-                          addToCart(product);
+                          if (!user) {
+                            navigate('/login');
+                          } else {
+                            setSelectedProduct(product);
+                          }
                         }}
                         style={{
                           position: 'absolute',
@@ -641,6 +658,144 @@ const FullCatalog = () => {
           )}
         </section>
       </main>
+
+      {/* Customize Product Modal */}
+      {selectedProduct && (
+        <div className="quick-view-overlay" onClick={() => setSelectedProduct(null)}>
+          <div className="quick-view-modal fade-in-scale" onClick={e => e.stopPropagation()} style={{ maxWidth: '560px', display: 'flex', flexDirection: 'column' }}>
+            <button className="quick-view-close" onClick={() => setSelectedProduct(null)} style={{ top: '16px', right: '16px' }}><X size={20} /></button>
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', overflowY: 'auto', maxHeight: '85vh' }}>
+              <div>
+                <span className="details-brand-badge">{selectedProduct.brand}</span>
+                <h2 style={{ fontSize: '18px', fontWeight: '800', margin: '4px 0 0 0', color: 'var(--color-on-surface)' }}>{selectedProduct.brand} AC {selectedProduct.name}</h2>
+                <p style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', margin: '4px 0 0 0' }}>Kapasitas: {selectedProduct.capacity_pk} PK • {selectedProduct.stock > 0 ? 'Ready Stock' : 'Indent'}</p>
+              </div>
+
+              {/* Price Calculation preview */}
+              <div style={{ background: 'var(--color-surface-container-low)', padding: '14px 18px', borderRadius: '14px', border: '1px solid var(--color-outline-variant)' }}>
+                <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estimasi Total Harga</span>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '2px' }}>
+                  <span style={{ fontSize: '20px', fontWeight: '900', color: 'var(--color-primary)' }}>
+                    {formatRupiah(calculateProductTotalPrice(selectedProduct, purchaseType, pipeGrade, pipeLength))}
+                  </span>
+                  <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', textDecoration: 'line-through' }}>
+                    {formatRupiah(Math.round(calculateProductTotalPrice(selectedProduct, purchaseType, pipeGrade, pipeLength) * 1.12))}
+                  </span>
+                </div>
+              </div>
+
+              {/* Purchase Type selection */}
+              <div>
+                <h4 style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--color-on-surface-variant)', marginBottom: '8px', letterSpacing: '0.05em' }}>Kategori Pembelian</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div 
+                    onClick={() => setPurchaseType('unit')}
+                    style={{
+                      border: `2px solid ${purchaseType === 'unit' ? 'var(--color-primary)' : 'var(--color-outline-variant)'}`,
+                      background: purchaseType === 'unit' ? 'rgba(0, 85, 255, 0.04)' : 'var(--color-surface-container-lowest)',
+                      padding: '12px',
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <div style={{ fontWeight: '800', fontSize: '12px', color: 'var(--color-on-surface)' }}>Hanya Unit AC</div>
+                    <div style={{ fontSize: '10px', color: 'var(--color-on-surface-variant)', marginTop: '2px', lineHeight: '1.3' }}>Tanpa material & jasa pasang.</div>
+                  </div>
+                  <div 
+                    onClick={() => setPurchaseType('package')}
+                    style={{
+                      border: `2px solid ${purchaseType === 'package' ? 'var(--color-primary)' : 'var(--color-outline-variant)'}`,
+                      background: purchaseType === 'package' ? 'rgba(0, 85, 255, 0.04)' : 'var(--color-surface-container-lowest)',
+                      padding: '12px',
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <div style={{ fontWeight: '800', fontSize: '12px', color: 'var(--color-on-surface)' }}>Paket Pasang (Terima Beres)</div>
+                    <div style={{ fontSize: '10px', color: 'var(--color-on-surface-variant)', marginTop: '2px', lineHeight: '1.3' }}>Termasuk pipa tembaga, bracket, vacuum, & jasa pasang.</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pipe Grade & Length selection */}
+              {purchaseType === 'package' && (
+                <div className="animate-slide-down" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <h4 style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--color-on-surface-variant)', marginBottom: '8px', letterSpacing: '0.05em' }}>Grade Pipa Tembaga</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {[
+                        { val: 'basic', label: 'Basic (0.50mm)', desc: 'Ekonomis, untuk budget terbatas.' },
+                        { val: 'premium', label: 'Premium (0.60mm JIS)', desc: 'Rekomendasi pabrik untuk AC R-32/Inverter.' },
+                        { val: 'elite', label: 'Elite (0.76mm ASTM)', desc: 'Terbaik jika pipa tertanam di dinding/plafon.' }
+                      ].map(item => (
+                        <div 
+                          key={item.val}
+                          onClick={() => setPipeGrade(item.val)}
+                          style={{
+                            border: `2px solid ${pipeGrade === item.val ? 'var(--color-primary)' : 'var(--color-outline-variant)'}`,
+                            background: pipeGrade === item.val ? 'rgba(0, 85, 255, 0.04)' : 'var(--color-surface-container-lowest)',
+                            padding: '8px 12px',
+                            borderRadius: '10px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <div style={{ fontWeight: '800', fontSize: '12px', color: 'var(--color-on-surface)' }}>{item.label}</div>
+                          <div style={{ fontSize: '10px', color: 'var(--color-on-surface-variant)', marginTop: '2px' }}>{item.desc}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--color-on-surface-variant)', marginBottom: '8px', letterSpacing: '0.05em' }}>Estimasi Panjang Pipa</h4>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <div className="stepper-container" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'var(--color-surface-container-low)', padding: '4px 12px', borderRadius: '10px', border: '1px solid var(--color-outline-variant)' }}>
+                        <button 
+                          onClick={() => setPipeLength(prev => Math.max(3, prev - 1))}
+                          style={{ border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-on-surface)' }}
+                        >
+                          <Minus size={12} />
+                        </button>
+                        <span style={{ fontWeight: '900', fontSize: '13px', minWidth: '20px', textAlign: 'center', color: 'var(--color-on-surface)' }}>{pipeLength}m</span>
+                        <button 
+                          onClick={() => setPipeLength(prev => prev + 1)}
+                          style={{ border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-on-surface)' }}
+                        >
+                          <Plus size={12} />
+                        </button>
+                      </div>
+                      <span style={{ fontSize: '10px', color: 'var(--color-on-surface-variant)', lineHeight: '1.4' }}>
+                        *Bawaan paket 3m pipa tembaga. Kelebihan meter dikenakan tarif opsional.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                <Button 
+                  fullWidth 
+                  icon={ShoppingCart} 
+                  onClick={() => {
+                    addToCart(selectedProduct, { purchaseType, pipeGrade, pipeLength });
+                    setSelectedProduct(null);
+                  }}
+                  disabled={selectedProduct.stock <= 0}
+                >
+                  {selectedProduct.stock > 0 ? 'Masukkan Keranjang' : 'Stok Sedang Habis'}
+                </Button>
+                <Button variant="outline" onClick={() => setSelectedProduct(null)}>
+                  Batal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Cart Sidebar/Drawer */}
       {isCartOpen && (
