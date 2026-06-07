@@ -16,7 +16,7 @@ import './ProductDetails.css';
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, role } = useAuth();
 
   const [purchaseType, setPurchaseType] = useState('package');
   const [pipeGrade, setPipeGrade] = useState('premium');
@@ -225,8 +225,12 @@ const ProductDetails = () => {
     const isMulti = product.type?.toLowerCase().includes('multi') || product.name?.toLowerCase().includes('multi');
     const connectionLabel = isMulti ? '2 Koneksi (Multi Split)' : '1 Koneksi (Single Split)';
 
+    const isVisitorOrGuest = !user || role === 'visitor';
+    const hasNormalSidebar = role === 'admin' || role === 'technician';
+    const containerClass = hasNormalSidebar ? '' : (isVisitorOrGuest ? ' customer-layout' : ' guest-layout');
+
     return (
-      <div className="dashboard-container product-detail-container fade-in">
+      <div className={`dashboard-container product-detail-container fade-in ${containerClass}`}>
         <TopHeader title="Detail Produk" onBack={() => navigate('/catalog')}>
           <button className="icon-btn" onClick={() => navigate('/catalog')}>
             <ArrowLeft size={20} />
