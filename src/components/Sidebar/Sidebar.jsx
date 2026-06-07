@@ -13,10 +13,6 @@ const Sidebar = () => {
   const isAdmin = role === 'admin'
   const isTechnician = role === 'technician'
 
-  useEffect(() => {
-    document.body.classList.remove('sidebar-open')
-  }, [location.pathname])
-
   const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/visitor-home']
   if (frontEndRoutes.includes(location.pathname)) {
     if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog')) {

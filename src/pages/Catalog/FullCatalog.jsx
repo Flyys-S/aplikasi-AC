@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package, ChevronLeft, ArrowUpDown, Sun, Moon } from 'lucide-react';
+import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package, ChevronLeft, ArrowUpDown, Sun, Moon, ArrowLeft, Menu } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
 import { useAuth } from '../../context/AuthContext';
@@ -199,8 +199,45 @@ const FullCatalog = () => {
         <TopHeader title="Katalog Utama" subtitle="Seluruh Produk AC" />
       ) : (
         <header className="catalog-header glass-panel">
-          <div className="catalog-header-left" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
-            <ChevronLeft size={20} style={{ color: 'var(--color-primary)', marginRight: '4px' }} />
+          <div className="catalog-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {isVisitorOrGuest && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
+                <button 
+                  className="icon-btn back-btn-customer" 
+                  onClick={() => navigate(-1)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '6px',
+                    color: 'var(--color-on-surface)'
+                  }}
+                  title="Kembali"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+                <button 
+                  className="icon-btn hamburger-btn-customer" 
+                  onClick={() => document.body.classList.toggle('sidebar-open')}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '6px',
+                    color: 'var(--color-on-surface)'
+                  }}
+                  title="Menu"
+                >
+                  <Menu size={20} />
+                </button>
+              </div>
+            )}
             <span className="logo-icon">❄️</span>
             <span className="catalog-header-brand">MITRA MAJU SEJATI</span>
           </div>

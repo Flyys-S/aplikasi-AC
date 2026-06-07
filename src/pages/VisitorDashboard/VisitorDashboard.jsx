@@ -1,26 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  ShoppingBag, Phone, BookOpen, Package, Wrench,
-  ChevronRight, Loader2, Star, Headphones,
+  Wrench, ChevronRight, Loader2, Headphones,
   Sun, Moon, Plus, X, CheckCircle, Clock, AlertCircle,
-  MapPin, Calendar, FileText, Send, ArrowLeft, Menu
+  MapPin, Calendar, FileText, Send, ArrowLeft, Menu, Phone
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { formatRupiah, formatTanggalJam } from '../../lib/formatters';
+import { formatTanggalJam } from '../../lib/formatters';
 import toast from 'react-hot-toast';
+import Navigation from '../../components/Navigation';
 import './VisitorDashboard.css';
 
 /* ─── Helpers ─── */
-const getOrderStatusLabel = (s) => ({
-  pending_verification: 'Menunggu Verifikasi',
-  processing: 'Diproses',
-  completed: 'Selesai',
-  cancelled: 'Dibatalkan',
-}[s] || s);
-
 const getServiceStatusLabel = (s) => ({
   pending:     'Menunggu Teknisi',
   in_progress: 'Sedang Dikerjakan',
@@ -38,90 +31,62 @@ const getServiceStatusClass = (s) => ({
 const SERVICE_TYPES = [
   'Cuci AC Rutin',
   'Isi / Tambah Freon',
-  'Perbaikan Kompresor',
+  'Troubleshoot',
   'Pengecekan Umum',
   'Pasang AC Baru',
   'Bongkar AC',
   'Perbaikan Kebocoran Pipa',
 ];
 
-const WA_NUMBER = '6281234567890'; // ← Ganti dengan nomor WA toko
+const WA_NUMBER = '6281234567890';
 
-/* ═══════════════════════════════════════════
-   MAIN COMPONENT
-═══════════════════════════════════════════ */
+const getTomorrowDate = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().split('T')[0];
+};
+
 const VisitorDashboard = () => {
   const navigate = useNavigate();
   const { user, role } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   /* ── State ── */
-  const [products, setProducts]       = useState([]);
-  const [orders, setOrders]           = useState([]);
   const [serviceReqs, setServiceReqs] = useState([]);
+  const [loadingServices, setLoadingServices] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  const [loadingProducts, setLoadingProducts]     = useState(true);
-  const [loadingOrders, setLoadingOrders]         = useState(true);
-  const [loadingServices, setLoadingServices]     = useState(true);
-  const [submitting, setSubmitting]               = useState(false);
+  // Editing/Rescheduling State
+  const [editingJobId, setEditingJobId] = useState(null);
+  const [rescheduleDate, setRescheduleDate] = useState(getTomorrowDate());
 
   /* ── Form state ── */
-  const [showServiceForm, setShowServiceForm] = useState(false);
   const [serviceForm, setServiceForm] = useState({
     service_type:            'Cuci AC Rutin',
     complaint_description:   '',
     service_address:         '',
-    scheduled_date:          new Date().toISOString().split('T')[0],
+    scheduled_date:          getTomorrowDate(),
     contact_phone:           '',
   });
 
   /* ── Auth guard ── */
   useEffect(() => {
-    if (!user) { navigate('/login', { replace: true }); return; }
-    if (role && role !== 'visitor') { navigate('/', { replace: true }); }
-  }, [user, role, navigate]);
+    if (!user) {
+      navigate('/login', { replace: true });
+      return;
+    }
+  }, [user, navigate]);
 
-  /* ── Fetch products ── */
-  const fetchProducts = useCallback(async () => {
-    try {
-      const { data } = await supabase
-        .from('products')
-        .select('id, name, brand, price, stock, image_url')
-        .order('brand')
-        .limit(10);
-      setProducts(data || []);
-    } catch (e) { console.error(e); }
-    finally { setLoadingProducts(false); }
-  }, []);
-
-  /* ── Fetch orders ── */
-  const fetchOrders = useCallback(async () => {
-    if (!user) return;
-    try {
-      const { data } = await supabase
-        .from('transactions')
-        .select(`
-          id, status, created_at, total_amount,
-          transaction_items(quantity, products(name, brand))
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-      setOrders(data || []);
-    } catch (e) { console.error(e); }
-    finally { setLoadingOrders(false); }
-  }, [user]);
-
-  /* ── Fetch permintaan servis milik user ini ── */
+  /* ── Fetch service requests ── */
   const fetchServiceRequests = useCallback(async () => {
     if (!user) return;
     try {
+      setLoadingServices(true);
       const { data, error } = await supabase
         .from('service_jobs')
         .select('id, service_type, complaint_description, service_address, scheduled_date, status, created_at, notes')
         .eq('created_by', user.id)
-        .order('created_at', { ascending: false })
-        .limit(10);
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setServiceReqs(data || []);
@@ -132,12 +97,53 @@ const VisitorDashboard = () => {
     }
   }, [user]);
 
-  useEffect(() => { fetchProducts(); },        [fetchProducts]);
-  useEffect(() => { fetchOrders(); },          [fetchOrders]);
-  useEffect(() => { fetchServiceRequests(); }, [fetchServiceRequests]);
+  useEffect(() => {
+    fetchServiceRequests();
+  }, [fetchServiceRequests]);
 
-  /* ── Submit permintaan servis ── */
-  const handleSubmitService = async () => {
+  /* ── Cancel Service request ── */
+  const handleCancelService = async (jobId) => {
+    if (!window.confirm('Apakah Anda yakin ingin membatalkan permintaan servis ini?')) return;
+    try {
+      const { error } = await supabase
+        .from('service_jobs')
+        .update({ status: 'cancelled' })
+        .eq('id', jobId);
+
+      if (error) throw error;
+      toast.success('Permintaan servis berhasil dibatalkan');
+      fetchServiceRequests();
+    } catch (e) {
+      console.error(e);
+      toast.error('Gagal membatalkan: ' + e.message);
+    }
+  };
+
+  /* ── Reschedule Service request ── */
+  const handleRescheduleService = async (jobId) => {
+    if (!rescheduleDate) {
+      toast.error('Mohon pilih tanggal baru');
+      return;
+    }
+    try {
+      const { error } = await supabase
+        .from('service_jobs')
+        .update({ scheduled_date: rescheduleDate })
+        .eq('id', jobId);
+
+      if (error) throw error;
+      toast.success('Jadwal servis berhasil diatur ulang');
+      setEditingJobId(null);
+      fetchServiceRequests();
+    } catch (e) {
+      console.error(e);
+      toast.error('Gagal mengatur ulang jadwal: ' + e.message);
+    }
+  };
+
+  /* ── Submit service request ── */
+  const handleSubmitService = async (e) => {
+    e.preventDefault();
     if (!serviceForm.complaint_description.trim()) {
       toast.error('Mohon jelaskan keluhan Anda.');
       return;
@@ -147,14 +153,13 @@ const VisitorDashboard = () => {
       return;
     }
     if (!serviceForm.scheduled_date) {
-      toast.error('Mohon pilih tanggal yang diinginkan.');
+      toast.error('Mohon pilih tanggal servis.');
       return;
     }
 
     try {
       setSubmitting(true);
 
-      // Cari customer_id berdasarkan user_id (jika ada di tabel customers)
       const { data: custData } = await supabase
         .from('customers')
         .select('id')
@@ -170,7 +175,7 @@ const VisitorDashboard = () => {
                                  ? `Kontak: ${serviceForm.contact_phone}`
                                  : null,
         status:                'pending',
-        technician_id:         null,          // akan diisi admin
+        technician_id:         null,
         created_by:            user.id,
         ...(custData?.id ? { customer_id: custData.id } : {}),
       };
@@ -181,44 +186,34 @@ const VisitorDashboard = () => {
 
       if (error) throw error;
 
-      toast.success('✅ Permintaan servis berhasil dikirim! Admin akan segera menghubungi Anda.');
-      setShowServiceForm(false);
+      toast.success('✅ Permintaan servis berhasil diajukan!');
       setServiceForm({
         service_type:          'Cuci AC Rutin',
         complaint_description: '',
         service_address:       '',
-        scheduled_date:        new Date().toISOString().split('T')[0],
+        scheduled_date:        getTomorrowDate(),
         contact_phone:         '',
       });
       fetchServiceRequests();
     } catch (e) {
       console.error(e);
-      toast.error('Gagal mengirim permintaan: ' + e.message);
+      toast.error('Gagal mengajukan servis: ' + e.message);
     } finally {
       setSubmitting(false);
     }
   };
 
-  /* ── Greeting ── */
-  const hour        = new Date().getHours();
-  const greeting    = hour < 11 ? 'Selamat Pagi'  : hour < 15 ? 'Selamat Siang'
-                    : hour < 18 ? 'Selamat Sore'  : 'Selamat Malam';
-  const greetEmoji  = hour < 11 ? '☀️' : hour < 15 ? '🌤️' : hour < 18 ? '🌅' : '🌙';
-  const userName    = user?.email?.split('@')[0] || 'Pelanggan';
-  const userAvatar  = userName.charAt(0).toUpperCase();
-  const waMessage   = encodeURIComponent('Halo Mitra Maju Sejati, saya ingin menanyakan produk AC...');
-  const waUrl       = `https://wa.me/${WA_NUMBER}?text=${waMessage}`;
+  const userName = user?.email?.split('@')[0] || 'Pelanggan';
+  const waMessage = encodeURIComponent('Halo Mitra Maju Sejati, saya ingin bertanya tentang servis AC...');
+  const waUrl = `https://wa.me/${WA_NUMBER}?text=${waMessage}`;
 
-  /* ═══════════════════════════════════════════
-     RENDER
-  ═══════════════════════════════════════════ */
   return (
-    <div className="dashboard-container customer-layout">
-
-      {/* ─── Header ─── */}
-      <header className="top-header glass-panel">
-        <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {role === 'visitor' && (
+    <>
+      <div className="dashboard-container customer-layout">
+        
+        {/* ─── Header ─── */}
+        <header className="top-header glass-panel">
+          <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
               <button 
                 className="icon-btn back-btn-customer" 
@@ -255,361 +250,265 @@ const VisitorDashboard = () => {
                 <Menu size={20} />
               </button>
             </div>
-          )}
-          <div className="header-info">
-            <h2>Beranda</h2>
-            <p>Mitra Maju Sejati</p>
-          </div>
-        </div>
-        <div className="header-actions">
-          <button className="icon-btn theme-toggle-btn" onClick={toggleTheme}
-            title={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}>
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-          <div className="user-avatar" onClick={() => navigate('/profile')}
-            style={{ cursor: 'pointer' }} title="Profil Saya">
-            {userAvatar}
-          </div>
-        </div>
-      </header>
-
-      <div className="page-content fade-in">
-
-        {/* ─── Hero Greeting ─── */}
-        <div className="visitor-hero">
-          <div className="visitor-hero-text">
-            <p className="visitor-hero-greeting">{greetEmoji} {greeting},</p>
-            <h2 className="visitor-hero-name">{userName}</h2>
-            <p className="visitor-hero-sub">
-              Selamat datang di portal pelanggan kami.<br />
-              Pesan AC atau ajukan servis langsung di sini.
-            </p>
-          </div>
-          <div className="visitor-hero-avatar">{userAvatar}</div>
-        </div>
-
-        {/* ─── Quick Actions (4 tombol) ─── */}
-        <div className="visitor-quick-actions" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-          <button id="btn-visitor-catalog" className="visitor-action-btn"
-            onClick={() => navigate('/')}>
-            <div className="visitor-action-icon catalog"><BookOpen size={18} /></div>
-            <span className="visitor-action-label">Katalog</span>
-          </button>
-          <button id="btn-visitor-service" className="visitor-action-btn"
-            onClick={() => setShowServiceForm(true)}>
-            <div className="visitor-action-icon service"><Wrench size={18} /></div>
-            <span className="visitor-action-label">Servis</span>
-          </button>
-          <button id="btn-visitor-orders" className="visitor-action-btn"
-            onClick={() => document.getElementById('vd-orders-section')?.scrollIntoView({ behavior: 'smooth' })}>
-            <div className="visitor-action-icon orders"><ShoppingBag size={18} /></div>
-            <span className="visitor-action-label">Pesanan</span>
-          </button>
-          <a id="btn-visitor-wa" href={waUrl} target="_blank"
-            rel="noopener noreferrer" className="visitor-action-btn">
-            <div className="visitor-action-icon contact"><Phone size={18} /></div>
-            <span className="visitor-action-label">Hubungi</span>
-          </a>
-        </div>
-
-        {/* ─── PERMINTAAN SERVIS FORM CARD ─── */}
-        <div className="vd-service-cta-card card-elevation" id="vd-service-section">
-          <div className="vd-service-cta-left">
-            <div className="vd-service-cta-icon">
-              <Wrench size={22} />
-            </div>
-            <div>
-              <h4>Butuh Servis AC?</h4>
-              <p>Ajukan permintaan sekarang, teknisi kami siap membantu.</p>
+            <div className="header-info">
+              <h2>Layanan Servis</h2>
+              <p>Atur jadwal pemeliharaan AC Anda</p>
             </div>
           </div>
-          <button
-            id="btn-open-service-form"
-            className="vd-service-cta-btn"
-            onClick={() => setShowServiceForm(true)}
-          >
-            <Plus size={18} />
-            Ajukan
-          </button>
-        </div>
-
-        {/* ─── Riwayat Permintaan Servis ─── */}
-        <div className="vd-section-header" style={{ marginTop: 4 }}>
-          <h3 className="vd-section-title">🔧 Servis Saya</h3>
-          <button className="vd-see-all-btn"
-            onClick={() => setShowServiceForm(true)}>
-            + Tambah
-          </button>
-        </div>
-
-        {loadingServices ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-            <Loader2 size={26} className="vd-spinner" color="var(--color-primary)" />
+          <div className="header-actions">
+            <button className="icon-btn theme-toggle-btn" onClick={toggleTheme}
+              title={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}>
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
           </div>
-        ) : serviceReqs.length === 0 ? (
-          <div className="vd-empty" style={{ marginBottom: 20 }}>
-            <div className="vd-empty-icon"><Wrench size={26} /></div>
-            <p>Belum ada permintaan servis. Ketuk tombol Ajukan untuk memulai.</p>
-          </div>
-        ) : (
-          <div className="vd-service-list">
-            {serviceReqs.map(req => (
-              <div key={req.id} className="vd-service-card card-elevation">
-                <div className="vd-service-card-header">
-                  <div className="vd-service-type-badge">
-                    <Wrench size={13} />
-                    {req.service_type}
-                  </div>
-                  <span className={`vd-service-status ${getServiceStatusClass(req.status)}`}>
-                    {req.status === 'completed'   && <CheckCircle size={11} />}
-                    {req.status === 'pending'      && <Clock size={11} />}
-                    {req.status === 'in_progress' && <AlertCircle size={11} />}
-                    {getServiceStatusLabel(req.status)}
-                  </span>
+        </header>
+
+        {/* ─── Page Content ─── */}
+        <div className="page-content fade-in" style={{ padding: '24px var(--gutter)' }}>
+          <div className="visitor-service-layout" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
+            
+            {/* ─── FORM SCHEDULING (Left Column) ─── */}
+            <div className="tool-card glass-panel" style={{ padding: '28px', height: 'fit-content' }}>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Wrench size={22} color="var(--color-primary)" /> Ajukan Servis AC Baru
+              </h3>
+              <p style={{ fontSize: '13px', color: 'var(--color-on-surface-variant)', marginBottom: '24px' }}>
+                Paling cepat adalah H-1 (Esok Hari). Admin kami akan menunjuk teknisi terbaik setelah verifikasi slot.
+              </p>
+
+              <form onSubmit={handleSubmitService} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                
+                {/* Jenis Layanan */}
+                <div className="vd-form-group">
+                  <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>Jenis Layanan</label>
+                  <select
+                    className="vd-form-select"
+                    value={serviceForm.service_type}
+                    onChange={e => setServiceForm({ ...serviceForm, service_type: e.target.value })}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)' }}
+                  >
+                    {SERVICE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
                 </div>
-                {req.complaint_description && (
-                  <p className="vd-service-complaint">
-                    <FileText size={12} style={{ marginRight: 4 }} />
-                    {req.complaint_description}
-                  </p>
-                )}
-                <div className="vd-service-meta">
-                  {req.service_address && (
-                    <span className="vd-service-meta-item">
-                      <MapPin size={11} />
-                      {req.service_address.length > 40
-                        ? req.service_address.substring(0, 40) + '...'
-                        : req.service_address}
+
+                {/* Deskripsi Keluhan */}
+                <div className="vd-form-group">
+                  <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                    Deskripsi Masalah / Keluhan <span className="vd-form-required" style={{ color: '#ff4444' }}>*</span>
+                  </label>
+                  <textarea
+                    className="vd-form-textarea"
+                    placeholder="Tulis keluhan Anda (misal: AC bocor air, outdoor berisik, AC kurang dingin setelah dicuci...)"
+                    rows={4}
+                    value={serviceForm.complaint_description}
+                    onChange={e => setServiceForm({ ...serviceForm, complaint_description: e.target.value })}
+                    required
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)', resize: 'vertical' }}
+                  />
+                </div>
+
+                {/* Alamat Servis */}
+                <div className="vd-form-group">
+                  <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
+                    Alamat Lengkap Servis <span className="vd-form-required" style={{ color: '#ff4444' }}>*</span>
+                  </label>
+                  <textarea
+                    className="vd-form-textarea"
+                    placeholder="Masukkan alamat lengkap lokasi pengerjaan..."
+                    rows={3}
+                    value={serviceForm.service_address}
+                    onChange={e => setServiceForm({ ...serviceForm, service_address: e.target.value })}
+                    required
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)', resize: 'vertical' }}
+                  />
+                </div>
+
+                {/* Tanggal Penjadwalan */}
+                <div className="vd-form-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px', margin: 0 }}>Tanggal Servis</label>
+                    <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: '700', background: 'rgba(0, 85, 255, 0.08)', padding: '2px 8px', borderRadius: '8px' }}>
+                      Slot Tersedia: 3/5 harian
                     </span>
-                  )}
-                  <span className="vd-service-meta-item">
-                    <Calendar size={11} />
-                    {new Date(req.scheduled_date).toLocaleDateString('id-ID', {
-                      day: 'numeric', month: 'long', year: 'numeric'
-                    })}
-                  </span>
-                </div>
-                <p className="vd-service-created">
-                  Dikirim: {formatTanggalJam(req.created_at)}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ─── Katalog ─── */}
-        <div className="vd-section-header">
-          <h3 className="vd-section-title">🛒 Katalog AC</h3>
-          <button className="vd-see-all-btn" onClick={() => navigate('/')}>
-            Lihat Semua →
-          </button>
-        </div>
-
-        {loadingProducts ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-            <Loader2 size={26} className="vd-spinner" color="var(--color-primary)" />
-          </div>
-        ) : (
-          <div className="vd-products-scroll">
-            {products.length === 0 ? (
-              <div className="vd-empty">
-                <div className="vd-empty-icon"><Package size={26} /></div>
-                <p>Belum ada produk di katalog.</p>
-              </div>
-            ) : products.map(product => (
-              <div key={product.id} className="vd-product-card"
-                id={`vd-product-${product.id}`} onClick={() => navigate('/')}>
-                {product.image_url ? (
-                  <img src={product.image_url} alt={product.name} className="vd-product-image" />
-                ) : (
-                  <div className="vd-product-image-placeholder"><Package size={26} /></div>
-                )}
-                <p className="vd-product-brand">{product.brand}</p>
-                <p className="vd-product-name">{product.name}</p>
-                <p className="vd-product-price">{formatRupiah(product.price)}</p>
-                <span className={`vd-product-stock-badge ${product.stock > 0 ? 'ready' : 'habis'}`}>
-                  {product.stock > 0 ? `Ready ${product.stock}` : 'Habis'}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ─── Riwayat Pesanan ─── */}
-        <div id="vd-orders-section" className="vd-section-header" style={{ marginTop: 8 }}>
-          <h3 className="vd-section-title">📦 Pesanan Saya</h3>
-        </div>
-        {loadingOrders ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-            <Loader2 size={26} className="vd-spinner" color="var(--color-primary)" />
-          </div>
-        ) : orders.length === 0 ? (
-          <div className="vd-empty" style={{ marginBottom: 20 }}>
-            <div className="vd-empty-icon"><ShoppingBag size={26} /></div>
-            <p>Belum ada pesanan. Yuk mulai belanja dari katalog!</p>
-          </div>
-        ) : (
-          <div className="vd-orders-list">
-            {orders.map(order => {
-              const firstItem   = order.transaction_items?.[0];
-              const productName = firstItem?.products
-                ? `${firstItem.products.brand} ${firstItem.products.name}` : 'Produk';
-              const itemCount   = order.transaction_items?.length || 0;
-              return (
-                <div key={order.id} className="vd-order-card"
-                  id={`vd-order-${order.id}`}
-                  onClick={() => navigate(`/transactions/${order.id}`)}>
-                  <div className="vd-order-icon"><ShoppingBag size={20} /></div>
-                  <div className="vd-order-info">
-                    <p className="vd-order-id">#{String(order.id).substring(0, 8).toUpperCase()}</p>
-                    <p className="vd-order-product">
-                      {productName}{itemCount > 1 ? ` +${itemCount - 1} item` : ''}
-                    </p>
-                    <p className="vd-order-date">{formatTanggalJam(order.created_at)}</p>
                   </div>
-                  <div>
-                    <span className={`vd-order-status ${order.status}`}>
-                      {getOrderStatusLabel(order.status)}
-                    </span>
-                    <ChevronRight size={16} style={{ display: 'block', margin: '6px auto 0',
-                      color: 'var(--color-outline)' }} />
-                  </div>
+                  <input
+                    type="date"
+                    className="vd-form-input"
+                    min={getTomorrowDate()}
+                    value={serviceForm.scheduled_date}
+                    onChange={e => setServiceForm({ ...serviceForm, scheduled_date: e.target.value })}
+                    required
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)' }}
+                  />
                 </div>
-              );
-            })}
-          </div>
-        )}
 
-        {/* ─── WA Button ─── */}
-        <a href={waUrl} target="_blank" rel="noopener noreferrer"
-          className="vd-wa-btn" id="btn-wa-contact">
-          <Headphones size={20} />
-          Hubungi Kami via WhatsApp
-        </a>
+                {/* Kontak */}
+                <div className="vd-form-group">
+                  <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>Nomor HP Kontak</label>
+                  <input
+                    type="tel"
+                    className="vd-form-input"
+                    placeholder="0812xxxxxxxx"
+                    value={serviceForm.contact_phone}
+                    onChange={e => setServiceForm({ ...serviceForm, contact_phone: e.target.value })}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)' }}
+                  />
+                </div>
 
-      </div>{/* /page-content */}
-
-      {/* ═══════════════════════════════════════
-          BOTTOM SHEET — Form Permintaan Servis
-      ═══════════════════════════════════════ */}
-      {showServiceForm && (
-        <div className="vd-sheet-overlay" onClick={() => setShowServiceForm(false)}>
-          <div className="vd-sheet-panel" onClick={e => e.stopPropagation()}>
-
-            {/* Drag Handle */}
-            <div className="vd-sheet-handle" />
-
-            {/* Header */}
-            <div className="vd-sheet-header">
-              <div>
-                <h3 className="vd-sheet-title">🔧 Ajukan Permintaan Servis</h3>
-                <p className="vd-sheet-subtitle">
-                  Isi formulir di bawah, admin akan menugaskan teknisi untuk Anda.
-                </p>
-              </div>
-              <button className="icon-btn" onClick={() => setShowServiceForm(false)}>
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Form */}
-            <div className="vd-sheet-body">
-
-              {/* Jenis Servis */}
-              <div className="vd-form-group">
-                <label className="vd-form-label">Jenis Layanan</label>
-                <select
-                  id="service-type-select"
-                  className="vd-form-select"
-                  value={serviceForm.service_type}
-                  onChange={e => setServiceForm({ ...serviceForm, service_type: e.target.value })}
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="vd-submit-btn"
+                  style={{
+                    backgroundColor: 'var(--color-primary)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    width: '100%',
+                    boxShadow: '0 4px 12px rgba(0, 85, 255, 0.25)',
+                    marginTop: '8px'
+                  }}
                 >
-                  {SERVICE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
+                  {submitting ? (
+                    <><Loader2 size={18} className="vd-spinner" /> Memproses...</>
+                  ) : (
+                    <><Send size={18} /> Ajukan Jadwal Servis</>
+                  )}
+                </button>
+
+              </form>
+            </div>
+
+            {/* ─── MY SERVICES LIST (Right Column) ─── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div className="vd-section-header" style={{ margin: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 className="vd-section-title" style={{ fontSize: '18px', fontWeight: '800' }}>🔧 Servis AC Saya</h3>
+                <span className="vd-see-all-btn" style={{ fontSize: '12px', opacity: 0.8 }}>({serviceReqs.length} total)</span>
               </div>
 
-              {/* Keluhan */}
-              <div className="vd-form-group">
-                <label className="vd-form-label">
-                  Keluhan / Deskripsi Masalah <span className="vd-form-required">*</span>
-                </label>
-                <textarea
-                  id="service-complaint-input"
-                  className="vd-form-textarea"
-                  placeholder="Contoh: AC tidak dingin sama sekali, sudah 3 hari, ada suara berisik dari outdoor..."
-                  rows={4}
-                  value={serviceForm.complaint_description}
-                  onChange={e => setServiceForm({ ...serviceForm, complaint_description: e.target.value })}
-                />
-              </div>
+              {loadingServices ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+                  <Loader2 size={32} className="vd-spinner" color="var(--color-primary)" />
+                </div>
+              ) : serviceReqs.length === 0 ? (
+                <div className="vd-empty" style={{ background: 'var(--color-surface-container-low)', padding: '40px 24px', borderRadius: '20px', textAlign: 'center', border: '1px solid var(--color-outline-variant)' }}>
+                  <div className="vd-empty-icon" style={{ fontSize: '32px', marginBottom: '12px' }}>🔧</div>
+                  <h4 style={{ margin: 0, fontWeight: '700' }}>Belum Ada Pengajuan</h4>
+                  <p style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>Daftar jadwal servis Anda akan tampil di kolom ini.</p>
+                </div>
+              ) : (
+                <div className="vd-service-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '720px', overflowY: 'auto', paddingRight: '4px' }}>
+                  {serviceReqs.map(req => (
+                    <div key={req.id} className="vd-service-card card-elevation" style={{ background: 'var(--color-surface-container-low)', borderRadius: '18px', padding: '20px', border: '1px solid var(--color-outline-variant)', position: 'relative' }}>
+                      <div className="vd-service-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                        <div className="vd-service-type-badge" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '800', fontSize: '14px', color: 'var(--color-primary)' }}>
+                          <Wrench size={14} />
+                          {req.service_type}
+                        </div>
+                        <span className={`vd-service-status ${getServiceStatusClass(req.status)}`} style={{ padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          {req.status === 'completed'   && <CheckCircle size={11} />}
+                          {req.status === 'pending'      && <Clock size={11} />}
+                          {req.status === 'in_progress' && <AlertCircle size={11} />}
+                          {getServiceStatusLabel(req.status)}
+                        </span>
+                      </div>
 
-              {/* Alamat */}
-              <div className="vd-form-group">
-                <label className="vd-form-label">
-                  <MapPin size={13} style={{ marginRight: 4 }} />
-                  Alamat Servis <span className="vd-form-required">*</span>
-                </label>
-                <textarea
-                  id="service-address-input"
-                  className="vd-form-textarea"
-                  placeholder="Jl. Contoh No. 10, RT 01/RW 02, Kel. ABC, Kec. XYZ, Kota..."
-                  rows={3}
-                  value={serviceForm.service_address}
-                  onChange={e => setServiceForm({ ...serviceForm, service_address: e.target.value })}
-                />
-              </div>
+                      {req.complaint_description && (
+                        <p style={{ fontSize: '13px', color: 'var(--color-on-surface)', margin: '0 0 12px 0', lineHeight: 1.4, background: 'var(--color-surface-container-lowest)', padding: '10px 12px', borderRadius: '10px' }}>
+                          <strong>Keluhan:</strong> {req.complaint_description}
+                        </p>
+                      )}
 
-              {/* Tanggal Preferensi */}
-              <div className="vd-form-group">
-                <label className="vd-form-label">
-                  <Calendar size={13} style={{ marginRight: 4 }} />
-                  Tanggal yang Diinginkan
-                </label>
-                <input
-                  id="service-date-input"
-                  type="date"
-                  className="vd-form-input"
-                  min={new Date().toISOString().split('T')[0]}
-                  value={serviceForm.scheduled_date}
-                  onChange={e => setServiceForm({ ...serviceForm, scheduled_date: e.target.value })}
-                />
-              </div>
+                      <div className="vd-service-meta" style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px', color: 'var(--color-on-surface-variant)', borderBottom: '1px solid var(--color-outline-variant)', paddingBottom: '12px', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Calendar size={13} style={{ color: 'var(--color-primary)' }} />
+                          <span>Tanggal Jadwal: <strong>{new Date(req.scheduled_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></span>
+                        </div>
+                        {req.service_address && (
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                            <MapPin size={13} style={{ color: 'var(--color-primary)', marginTop: '2px' }} />
+                            <span>{req.service_address}</span>
+                          </div>
+                        )}
+                      </div>
 
-              {/* Nomor Kontak */}
-              <div className="vd-form-group">
-                <label className="vd-form-label">
-                  <Phone size={13} style={{ marginRight: 4 }} />
-                  Nomor HP yang Bisa Dihubungi
-                </label>
-                <input
-                  id="service-phone-input"
-                  type="tel"
-                  className="vd-form-input"
-                  placeholder="08xxxxxxxxxx"
-                  value={serviceForm.contact_phone}
-                  onChange={e => setServiceForm({ ...serviceForm, contact_phone: e.target.value })}
-                />
-              </div>
+                      {/* Cancel & Reschedule Actions */}
+                      {(req.status === 'pending' || req.status === 'in_progress') && (
+                        <div style={{ marginTop: '8px' }}>
+                          {editingJobId === req.id ? (
+                            <div className="reschedule-form" style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'var(--color-surface-container-high)', padding: '10px', borderRadius: '12px' }}>
+                              <input 
+                                type="date" 
+                                className="vd-form-input" 
+                                min={getTomorrowDate()}
+                                value={rescheduleDate}
+                                onChange={e => setRescheduleDate(e.target.value)}
+                                style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--color-outline-variant)', fontSize: '12px' }}
+                              />
+                              <button 
+                                className="vd-submit-btn" 
+                                style={{ padding: '6px 12px', width: 'auto', margin: 0, fontSize: '12px', backgroundColor: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                                onClick={() => handleRescheduleService(req.id)}
+                              >
+                                Simpan
+                              </button>
+                              <button 
+                                className="qty-btn" 
+                                style={{ border: '1px solid var(--color-outline-variant)', background: 'transparent', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', color: 'var(--color-on-surface)' }}
+                                onClick={() => setEditingJobId(null)}
+                              >
+                                Batal
+                              </button>
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button 
+                                className="vd-see-all-btn" 
+                                style={{ background: 'rgba(0, 85, 255, 0.08)', color: 'var(--color-primary)', border: 'none', padding: '6px 14px', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: '800' }}
+                                onClick={() => { setEditingJobId(req.id); setRescheduleDate(req.scheduled_date); }}
+                              >
+                                Reschedule
+                              </button>
+                              <button 
+                                className="vd-see-all-btn" 
+                                style={{ background: 'rgba(255, 68, 68, 0.08)', color: '#ff4444', border: 'none', padding: '6px 14px', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: '800' }}
+                                onClick={() => handleCancelService(req.id)}
+                              >
+                                Batalkan
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-              {/* Submit Button */}
-              <button
-                id="btn-submit-service"
-                className="vd-submit-btn"
-                onClick={handleSubmitService}
-                disabled={submitting}
-              >
-                {submitting
-                  ? <><Loader2 size={18} className="vd-spinner" /> Mengirim...</>
-                  : <><Send size={18} /> Kirim Permintaan Servis</>
-                }
-              </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* WA Help Button */}
+              <a href={waUrl} target="_blank" rel="noopener noreferrer"
+                className="vd-wa-btn" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '12px', borderRadius: '12px', fontWeight: '700', fontSize: '13px', marginTop: '8px' }}>
+                <Headphones size={18} />
+                Butuh Bantuan? Hubungi via WhatsApp
+              </a>
 
             </div>
+
           </div>
         </div>
-      )}
 
-    </div>
+      </div>
+      <Navigation />
+    </>
   );
 };
 
