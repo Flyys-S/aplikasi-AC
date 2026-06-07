@@ -605,7 +605,7 @@ const FullCatalog = () => {
                         if (user && isAdmin) {
                           navigate(`/inventory/${product.id}`);
                         } else {
-                          setSelectedProduct(product);
+                          navigate(`/product/${product.id}`);
                         }
                       }}
                     />

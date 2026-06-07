@@ -16,7 +16,81 @@ import './ProductDetails.css';
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
+
+  const [purchaseType, setPurchaseType] = useState('package');
+  const [pipeGrade, setPipeGrade] = useState('premium');
+  const [pipeLength, setPipeLength] = useState(3);
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('arctic_cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('arctic_cart', JSON.stringify(cart));
+  }, [cart]);
+
+  const getPackageCosts = (grade) => {
+    switch (grade) {
+      case 'basic':
+        return { base: 500000, perMeter: 100000, desc: 'Pipa Basic (0.50mm)' };
+      case 'elite':
+        return { base: 950000, perMeter: 160000, desc: 'Pipa Elite (0.76mm ASTM)' };
+      case 'premium':
+      default:
+        return { base: 700000, perMeter: 130000, desc: 'Pipa Premium (0.60mm JIS)' };
+    }
+  };
+
+  const calculateProductTotalPrice = (product, type, grade, length) => {
+    if (!product) return 0;
+    let total = product.price;
+    if (type === 'package') {
+      const costs = getPackageCosts(grade);
+      total += costs.base;
+      if (length > 3) {
+        total += (length - 3) * costs.perMeter;
+      }
+    }
+    return total;
+  };
+
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.error('Silakan login terlebih dahulu untuk menambahkan ke keranjang.');
+      navigate('/login');
+      return;
+    }
+
+    const cartItemId = purchaseType === 'package'
+      ? `${product.id}-package-${pipeGrade}-${pipeLength}`
+      : `${product.id}-unit`;
+
+    const finalPrice = calculateProductTotalPrice(product, purchaseType, pipeGrade, pipeLength);
+    const configLabel = purchaseType === 'package'
+      ? `Paket Pasang ${pipeGrade.toUpperCase()} (${pipeLength}m)`
+      : `Unit Saja`;
+
+    const existing = cart.find(item => item.cartItemId === cartItemId);
+    let updatedCart;
+    if (existing) {
+      updatedCart = cart.map(item =>
+        item.cartItemId === cartItemId ? { ...item, quantity: item.quantity + 1 } : item
+      );
+    } else {
+      updatedCart = [...cart, {
+        ...product,
+        cartItemId,
+        configLabel,
+        price: finalPrice,
+        originalPrice: product.price,
+        quantity: 1,
+        customOpts: { purchaseType, pipeGrade, pipeLength }
+      }];
+    }
+    setCart(updatedCart);
+    toast.success('Produk berhasil ditambahkan ke keranjang!');
+  };
   const [product, setProduct] = useState(() => {
     if (id === 'new') {
       return {
@@ -146,82 +220,225 @@ const ProductDetails = () => {
   }
 
   if (!isAdmin) {
+    const calculatedPrice = calculateProductTotalPrice(product, purchaseType, pipeGrade, pipeLength);
+    const estimatedBtu = product.capacity_pk ? Math.round(parseFloat(product.capacity_pk) * 9000) : 9000;
+    const isMulti = product.type?.toLowerCase().includes('multi') || product.name?.toLowerCase().includes('multi');
+    const connectionLabel = isMulti ? '2 Koneksi (Multi Split)' : '1 Koneksi (Single Split)';
+
     return (
       <div className="dashboard-container product-detail-container fade-in">
-        <TopHeader title="Detail Produk" onBack={() => navigate('/inventory')}>
-          <button className="icon-btn" onClick={() => navigate('/inventory')}>
+        <TopHeader title="Detail Produk" onBack={() => navigate('/catalog')}>
+          <button className="icon-btn" onClick={() => navigate('/catalog')}>
             <ArrowLeft size={20} />
           </button>
         </TopHeader>
 
         <div className="page-content" style={{ overflowY: 'auto', paddingBottom: '40px' }}>
-          <div className="product-hero">
-            <div className="product-hero-image">
-              {product.image_url ? (
-                <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <div className="hero-placeholder">
-                  <Thermometer size={64} strokeWidth={1} color="var(--color-primary)" />
-                  <span>Tidak ada gambar</span>
+          <div className="product-detail-grid">
+            
+            {/* LEFT COLUMN: Gallery & Specs Table */}
+            <div className="details-left-pane">
+              <div className="details-image-card">
+                {product.image_url ? (
+                  <img src={product.image_url} alt={product.name} />
+                ) : (
+                  <div className="hero-placeholder">
+                    <Thermometer size={64} strokeWidth={1} color="var(--color-primary)" />
+                    <span>Tidak ada gambar</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Specs Table Card */}
+              <div className="details-specs-card card-elevation">
+                <h3>Spesifikasi Unit</h3>
+                <table className="specs-table">
+                  <tbody>
+                    <tr>
+                      <td className="label">Merk AC</td>
+                      <td className="value">{product.brand || 'TBA'}</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Kapasitas PK</td>
+                      <td className="value">{product.capacity_pk} PK</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Daya Dingin (BTU)</td>
+                      <td className="value">{estimatedBtu} BTU/h</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Konsumsi Daya</td>
+                      <td className="value">{product.power_watt || 'TBA'} W</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Tipe Teknologi</td>
+                      <td className="value" style={{ textTransform: 'capitalize' }}>
+                        {product.type || product.category || 'Standard Split'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="label">Koneksi</td>
+                      <td className="value">{connectionLabel}</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Refrigerant</td>
+                      <td className="value">R-32 (Eco Friendly)</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Garansi Resmi</td>
+                      <td className="value">Sparepart 1 Thn, Kompresor 3 Thn</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Status Stok</td>
+                      <td className="value" style={{ color: product.stock > 0 ? '#10b981' : '#ef4444' }}>
+                        {product.stock > 0 ? `Ready Stock (${product.stock} Unit)` : 'Indent / Habis'}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN: Details & Configurator */}
+            <div className="details-right-pane">
+              <div>
+                <span className="details-brand-badge">{product.brand}</span>
+                <h1 className="details-main-title">{product.brand?.toUpperCase()} AC {product.name?.toUpperCase()}</h1>
+                <div className="details-rating-row">
+                  <div className="details-stars">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={14} fill="#facc15" color="#facc15" />
+                    ))}
+                    <span style={{ fontWeight: '700', color: 'var(--color-on-surface)', marginLeft: '4px' }}>5.0</span>
+                  </div>
+                  <span>•</span>
+                  <span>Ulasan Realtime</span>
+                </div>
+              </div>
+
+              {/* Price Row */}
+              <div className="details-price-card card-elevation">
+                <span className="spec-label" style={{ fontSize: '11px' }}>HARGA ESTIMASI TOTAL</span>
+                <div className="details-price-row">
+                  <span className="details-price-box">{formatRupiah(calculatedPrice)}</span>
+                  <span className="details-price-original">
+                    {formatRupiah(Math.round(calculatedPrice * 1.12))}
+                  </span>
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
+                  *Termasuk PPN 11%, estimasi paket pemasangan sesuai opsi yang Anda pilih.
+                </div>
+              </div>
+
+              {/* Configurator 1: Beli Unit vs Paket */}
+              <div className="configurator-section">
+                <h3 className="spec-label">Pilih Kategori Pembelian</h3>
+                <div className="config-card-grid">
+                  <div 
+                    className={`config-card ${purchaseType === 'unit' ? 'active' : ''}`}
+                    onClick={() => setPurchaseType('unit')}
+                  >
+                    <div className="config-card-title">Hanya Unit AC</div>
+                    <div className="config-card-desc">Hanya unit AC indoor & outdoor saja. Tanpa material & jasa pasang.</div>
+                  </div>
+                  <div 
+                    className={`config-card ${purchaseType === 'package' ? 'active' : ''}`}
+                    onClick={() => setPurchaseType('package')}
+                  >
+                    <div className="config-card-title">Paket Pasang (Terima Beres)</div>
+                    <div className="config-card-desc">Termasuk pipa tembaga, kabel, bracket outdoor, vacuum, & jasa instalasi bergaransi.</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Configurator 2: Grade Pipa Tembaga */}
+              {purchaseType === 'package' && (
+                <div className="configurator-section animate-slide-down" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <h3 className="spec-label">Pilih Grade Pipa Tembaga</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {[
+                      { val: 'basic', label: 'Basic Grade (Tebal 0.50mm)', desc: 'Ekonomis, direkomendasikan untuk low-budget.' },
+                      { val: 'premium', label: 'Premium Grade (Tebal 0.60mm JIS)', desc: 'Ketebalan standar Inverter, direkomendasikan untuk performa optimal.' },
+                      { val: 'elite', label: 'Elite Grade (Tebal 0.76mm ASTM)', desc: 'Sangat kokoh & awet, terbaik jika pipa masuk ke dalam dinding/plafon.' }
+                    ].map(item => (
+                      <div 
+                        key={item.val}
+                        className={`config-card ${pipeGrade === item.val ? 'active' : ''}`}
+                        onClick={() => setPipeGrade(item.val)}
+                      >
+                        <div className="config-card-title">{item.label}</div>
+                        <div className="config-card-desc">{item.desc}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <h3 className="spec-label" style={{ marginTop: '8px' }}>Estimasikan Panjang Pipa</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div className="stepper-container">
+                      <button 
+                        onClick={() => setPipeLength(prev => Math.max(3, prev - 1))}
+                        style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-on-surface)' }}
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span style={{ fontWeight: '900', fontSize: '14px', minWidth: '24px', textAlign: 'center' }}>{pipeLength}m</span>
+                      <button 
+                        onClick={() => setPipeLength(prev => prev + 1)}
+                        style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-on-surface)' }}
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                    <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', lineHeight: '1.4' }}>
+                      *Bawaan paket adalah 3 meter pipa tembaga.<br />Penambahan dikenakan tarif per meter.
+                    </span>
+                  </div>
                 </div>
               )}
-            </div>
-          </div>
 
-          <div className="product-detail-body">
-            <div className="product-detail-header">
-              <StatusChip 
-                status={product.stock > 0 ? 'Tersedia' : 'Habis'} 
-                type={product.stock > 0 ? 'success' : 'error'} 
-              />
-              <div className="rating-row">
-                <Star size={14} fill="#F5A623" stroke="#F5A623" />
-                <span>Unit Baru</span>
+              {/* Action CTA Buttons */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                <Button 
+                  fullWidth 
+                  icon={ShoppingCart} 
+                  onClick={handleAddToCart}
+                  disabled={product.stock <= 0}
+                >
+                  {product.stock > 0 ? 'Masukkan Keranjang' : 'Stok Sedang Habis'}
+                </Button>
+                <Button variant="outline" onClick={() => navigate(-1)}>
+                  Kembali
+                </Button>
               </div>
-            </div>
 
-            {/* Read-Only Info Card */}
-            <div className="card-elevation" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <span className="spec-label" style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: '700', textTransform: 'uppercase' }}>
-                {product.brand || 'No Brand'}
-              </span>
-              <h1 className="product-detail-title" style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 8px 0' }}>
-                {product.name || 'Unnamed Product'}
-              </h1>
-              <div className="product-detail-price" style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-primary)' }}>
-                {formatRupiah(product.price || 0)}
+              {/* Description Card */}
+              <div className="details-desc-card card-elevation">
+                <h3>Deskripsi Produk</h3>
+                <p style={{ margin: 0, fontSize: '13.5px', lineHeight: '1.7', color: 'var(--color-on-surface-variant)', whiteSpace: 'pre-wrap' }}>
+                  {product.description || 'Tidak ada deskripsi tambahan untuk produk pendingin ruangan ini.'}
+                </p>
               </div>
-            </div>
 
-            <div className="spec-grid">
-              <div className="spec-item card-elevation">
-                <Thermometer size={20} className="spec-icon-main" />
-                <span className="spec-label">Kapasitas PK</span>
-                <span className="spec-value" style={{ marginTop: '4px' }}>
-                  {product.capacity_pk} PK
-                </span>
+              {/* Trust Badges */}
+              <div className="trust-badges-grid">
+                <div className="trust-badge-item card-elevation" style={{ background: 'rgba(0, 85, 255, 0.03)' }}>
+                  <span style={{ fontSize: '24px' }}>🛡️</span>
+                  <div>
+                    <div style={{ fontWeight: '800', fontSize: '12px' }}>Garansi 100% Asli</div>
+                    <div style={{ fontSize: '10px', color: 'var(--color-on-surface-variant)' }}>Garansi resmi produsen langsung</div>
+                  </div>
+                </div>
+                <div className="trust-badge-item card-elevation" style={{ background: 'rgba(16, 185, 129, 0.03)' }}>
+                  <span style={{ fontSize: '24px' }}>🔧</span>
+                  <div>
+                    <div style={{ fontWeight: '800', fontSize: '12px' }}>Jasa Pasang Pro</div>
+                    <div style={{ fontSize: '10px', color: 'var(--color-on-surface-variant)' }}>Teknisi bersertifikasi & vacuum rapi</div>
+                  </div>
+                </div>
               </div>
-              <div className="spec-item card-elevation">
-                <Zap size={20} className="spec-icon-main" />
-                <span className="spec-label">Stok Tersedia</span>
-                <span className="spec-value" style={{ marginTop: '4px', color: product.stock > 0 ? 'inherit' : 'var(--color-error)' }}>
-                  {product.stock || 0} unit
-                </span>
-              </div>
+
             </div>
 
-            <div className="product-description card-elevation" style={{ padding: '20px' }}>
-              <h3>Deskripsi</h3>
-              <p style={{ margin: 0, fontSize: '14px', lineHeight: '1.7', color: 'var(--color-on-surface-variant)', whiteSpace: 'pre-wrap' }}>
-                {product.description || 'Tidak ada deskripsi untuk produk ini.'}
-              </p>
-            </div>
-
-            <div className="action-buttons" style={{ marginTop: '24px' }}>
-              <Button onClick={() => navigate(-1)} style={{ flex: 1 }}>
-                Kembali
-              </Button>
-            </div>
           </div>
         </div>
 

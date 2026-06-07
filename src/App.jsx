@@ -43,6 +43,7 @@ function App() {
               {/* Public */}
               <Route path="/" element={<Catalog />} />
               <Route path="/catalog" element={<FullCatalog />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/company" element={<CompanyProfile />} />
