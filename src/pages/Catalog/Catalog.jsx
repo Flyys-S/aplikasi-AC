@@ -1007,6 +1007,7 @@ const Catalog = () => {
           </footer>
         )}
       </div>
+    </div>
 
       {/* Customize Product Modal */}
       {selectedProduct && (
@@ -1213,7 +1214,6 @@ const Catalog = () => {
           </div>
         </div>
       )}
-    </div>
       <Navigation />
     </>
   );

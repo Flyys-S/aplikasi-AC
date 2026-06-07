@@ -658,6 +658,7 @@ const FullCatalog = () => {
           )}
         </section>
       </main>
+    </div>
 
       {/* Customize Product Modal */}
       {selectedProduct && (
@@ -864,8 +865,6 @@ const FullCatalog = () => {
           </div>
         </div>
       )}
-
-    </div>
       {!isAdmin && <Navigation />}
     </>
   );
