@@ -11,6 +11,7 @@ import ProductCard from '../../components/ProductCard';
 import Button from '../../components/Button';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
+import '../Inventory/Inventory.css';
 import './Catalog.css';
 
 const FullCatalog = () => {
