@@ -114,7 +114,8 @@ const UserProfile = () => {
   const containerClass = hasNormalSidebar ? '' : (isVisitor ? ' customer-layout' : ' guest-layout');
 
   return (
-    <div className={`dashboard-container${containerClass}`}>
+    <>
+      <div className={`dashboard-container${containerClass}`}>
       <TopHeader title="Profil Saya" subtitle="Kelola informasi akun dan pengaturan aplikasi" />
 
       <div className="page-content fade-in profile-page-content">
@@ -270,8 +271,9 @@ const UserProfile = () => {
         )}
       </div>
 
-      <Navigation />
     </div>
+      <Navigation />
+    </>
   );
 };
 

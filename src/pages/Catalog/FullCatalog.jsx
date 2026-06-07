@@ -193,7 +193,8 @@ const FullCatalog = () => {
   const containerClass = hasNormalSidebar ? '' : (isVisitor ? ' customer-layout' : ' guest-layout');
 
   return (
-    <div className={`dashboard-container${containerClass}`}>
+    <>
+      <div className={`dashboard-container${containerClass}`}>
       {isAdmin ? (
         <TopHeader title="Katalog Utama" subtitle="Seluruh Produk AC" />
       ) : (
@@ -277,8 +278,7 @@ const FullCatalog = () => {
         </header>
       )}
 
-      {/* Navigation banner - only for non-admin */}
-      {!isAdmin && <Navigation />}
+
 
       <main style={{ padding: '32px var(--gutter)', display: 'grid', gridTemplateColumns: '260px 1fr', gap: '32px' }}>
         
@@ -854,6 +854,8 @@ const FullCatalog = () => {
         </div>
       )}
     </div>
+      {!isAdmin && <Navigation />}
+    </>
   );
 };
 

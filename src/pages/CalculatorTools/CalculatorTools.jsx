@@ -107,7 +107,8 @@ const CalculatorTools = () => {
   const containerClass = hasNormalSidebar ? '' : (isVisitor ? ' customer-layout' : ' guest-layout');
 
   return (
-    <div className={`dashboard-container${containerClass}`}>
+    <>
+      <div className={`dashboard-container${containerClass}`}>
       <header className="catalog-header glass-panel calculator-header-custom">
         <div className="calculator-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {role === 'visitor' && (
@@ -350,8 +351,9 @@ const CalculatorTools = () => {
         )}
       </div>
 
-      {user && <Navigation />}
     </div>
+      {user && <Navigation />}
+    </>
   );
 };
 

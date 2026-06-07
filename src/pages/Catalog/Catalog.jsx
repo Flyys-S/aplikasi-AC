@@ -268,7 +268,8 @@ const Catalog = () => {
   const isVisitor = role === 'visitor';
 
   return (
-    <div className={`dashboard-container ${(!user || !isVisitor) ? 'guest-layout' : 'customer-layout'}`}>
+    <>
+      <div className={`dashboard-container ${(!user || !isVisitor) ? 'guest-layout' : 'customer-layout'}`}>
       <header className="catalog-header glass-panel fade-in">
         <div className="catalog-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {user && isVisitor && (
@@ -1265,8 +1266,9 @@ const Catalog = () => {
         </div>
       )}
 
-      {user && <Navigation />}
     </div>
+      {user && <Navigation />}
+    </>
   );
 };
 
