@@ -367,7 +367,9 @@ const Inventory = () => {
                     <ProductCard 
                       key={product.id}
                       image={product.image_url}
-                      title={`${product.brand} ${product.name}`}
+                      brand={product.brand}
+                      name={product.name}
+                      type={product.type || product.category}
                       price={formatRupiah(product.price)}
                       specs={[`Stok: ${product.stock} unit`, `${product.capacity_pk} PK`]}
                       status={getStatusLabel(product.stock)}

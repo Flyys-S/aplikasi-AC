@@ -840,9 +840,11 @@ const Catalog = () => {
                   <div key={product.id} style={{ position: 'relative' }}>
                     <ProductCard
                       image={product.image_url}
-                      title={`${product.brand} ${product.name}`}
+                      brand={product.brand}
+                      name={product.name}
+                      type={product.type || product.category}
                       price={formatRupiah(product.price)}
-                      specs={[`${product.capacity_pk} PK`, product.stock > 0 ? 'Ready Stock' : 'Indent']}
+                      specs={[`${product.capacity_pk} PK`, product.stock > 0 ? 'Ready' : 'Indent']}
                       status={product.stock > 0 ? 'Tersedia' : 'Habis'}
                       onClick={() => {
                         if (user && isAdmin) {
