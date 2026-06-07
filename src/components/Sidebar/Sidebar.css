@@ -400,39 +400,29 @@ body.sidebar-open .sidebar-nav.customer-sidebar {
   left: var(--space-md) !important;
 }
 
-/* Page content minimize/scale transition when customer sidebar is active */
+/* Page content push/slide transition when customer sidebar is active */
 .dashboard-container.customer-layout {
   padding-left: 0 !important;
-  transform-origin: left center;
-  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s ease, box-shadow 0.4s ease;
+  width: 100% !important;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 body.sidebar-open .dashboard-container.customer-layout {
-  transform: scale(0.93) translateX(260px) rotateY(2deg); /* subtle premium perspective scale */
-  border-radius: var(--radius-xl) !important;
-  box-shadow: 0 25px 60px rgba(0, 85, 255, 0.15) !important;
-  pointer-events: none; /* prevent click/scroll during open state */
-  overflow: hidden !important;
-  height: 100vh !important;
+  transform: translateX(270px); /* Just shift the content right without scaling or squeezing */
+  pointer-events: none; /* Disable inputs inside content when menu is open */
 }
 
-/* Ensure backdrop overlay is shown */
+/* Backdrop capture overlay to catch clicks outside menu */
 .sidebar-backdrop {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
+  background: transparent; /* Transparent so content remains fully visible */
   z-index: 10000;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
 }
 
 body.sidebar-open .sidebar-backdrop {
   display: block;
-  opacity: 1;
-  pointer-events: auto;
 }
 
 @media (max-width: 768px) {
@@ -449,6 +439,6 @@ body.sidebar-open .sidebar-backdrop {
   }
   
   body.sidebar-open .dashboard-container.customer-layout {
-    transform: scale(0.95) translateX(240px);
+    transform: translateX(260px);
   }
 }
