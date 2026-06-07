@@ -789,3 +789,73 @@
 
 /* ─── Loader ─── */
 .vd-spinner { animation: mms-spin 0.8s linear infinite; }
+
+/* ─── Responsive Mobile Overrides ─── */
+@media (max-width: 768px) {
+  .visitor-hero {
+    padding: 24px 16px;
+    text-align: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .visitor-hero h1 {
+    font-size: 28px !important;
+  }
+  
+  .visitor-quick-actions {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  
+  .vd-info-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .vd-service-cta-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .vd-service-cta-card button {
+    width: 100%;
+  }
+
+  .vd-order-card {
+    padding: 16px;
+  }
+  
+  .vd-order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .vd-sheet-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .visitor-quick-actions {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .vd-product-scroll-container {
+    padding-bottom: 8px;
+  }
+  
+  .vd-order-item-detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+

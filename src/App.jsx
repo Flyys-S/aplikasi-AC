@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 // Pages
 import Login from './pages/Login'
 import Catalog from './pages/Catalog'
+import AdminCatalog from './pages/Catalog/AdminCatalog'
 import FullCatalog from './pages/Catalog/FullCatalog'
 import Checkout from './pages/Checkout'
 import OnlineOrders from './pages/OnlineOrders'
@@ -51,6 +52,7 @@ function App() {
 
               {/* Protected */}
               <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><SalesDashboard /></ProtectedRoute>} />
+              <Route path="/admin-catalog" element={<ProtectedRoute allowedRoles={['admin']}><AdminCatalog /></ProtectedRoute>} />
               <Route path="/checkout" element={<ProtectedRoute allowedRoles={['visitor', 'admin', 'technician']}><Checkout /></ProtectedRoute>} />
               <Route path="/online-orders" element={<ProtectedRoute allowedRoles={['admin']}><OnlineOrders /></ProtectedRoute>} />
               <Route path="/inventory" element={<ProtectedRoute allowedRoles={['admin']}><Inventory /></ProtectedRoute>} />

@@ -104,8 +104,8 @@ const CalculatorTools = () => {
 
   return (
     <div className="dashboard-container guest-layout">
-      <header className="catalog-header glass-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', height: '72px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <header className="catalog-header glass-panel calculator-header-custom">
+        <div className="calculator-header-left">
           <button className="icon-btn" onClick={() => navigate(-1)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
             <ArrowLeft size={20} />
           </button>
@@ -115,38 +115,18 @@ const CalculatorTools = () => {
         </div>
       </header>
 
-      <div className="page-content fade-in" style={{ padding: '24px', maxWidth: '800px', margin: '0 auto' }}>
+      <div className="page-content tools-page-content fade-in">
         {/* Navigation Tabs */}
-        <div className="tools-tabs" style={{ display: 'flex', gap: '12px', marginBottom: '24px', borderBottom: '1px solid var(--color-outline-variant)', paddingBottom: '12px' }}>
+        <div className="tools-tabs">
           <button 
             className={`tab-btn ${activeTab === 'pk' ? 'active' : ''}`}
             onClick={() => { setActiveTab('pk'); setPkResult(null); }}
-            style={{
-              padding: '10px 20px',
-              borderRadius: '12px',
-              border: 'none',
-              background: activeTab === 'pk' ? 'var(--color-primary)' : 'transparent',
-              color: activeTab === 'pk' ? 'white' : 'var(--color-on-surface-variant)',
-              fontWeight: '700',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
           >
             🔌 Kalkulator PK AC
           </button>
           <button 
             className={`tab-btn ${activeTab === 'kwh' ? 'active' : ''}`}
             onClick={() => { setActiveTab('kwh'); setKwhResult(null); }}
-            style={{
-              padding: '10px 20px',
-              borderRadius: '12px',
-              border: 'none',
-              background: activeTab === 'kwh' ? 'var(--color-primary)' : 'transparent',
-              color: activeTab === 'kwh' ? 'white' : 'var(--color-on-surface-variant)',
-              fontWeight: '700',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
           >
             ⚡ Kalkulator Biaya Listrik AC
           </button>
@@ -154,7 +134,7 @@ const CalculatorTools = () => {
 
         {/* 1. PK Calculator */}
         {activeTab === 'pk' && (
-          <div className="tool-card glass-panel fade-in" style={{ padding: '28px', borderRadius: '24px' }}>
+          <div className="tool-card glass-panel fade-in">
             <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Wind size={20} color="var(--color-primary)" /> Cari Ukuran PK AC yang Tepat
             </h3>
@@ -162,7 +142,7 @@ const CalculatorTools = () => {
               Pendinginan optimal tercapai jika kapasitas AC (BTU) sesuai dengan volume ruangan dan faktor paparan panas matahari.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '20px' }}>
+            <div className="calc-grid mb-20">
               <div className="input-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '12px', fontWeight: '700' }}>Panjang Ruangan (meter)</label>
                 <input 
@@ -185,7 +165,7 @@ const CalculatorTools = () => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '24px' }}>
+            <div className="calc-grid mb-24">
               <div className="input-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '12px', fontWeight: '700' }}>Tinggi Plafon (meter)</label>
                 <input 
@@ -214,7 +194,7 @@ const CalculatorTools = () => {
             {pkResult && (
               <div className="result-display fade-in" style={{ marginTop: '28px', padding: '20px', borderRadius: '16px', background: 'rgba(0, 85, 255, 0.06)', border: '1px solid var(--color-primary)' }}>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: '800', color: 'var(--color-primary)' }}>REKOMENDASI UNIT AC</h4>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="result-flex-container">
                   <div>
                     <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--color-on-surface)' }}>{pkResult.label}</div>
                     <div style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>Beban Pendinginan: {pkResult.btu} BTU</div>
@@ -228,7 +208,7 @@ const CalculatorTools = () => {
 
         {/* 2. kWh/Electricity Cost Calculator */}
         {activeTab === 'kwh' && (
-          <div className="tool-card glass-panel fade-in" style={{ padding: '28px', borderRadius: '24px' }}>
+          <div className="tool-card glass-panel fade-in">
             <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Zap size={20} color="var(--color-primary)" /> Estimasi Biaya Listrik Bulanan AC
             </h3>
@@ -236,7 +216,7 @@ const CalculatorTools = () => {
               Hitung perkiraan tagihan listrik khusus untuk penggunaan unit AC berdasarkan tipe kompresor yang digunakan.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '20px' }}>
+            <div className="calc-grid mb-20">
               <div className="input-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '12px', fontWeight: '700' }}>Kapasitas AC (PK)</label>
                 <select 
@@ -265,7 +245,7 @@ const CalculatorTools = () => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '24px' }}>
+            <div className="calc-grid mb-24">
               <div className="input-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '12px', fontWeight: '700' }}>Rata-rata Penggunaan (Jam/Hari)</label>
                 <input 

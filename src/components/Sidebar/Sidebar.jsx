@@ -13,9 +13,13 @@ const Sidebar = () => {
   const isAdmin = role === 'admin'
   const isTechnician = role === 'technician'
 
-  const frontEndRoutes = ['/', '/catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/visitor-home']
+  const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/visitor-home']
   if (frontEndRoutes.includes(location.pathname)) {
-    return null
+    if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog')) {
+      // Render sidebar for admin
+    } else {
+      return null
+    }
   }
 
   const handleLogout = async () => {
@@ -32,7 +36,7 @@ const Sidebar = () => {
 
   const navItems = [
     ...(isAdmin ? [{ to: '/dashboard', label: 'Beranda', icon: LayoutDashboard }] : []),
-    { to: '/', label: 'Katalog', icon: BookOpen },
+    { to: isAdmin ? '/admin-catalog' : '/', label: 'Katalog', icon: BookOpen },
     ...(isAdmin ? [{ to: '/inventory', label: 'Stok', icon: Package }] : []),
     ...(!isTechnician ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
     ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),

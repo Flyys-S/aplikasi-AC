@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import TopHeader from '../../components/TopHeader';
 import Navigation from '../../components/Navigation';
 import ProductCard from '../../components/ProductCard';
 import Button from '../../components/Button';
@@ -188,88 +189,92 @@ const FullCatalog = () => {
   });
 
   return (
-    <div className="dashboard-container guest-layout">
-      <header className="catalog-header glass-panel">
-        <div className="catalog-header-left" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <ChevronLeft size={20} style={{ color: 'var(--color-primary)', marginRight: '4px' }} />
-          <span className="logo-icon">❄️</span>
-          <span className="catalog-header-brand">MITRA MAJU SEJATI</span>
-        </div>
-        
-        <div className="catalog-header-right">
-          <div className="guest-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {/* Theme Toggle Mode Button */}
-            <button 
-              className="icon-btn theme-toggle-btn" 
-              onClick={toggleTheme} 
-              title={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
-              style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '12px',
-                border: '1px solid var(--color-outline-variant)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s',
-                backgroundColor: 'var(--color-surface-container-high)',
-                color: 'var(--color-on-surface)'
-              }}
-            >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-
-            <div
-              className="icon-btn cart-btn-header"
-              style={{
-                backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)',
-                color: cart.length > 0 ? 'white' : 'var(--color-on-surface)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '42px',
-                height: '42px',
-                borderRadius: '12px',
-                cursor: 'pointer',
-                position: 'relative',
-                transition: 'all 0.2s'
-              }}
-              onClick={() => setIsCartOpen(true)}
-            >
-              <ShoppingCart size={20} />
-              {cart.length > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '-4px',
-                  right: '-4px',
-                  backgroundColor: '#ff4444',
-                  color: 'white',
-                  borderRadius: '50%',
-                  width: '18px',
-                  height: '18px',
-                  fontSize: '10px',
-                  fontWeight: 'bold',
+    <div className={`dashboard-container${isAdmin ? '' : ' guest-layout'}`}>
+      {isAdmin ? (
+        <TopHeader title="Katalog Utama" subtitle="Seluruh Produk AC" />
+      ) : (
+        <header className="catalog-header glass-panel">
+          <div className="catalog-header-left" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+            <ChevronLeft size={20} style={{ color: 'var(--color-primary)', marginRight: '4px' }} />
+            <span className="logo-icon">❄️</span>
+            <span className="catalog-header-brand">MITRA MAJU SEJATI</span>
+          </div>
+          
+          <div className="catalog-header-right">
+            <div className="guest-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {/* Theme Toggle Mode Button */}
+              <button 
+                className="icon-btn theme-toggle-btn" 
+                onClick={toggleTheme} 
+                title={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--color-outline-variant)',
+                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                }}>
-                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
+                  transition: 'all 0.2s',
+                  backgroundColor: 'var(--color-surface-container-high)',
+                  color: 'var(--color-on-surface)'
+                }}
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+
+              <div
+                className="icon-btn cart-btn-header"
+                style={{
+                  backgroundColor: cart.length > 0 ? 'var(--color-primary)' : 'var(--color-surface-container-high)',
+                  color: cart.length > 0 ? 'white' : 'var(--color-on-surface)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  transition: 'all 0.2s'
+                }}
+                onClick={() => setIsCartOpen(true)}
+              >
+                <ShoppingCart size={20} />
+                {cart.length > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    backgroundColor: '#ff4444',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '18px',
+                    height: '18px',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                  }}>
+                    {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                  </span>
+                )}
+              </div>
+              {!user ? (
+                <Button size="small" onClick={() => navigate('/login')}>Login</Button>
+              ) : (
+                <Button size="small" variant="outline" onClick={() => navigate('/profile')}>Akun Saya</Button>
               )}
             </div>
-            {!user ? (
-              <Button size="small" onClick={() => navigate('/login')}>Login</Button>
-            ) : (
-              <Button size="small" variant="outline" onClick={() => navigate('/profile')}>Akun Saya</Button>
-            )}
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
-      {/* Navigation banner */}
-      <Navigation />
+      {/* Navigation banner - only for non-admin */}
+      {!isAdmin && <Navigation />}
 
       <main style={{ padding: '32px var(--gutter)', display: 'grid', gridTemplateColumns: '260px 1fr', gap: '32px' }}>
         

@@ -1,12 +1,51 @@
 /* Calculator & Tools Styles */
 
+.calculator-header-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 72px;
+}
+
+.calculator-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tools-page-content {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 .tools-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
   border-bottom: 1px solid var(--color-outline-variant);
+  padding-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for standard browsers */
+}
+
+.tools-tabs::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Webkit browsers */
 }
 
 .tab-btn {
   font-family: var(--font-body);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-on-surface-variant);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap; /* Prevent wrapping inside buttons */
+  flex-shrink: 0;
 }
 
 .tab-btn:hover {
@@ -21,6 +60,8 @@
 }
 
 .tool-card {
+  padding: 28px;
+  border-radius: 24px;
   background: rgba(255, 255, 255, 0.45);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
@@ -32,6 +73,27 @@
 :root[data-theme='dark'] .tool-card {
   background: var(--color-surface-container-low);
   border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.mb-24 {
+  margin-bottom: 24px;
+}
+
+.result-flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 
 .input-group select,
@@ -49,3 +111,51 @@
 .result-display {
   animation: slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Responsive Overrides */
+@media (max-width: 600px) {
+  .calculator-header-custom {
+    padding: 0 16px;
+    height: 56px;
+  }
+  
+  .tools-page-content {
+    padding: 16px;
+  }
+  
+  .tools-tabs {
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+  }
+  
+  .tab-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  
+  .tool-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .calc-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .mb-20, .mb-24 {
+    margin-bottom: 16px;
+  }
+  
+  .result-flex-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .result-flex-container button {
+    width: 100%;
+  }
+}
+
