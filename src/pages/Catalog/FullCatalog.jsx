@@ -588,7 +588,7 @@ const FullCatalog = () => {
           {loading ? (
             <InlineLoader text="Memuat produk..." />
           ) : (
-            <div className="inventory-grid" style={{ paddingBottom: '100px', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
+            <div className="inventory-grid" style={{ paddingBottom: '100px' }}>
               {sortedProducts.length > 0 ? (
                 sortedProducts.map(product => (
                   <div key={product.id} style={{ position: 'relative' }}>
