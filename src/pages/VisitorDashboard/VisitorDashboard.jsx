@@ -4,7 +4,7 @@ import {
   ShoppingBag, Phone, BookOpen, Package, Wrench,
   ChevronRight, Loader2, Star, Headphones,
   Sun, Moon, Plus, X, CheckCircle, Clock, AlertCircle,
-  MapPin, Calendar, FileText, Send
+  MapPin, Calendar, FileText, Send, ArrowLeft, Menu
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
@@ -213,11 +213,49 @@ const VisitorDashboard = () => {
      RENDER
   ═══════════════════════════════════════════ */
   return (
-    <div className="dashboard-container guest-layout">
+    <div className="dashboard-container">
 
       {/* ─── Header ─── */}
       <header className="top-header glass-panel">
-        <div className="header-left">
+        <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {role === 'visitor' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
+              <button 
+                className="icon-btn back-btn-customer" 
+                onClick={() => navigate(-1)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '6px',
+                  color: 'var(--color-on-surface)'
+                }}
+                title="Kembali"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <button 
+                className="icon-btn hamburger-btn-customer" 
+                onClick={() => document.body.classList.toggle('sidebar-open')}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '6px',
+                  color: 'var(--color-on-surface)'
+                }}
+                title="Menu"
+              >
+                <Menu size={20} />
+              </button>
+            </div>
+          )}
           <div className="header-info">
             <h2>Beranda</h2>
             <p>Mitra Maju Sejati</p>

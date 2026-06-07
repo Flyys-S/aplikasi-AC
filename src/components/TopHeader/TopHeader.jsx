@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Bell, ArrowLeft, Sun, Moon } from 'lucide-react';
+import { LogOut, Bell, ArrowLeft, Sun, Moon, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import './TopHeader.css';
 
 const TopHeader = ({ title, subtitle, onBack, children }) => {
   const navigate = useNavigate();
-  const { signOut, user } = useAuth();
+  const { signOut, user, role } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
@@ -25,11 +25,50 @@ const TopHeader = ({ title, subtitle, onBack, children }) => {
 
   return (
     <header className="top-header glass-panel">
-      <div className="header-left">
-        {onBack && (
-          <button className="back-btn-header" onClick={onBack}>
-            <ArrowLeft size={22} />
-          </button>
+      <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {role === 'visitor' ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
+            <button 
+              className="icon-btn back-btn-customer" 
+              onClick={() => navigate(-1)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '6px',
+                color: 'var(--color-on-surface)'
+              }}
+              title="Kembali"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <button 
+              className="icon-btn hamburger-btn-customer" 
+              onClick={() => document.body.classList.toggle('sidebar-open')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '6px',
+                color: 'var(--color-on-surface)'
+              }}
+              title="Menu"
+            >
+              <Menu size={20} />
+            </button>
+          </div>
+        ) : (
+          onBack && (
+            <button className="back-btn-header" onClick={onBack}>
+              <ArrowLeft size={22} />
+            </button>
+          )
         )}
         <div className="header-info">
           <h2>{title}</h2>

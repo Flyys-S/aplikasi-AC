@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Calculator, ArrowLeft, Wind, Zap, RefreshCw, Sun, Info } from 'lucide-react';
+import { Calculator, ArrowLeft, Wind, Zap, RefreshCw, Sun, Info, Menu } from 'lucide-react';
 import Button from '../../components/Button';
 import TopHeader from '../../components/TopHeader';
 import Navigation from '../../components/Navigation';
@@ -10,7 +10,7 @@ import './CalculatorTools.css';
 
 const CalculatorTools = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'pk';
 
@@ -103,12 +103,52 @@ const CalculatorTools = () => {
   };
 
   return (
-    <div className="dashboard-container guest-layout">
+    <div className={`dashboard-container ${(!user || role !== 'visitor') ? 'guest-layout' : ''}`}>
       <header className="catalog-header glass-panel calculator-header-custom">
-        <div className="calculator-header-left">
-          <button className="icon-btn" onClick={() => navigate(-1)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-            <ArrowLeft size={20} />
-          </button>
+        <div className="calculator-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {role === 'visitor' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
+              <button 
+                className="icon-btn back-btn-customer" 
+                onClick={() => navigate(-1)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '6px',
+                  color: 'var(--color-on-surface)'
+                }}
+                title="Kembali"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <button 
+                className="icon-btn hamburger-btn-customer" 
+                onClick={() => document.body.classList.toggle('sidebar-open')}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '6px',
+                  color: 'var(--color-on-surface)'
+                }}
+                title="Menu"
+              >
+                <Menu size={20} />
+              </button>
+            </div>
+          )}
+          {role !== 'visitor' && (
+            <button className="icon-btn" onClick={() => navigate(-1)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+              <ArrowLeft size={20} />
+            </button>
+          )}
           <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calculator size={20} color="var(--color-primary)" /> Arctic Tools & Kalkulator
           </h2>

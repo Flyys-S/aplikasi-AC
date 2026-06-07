@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen, LogOut, HardHat } from 'lucide-react'
+import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen, LogOut, HardHat, Calculator, User } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../Button'
 import './Sidebar.css'
@@ -13,10 +13,16 @@ const Sidebar = () => {
   const isAdmin = role === 'admin'
   const isTechnician = role === 'technician'
 
+  useEffect(() => {
+    document.body.classList.remove('sidebar-open')
+  }, [location.pathname])
+
   const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/visitor-home']
   if (frontEndRoutes.includes(location.pathname)) {
     if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog')) {
       // Render sidebar for admin
+    } else if (role === 'visitor' && ['/', '/catalog', '/tools', '/visitor-home'].includes(location.pathname)) {
+      // Render sidebar for visitor
     } else {
       return null
     }
@@ -36,23 +42,27 @@ const Sidebar = () => {
 
   const navItems = [
     ...(isAdmin ? [{ to: '/dashboard', label: 'Beranda', icon: LayoutDashboard }] : []),
+    ...(role === 'visitor' ? [{ to: '/visitor-home', label: 'Beranda', icon: LayoutDashboard }] : []),
     { to: isAdmin ? '/admin-catalog' : '/', label: 'Katalog', icon: BookOpen },
     ...(isAdmin ? [{ to: '/inventory', label: 'Stok', icon: Package }] : []),
-    ...(!isTechnician ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
+    ...(!isTechnician && role !== 'visitor' ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
+    ...(role === 'visitor' ? [{ to: '/tools', label: 'Kalkulator', icon: Calculator }] : []),
     ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),
-    { to: '/service', label: 'Servis', icon: Wrench },
+    ...(role !== 'visitor' ? [{ to: '/service', label: 'Servis', icon: Wrench }] : []),
     ...(isTechnician || isAdmin ? [{ to: '/technician', label: 'Tugas Saya', icon: HardHat }] : []),
+    ...(role === 'visitor' ? [{ to: '/profile', label: 'Profil Saya', icon: User }] : []),
   ]
 
   return (
     <>
+      <div className="sidebar-backdrop" onClick={() => document.body.classList.remove('sidebar-open')}></div>
       <aside className="sidebar-nav glass-panel">
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <span className="logo-icon">❄️</span>
             <div className="logo-text">
               <h3>MITRA MAJU SEJATI</h3>
-              <span className="logo-badge">{role?.toUpperCase()}</span>
+              <span className="logo-badge">{role?.toUpperCase() || 'VISITOR'}</span>
             </div>
           </div>
         </div>

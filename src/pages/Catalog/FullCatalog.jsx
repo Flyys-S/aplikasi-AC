@@ -16,7 +16,7 @@ import './Catalog.css';
 const FullCatalog = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, role } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   // Initial params
@@ -188,8 +188,10 @@ const FullCatalog = () => {
     return a.brand.localeCompare(b.brand);
   });
 
+  const hasSidebar = role === 'admin' || role === 'technician' || role === 'visitor';
+
   return (
-    <div className={`dashboard-container${isAdmin ? '' : ' guest-layout'}`}>
+    <div className={`dashboard-container${hasSidebar ? '' : ' guest-layout'}`}>
       {isAdmin ? (
         <TopHeader title="Katalog Utama" subtitle="Seluruh Produk AC" />
       ) : (

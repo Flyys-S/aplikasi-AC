@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package, Sun, Moon, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
+import { Search, ShoppingCart, Loader2, Plus, Minus, X, CreditCard, Package, Sun, Moon, ChevronLeft, ChevronRight, Menu, ArrowLeft } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
 import { useAuth } from '../../context/AuthContext';
@@ -87,7 +87,6 @@ const Catalog = () => {
   const [recommendedPK, setRecommendedPK] = useState('');
   const [pkFilter, setPkFilter] = useState('');
   const [brandFilter, setBrandFilter] = useState('');
-  const [isCustomerSidebarOpen, setIsCustomerSidebarOpen] = useState(false);
 
   // Selected Product Customize State
   const [purchaseType, setPurchaseType] = useState('package'); // 'unit' or 'package'
@@ -266,27 +265,49 @@ const Catalog = () => {
     catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const isVisitor = role === 'visitor';
+
   return (
-    <div className="dashboard-container guest-layout">
+    <div className={`dashboard-container ${(!user || !isVisitor) ? 'guest-layout' : ''}`}>
       <header className="catalog-header glass-panel fade-in">
         <div className="catalog-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {user && (
-            <button 
-              className="icon-btn hamburger-btn-customer" 
-              onClick={() => setIsCustomerSidebarOpen(true)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '4px',
-                color: 'var(--color-on-surface)'
-              }}
-            >
-              <Menu size={22} />
-            </button>
+          {user && isVisitor && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
+              <button 
+                className="icon-btn back-btn-customer" 
+                onClick={() => navigate(-1)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '6px',
+                  color: 'var(--color-on-surface)'
+                }}
+                title="Kembali"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <button 
+                className="icon-btn hamburger-btn-customer" 
+                onClick={() => document.body.classList.toggle('sidebar-open')}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '6px',
+                  color: 'var(--color-on-surface)'
+                }}
+                title="Menu"
+              >
+                <Menu size={20} />
+              </button>
+            </div>
           )}
           <span className="logo-icon">❄️</span>
           <span className="catalog-header-brand">MITRA MAJU SEJATI</span>
@@ -1245,76 +1266,6 @@ const Catalog = () => {
       )}
 
       {user && <Navigation />}
-
-      {/* 🧊 Customer Sidebar Drawer */}
-      {isCustomerSidebarOpen && (
-        <div className="cart-overlay" onClick={() => setIsCustomerSidebarOpen(false)} style={{ zIndex: '2000', justifyContent: 'flex-start' }}>
-          <div className="cart-drawer" onClick={e => e.stopPropagation()} style={{ animation: 'slideInLeft 0.4s cubic-bezier(0.25, 1, 0.5, 1)', right: 'auto', left: '0', borderLeft: 'none', borderRight: '1px solid var(--color-outline-variant)' }}>
-            <div className="cart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-outline-variant)' }}>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span>❄️ Menu Pelanggan</span>
-              </h3>
-              <button className="icon-btn" onClick={() => setIsCustomerSidebarOpen(false)} style={{ width: '32px', height: '32px', borderRadius: '50%' }}><X size={16} /></button>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '16px', flex: '1' }}>
-              <div 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
-                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/'); }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={{ fontSize: '18px' }}>🏠</span>
-                <span style={{ fontWeight: '600', fontSize: '14px' }}>Beranda</span>
-              </div>
-
-              <div 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
-                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/catalog'); }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={{ fontSize: '18px' }}>🛒</span>
-                <span style={{ fontWeight: '600', fontSize: '14px' }}>Katalog AC Utama</span>
-              </div>
-
-              <div 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
-                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/tools'); }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={{ fontSize: '18px' }}>🧮</span>
-                <span style={{ fontWeight: '600', fontSize: '14px' }}>Kalkulator & Tools</span>
-              </div>
-
-              <div 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
-                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/visitor-home'); }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={{ fontSize: '18px' }}>🔧</span>
-                <span style={{ fontWeight: '600', fontSize: '14px' }}>Layanan Servis AC</span>
-              </div>
-
-              <div 
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'transparent', color: 'var(--color-on-surface)' }}
-                onClick={() => { setIsCustomerSidebarOpen(false); navigate('/profile'); }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-surface-container-low)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                <span style={{ fontSize: '18px' }}>👤</span>
-                <span style={{ fontWeight: '600', fontSize: '14px' }}>Profil Saya</span>
-              </div>
-            </div>
-
-            <div className="cart-footer" style={{ padding: '24px', textAlign: 'center', fontSize: '12px', color: 'var(--color-on-surface-variant)', borderTop: '1px solid var(--color-outline-variant)' }}>
-              Mitra Maju Sejati &copy; 2026
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

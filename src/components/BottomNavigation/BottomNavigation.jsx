@@ -9,6 +9,10 @@ const BottomNavigation = () => {
   const isAdmin = role === 'admin'
   const isTechnician = role === 'technician'
 
+  if (role === 'visitor') {
+    return null
+  }
+
   const navItems = [
     ...(isAdmin ? [{ to: '/dashboard', label: 'Beranda', icon: LayoutDashboard }] : []),
     { to: '/', label: 'Katalog', icon: BookOpen },
