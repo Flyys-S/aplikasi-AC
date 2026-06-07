@@ -409,7 +409,7 @@ const Catalog = () => {
       </header>
 
       <div className="page-content fade-in">
-        {!user && (
+        {!isAdmin && (
           <div className="selka-homepage-layout fade-in">
             {/* 1. Hero Promo Banner Slider */}
             <section className="selka-hero-slider card-elevation" style={{ position: 'relative', overflow: 'hidden', borderRadius: '32px', height: '420px', marginBottom: '32px' }}>
@@ -441,7 +441,9 @@ const Catalog = () => {
                       <p style={{ fontSize: '15px', maxWidth: '600px', margin: '0 0 24px 0', opacity: 0.9 }}>Beli AC baru kini sangat praktis. Pilih unitnya, sesuaikan paket pipa tembaga premium pilihan Anda, dan atur jadwal pasang instan H-1.</p>
                       <div style={{ display: 'flex', gap: '12px' }}>
                         <Button onClick={scrollToCatalog}>Belanja AC Sekarang</Button>
-                        <Button variant="outline" style={{ color: 'white', borderColor: 'white' }} onClick={() => navigate('/login')}>Masuk / Daftar Akun</Button>
+                        {!user && (
+                          <Button variant="outline" style={{ color: 'white', borderColor: 'white' }} onClick={() => navigate('/login')}>Masuk / Daftar Akun</Button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -793,7 +795,7 @@ const Catalog = () => {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
             <div className="inventory-grid" style={{ paddingBottom: '32px', width: '100%' }}>
               {filteredProducts.length > 0 ? (
-                filteredProducts.slice(0, 4).map(product => (
+                (user ? filteredProducts : filteredProducts.slice(0, 4)).map(product => (
                   <div key={product.id} style={{ position: 'relative' }}>
                     <ProductCard
                       image={product.image_url}
@@ -843,7 +845,7 @@ const Catalog = () => {
               )}
             </div>
 
-            {!isAdmin && (
+            {!isAdmin && !user && (
               <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '80px', display: 'flex', justifyContent: 'center' }}>
                 <Button 
                   onClick={() => navigate('/catalog')} 
