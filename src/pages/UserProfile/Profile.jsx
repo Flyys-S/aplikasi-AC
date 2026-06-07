@@ -109,10 +109,12 @@ const UserProfile = () => {
       .toUpperCase();
   };
 
-  const hasSidebar = role === 'admin' || role === 'technician' || role === 'visitor';
+  const isVisitor = role === 'visitor';
+  const hasNormalSidebar = role === 'admin' || role === 'technician';
+  const containerClass = hasNormalSidebar ? '' : (isVisitor ? ' customer-layout' : ' guest-layout');
 
   return (
-    <div className={`dashboard-container${hasSidebar ? '' : ' guest-layout'}`}>
+    <div className={`dashboard-container${containerClass}`}>
       <TopHeader title="Profil Saya" subtitle="Kelola informasi akun dan pengaturan aplikasi" />
 
       <div className="page-content fade-in profile-page-content">

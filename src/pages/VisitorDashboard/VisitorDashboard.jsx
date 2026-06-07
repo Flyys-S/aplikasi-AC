@@ -213,7 +213,7 @@ const VisitorDashboard = () => {
      RENDER
   ═══════════════════════════════════════════ */
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container customer-layout">
 
       {/* ─── Header ─── */}
       <header className="top-header glass-panel">

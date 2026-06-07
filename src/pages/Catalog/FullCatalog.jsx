@@ -188,10 +188,12 @@ const FullCatalog = () => {
     return a.brand.localeCompare(b.brand);
   });
 
-  const hasSidebar = role === 'admin' || role === 'technician' || role === 'visitor';
+  const isVisitor = role === 'visitor';
+  const hasNormalSidebar = role === 'admin' || role === 'technician';
+  const containerClass = hasNormalSidebar ? '' : (isVisitor ? ' customer-layout' : ' guest-layout');
 
   return (
-    <div className={`dashboard-container${hasSidebar ? '' : ' guest-layout'}`}>
+    <div className={`dashboard-container${containerClass}`}>
       {isAdmin ? (
         <TopHeader title="Katalog Utama" subtitle="Seluruh Produk AC" />
       ) : (

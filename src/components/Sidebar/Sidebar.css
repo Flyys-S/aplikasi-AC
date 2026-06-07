@@ -379,3 +379,76 @@
     transform: rotate(15deg);
   }
 }
+
+/* 🛍️ CUSTOMER POP-UP SIDEBAR Drawer Styles */
+.sidebar-nav.customer-sidebar {
+  display: flex !important;
+  flex-direction: column;
+  position: fixed;
+  top: var(--space-md);
+  bottom: var(--space-md);
+  left: -280px; /* Hidden left offscreen by default */
+  width: 250px;
+  z-index: 10001;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-diffused);
+  transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+body.sidebar-open .sidebar-nav.customer-sidebar {
+  left: var(--space-md) !important;
+}
+
+/* Page content minimize/scale transition when customer sidebar is active */
+.dashboard-container.customer-layout {
+  padding-left: 0 !important;
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.4s ease, box-shadow 0.4s ease;
+}
+
+body.sidebar-open .dashboard-container.customer-layout {
+  transform: scale(0.93) translateX(260px) rotateY(2deg); /* subtle premium perspective scale */
+  border-radius: var(--radius-xl) !important;
+  box-shadow: 0 25px 60px rgba(0, 85, 255, 0.15) !important;
+  pointer-events: none; /* prevent click/scroll during open state */
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+/* Ensure backdrop overlay is shown */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+body.sidebar-open .sidebar-backdrop {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .sidebar-nav.customer-sidebar {
+    left: -280px;
+    width: 260px;
+    top: 0;
+    bottom: 0;
+    border-radius: 0;
+  }
+  
+  body.sidebar-open .sidebar-nav.customer-sidebar {
+    left: 0 !important;
+  }
+  
+  body.sidebar-open .dashboard-container.customer-layout {
+    transform: scale(0.95) translateX(240px);
+  }
+}

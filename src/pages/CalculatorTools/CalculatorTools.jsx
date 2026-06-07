@@ -102,8 +102,12 @@ const CalculatorTools = () => {
     });
   };
 
+  const isVisitor = role === 'visitor';
+  const hasNormalSidebar = role === 'admin' || role === 'technician';
+  const containerClass = hasNormalSidebar ? '' : (isVisitor ? ' customer-layout' : ' guest-layout');
+
   return (
-    <div className={`dashboard-container ${(!user || role !== 'visitor') ? 'guest-layout' : ''}`}>
+    <div className={`dashboard-container${containerClass}`}>
       <header className="catalog-header glass-panel calculator-header-custom">
         <div className="calculator-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {role === 'visitor' && (

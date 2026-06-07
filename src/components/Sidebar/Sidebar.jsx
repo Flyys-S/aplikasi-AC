@@ -42,13 +42,13 @@ const Sidebar = () => {
 
   const navItems = [
     ...(isAdmin ? [{ to: '/dashboard', label: 'Beranda', icon: LayoutDashboard }] : []),
-    ...(role === 'visitor' ? [{ to: '/visitor-home', label: 'Beranda', icon: LayoutDashboard }] : []),
-    { to: isAdmin ? '/admin-catalog' : '/', label: 'Katalog', icon: BookOpen },
+    ...(role === 'visitor' ? [{ to: '/', label: 'Beranda', icon: LayoutDashboard }] : []),
+    { to: isAdmin ? '/admin-catalog' : (role === 'visitor' ? '/catalog' : '/'), label: 'Katalog', icon: BookOpen },
     ...(isAdmin ? [{ to: '/inventory', label: 'Stok', icon: Package }] : []),
     ...(!isTechnician && role !== 'visitor' ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
     ...(role === 'visitor' ? [{ to: '/tools', label: 'Kalkulator', icon: Calculator }] : []),
     ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),
-    ...(role !== 'visitor' ? [{ to: '/service', label: 'Servis', icon: Wrench }] : []),
+    ...(role === 'visitor' ? [{ to: '/visitor-home', label: 'Servis', icon: Wrench }] : (role !== 'visitor' ? [{ to: '/service', label: 'Servis', icon: Wrench }] : [])),
     ...(isTechnician || isAdmin ? [{ to: '/technician', label: 'Tugas Saya', icon: HardHat }] : []),
     ...(role === 'visitor' ? [{ to: '/profile', label: 'Profil Saya', icon: User }] : []),
   ]
@@ -56,7 +56,7 @@ const Sidebar = () => {
   return (
     <>
       <div className="sidebar-backdrop" onClick={() => document.body.classList.remove('sidebar-open')}></div>
-      <aside className="sidebar-nav glass-panel">
+      <aside className={`sidebar-nav glass-panel ${role === 'visitor' ? 'customer-sidebar' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <span className="logo-icon">❄️</span>
