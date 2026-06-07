@@ -795,7 +795,7 @@ const Catalog = () => {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
             <div className="inventory-grid" style={{ paddingBottom: '32px', width: '100%' }}>
               {filteredProducts.length > 0 ? (
-                (user ? filteredProducts : filteredProducts.slice(0, 4)).map(product => (
+                (isAdmin ? filteredProducts : filteredProducts.slice(0, 8)).map(product => (
                   <div key={product.id} style={{ position: 'relative' }}>
                     <ProductCard
                       image={product.image_url}
@@ -845,7 +845,7 @@ const Catalog = () => {
               )}
             </div>
 
-            {!isAdmin && !user && (
+            {!isAdmin && (
               <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '80px', display: 'flex', justifyContent: 'center' }}>
                 <Button 
                   onClick={() => navigate('/catalog')} 
