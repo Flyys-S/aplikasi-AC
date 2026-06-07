@@ -13,6 +13,10 @@ const Sidebar = () => {
   const isAdmin = role === 'admin'
   const isTechnician = role === 'technician'
 
+  useEffect(() => {
+    document.body.classList.remove('sidebar-open')
+  }, [location.pathname])
+
   const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/visitor-home']
   if (frontEndRoutes.includes(location.pathname)) {
     if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog')) {
@@ -73,6 +77,7 @@ const Sidebar = () => {
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+                onClick={() => document.body.classList.remove('sidebar-open')}
               >
                 <div className="icon-wrapper">
                   <IconComponent size={20} />

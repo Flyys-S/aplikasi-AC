@@ -18,6 +18,7 @@
     padding: var(--space-md);
     box-shadow: var(--shadow-diffused);
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
   }
 
   body.sidebar-open .sidebar-nav {
@@ -54,6 +55,8 @@
     flex-direction: column;
     gap: var(--space-sm);
     flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .sidebar-nav .sidebar-item {
@@ -233,6 +236,8 @@
     flex-direction: column;
     gap: var(--space-sm);
     flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Nested Island Navigation Links */
@@ -395,13 +400,14 @@
   border-right: 1px solid var(--color-outline-variant);
   box-shadow: var(--shadow-diffused);
   transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  overflow-y: auto;
 }
 
 body.sidebar-open .sidebar-nav.customer-sidebar {
   left: 0 !important;
 }
 
-/* Page content push/slide transition when customer sidebar is active */
+/* Page content transition when customer sidebar is active */
 .dashboard-container.customer-layout {
   padding-left: 0 !important;
   width: 100% !important;
@@ -411,19 +417,17 @@ body.sidebar-open .sidebar-nav.customer-sidebar {
 }
 
 body.sidebar-open .dashboard-container.customer-layout {
-  transform: translateX(270px); /* Shift content exactly by sidebar width */
-  pointer-events: none; /* Disable inputs inside content when menu is open */
+  /* Keep container stable without shifting or blocking pointer events */
 }
 
-/* Backdrop capture overlay to catch clicks on shifted page content to close menu */
+/* Backdrop capture overlay to catch clicks outside sidebar to close menu */
 .sidebar-backdrop {
   display: none;
   position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 270px; /* Only cover the shifted page content area to avoid blocking sidebar clicks */
-  background: rgba(0, 0, 0, 0.05); /* Extremely subtle dim to indicate inactive page */
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35); /* Elegant overlay dimming */
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   z-index: 10000;
   cursor: pointer;
 }
@@ -443,13 +447,5 @@ body.sidebar-open .sidebar-backdrop {
   
   body.sidebar-open .sidebar-nav.customer-sidebar {
     left: 0 !important;
-  }
-  
-  body.sidebar-open .dashboard-container.customer-layout {
-    transform: translateX(270px);
-  }
-
-  .sidebar-backdrop {
-    left: 270px;
   }
 }

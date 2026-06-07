@@ -314,12 +314,14 @@ ul {
     display: flex !important;
     flex-direction: column !important;
   }
-  .dashboard-container.guest-layout {
+  .dashboard-container.guest-layout,
+  .dashboard-container.customer-layout {
     padding-left: 0 !important;
     height: 100vh !important;
     overflow-y: auto !important;
   }
-  .dashboard-container.guest-layout .page-content {
+  .dashboard-container.guest-layout .page-content,
+  .dashboard-container.customer-layout .page-content {
     height: auto !important;
     overflow: visible !important;
   }
