@@ -385,19 +385,20 @@
   display: flex !important;
   flex-direction: column;
   position: fixed;
-  top: var(--space-md);
-  bottom: var(--space-md);
-  left: -280px; /* Hidden left offscreen by default */
-  width: 250px;
+  top: 0;
+  bottom: 0;
+  left: -270px; /* Hidden left offscreen by default */
+  width: 270px;
   z-index: 10001;
   background: var(--color-surface);
-  border-radius: var(--radius-lg);
+  border-radius: 0 !important; /* Full height, no round corners */
+  border-right: 1px solid var(--color-outline-variant);
   box-shadow: var(--shadow-diffused);
   transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 body.sidebar-open .sidebar-nav.customer-sidebar {
-  left: var(--space-md) !important;
+  left: 0 !important;
 }
 
 /* Page content push/slide transition when customer sidebar is active */
@@ -408,17 +409,21 @@ body.sidebar-open .sidebar-nav.customer-sidebar {
 }
 
 body.sidebar-open .dashboard-container.customer-layout {
-  transform: translateX(270px); /* Just shift the content right without scaling or squeezing */
+  transform: translateX(270px); /* Shift content exactly by sidebar width */
   pointer-events: none; /* Disable inputs inside content when menu is open */
 }
 
-/* Backdrop capture overlay to catch clicks outside menu */
+/* Backdrop capture overlay to catch clicks on shifted page content to close menu */
 .sidebar-backdrop {
   display: none;
   position: fixed;
-  inset: 0;
-  background: transparent; /* Transparent so content remains fully visible */
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 270px; /* Only cover the shifted page content area to avoid blocking sidebar clicks */
+  background: rgba(0, 0, 0, 0.05); /* Extremely subtle dim to indicate inactive page */
   z-index: 10000;
+  cursor: pointer;
 }
 
 body.sidebar-open .sidebar-backdrop {
@@ -427,8 +432,8 @@ body.sidebar-open .sidebar-backdrop {
 
 @media (max-width: 768px) {
   .sidebar-nav.customer-sidebar {
-    left: -280px;
-    width: 260px;
+    left: -270px;
+    width: 270px;
     top: 0;
     bottom: 0;
     border-radius: 0;
@@ -439,6 +444,10 @@ body.sidebar-open .sidebar-backdrop {
   }
   
   body.sidebar-open .dashboard-container.customer-layout {
-    transform: translateX(260px);
+    transform: translateX(270px);
+  }
+
+  .sidebar-backdrop {
+    left: 270px;
   }
 }
