@@ -47,6 +47,16 @@ const FullCatalog = () => {
 
   // Customize Modal
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  useEffect(() => {
+    if (isCartOpen || selectedProduct) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [isCartOpen, selectedProduct]);
+
   const [purchaseType, setPurchaseType] = useState('package'); 
   const [pipeGrade, setPipeGrade] = useState('premium'); 
   const [pipeLength, setPipeLength] = useState(3);

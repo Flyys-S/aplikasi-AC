@@ -176,6 +176,11 @@ body {
   scrollbar-width: thin;
 }
 
+body.modal-open {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
 /* Elegant Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

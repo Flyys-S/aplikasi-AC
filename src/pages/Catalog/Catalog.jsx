@@ -46,6 +46,16 @@ const Catalog = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  useEffect(() => {
+    if (isCartOpen || selectedProduct) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [isCartOpen, selectedProduct]);
+
   const [currentSlide, setCurrentSlide] = useState(0);
   
   // Promo Carousel State & Auto-slide
