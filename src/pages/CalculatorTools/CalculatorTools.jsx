@@ -102,16 +102,16 @@ const CalculatorTools = () => {
     });
   };
 
-  const isVisitor = role === 'visitor';
+  const isVisitorOrGuest = !user || role === 'visitor';
   const hasNormalSidebar = role === 'admin' || role === 'technician';
-  const containerClass = hasNormalSidebar ? '' : (isVisitor ? ' customer-layout' : ' guest-layout');
+  const containerClass = hasNormalSidebar ? '' : (isVisitorOrGuest ? ' customer-layout' : ' guest-layout');
 
   return (
     <>
       <div className={`dashboard-container${containerClass}`}>
       <header className="catalog-header glass-panel calculator-header-custom">
         <div className="calculator-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {role === 'visitor' && (
+          {isVisitorOrGuest && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
               <button 
                 className="icon-btn back-btn-customer" 
@@ -352,7 +352,7 @@ const CalculatorTools = () => {
       </div>
 
     </div>
-      {user && <Navigation />}
+      <Navigation />
     </>
   );
 };

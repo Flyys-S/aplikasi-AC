@@ -188,9 +188,9 @@ const FullCatalog = () => {
     return a.brand.localeCompare(b.brand);
   });
 
-  const isVisitor = role === 'visitor';
+  const isVisitorOrGuest = !user || role === 'visitor';
   const hasNormalSidebar = role === 'admin' || role === 'technician';
-  const containerClass = hasNormalSidebar ? '' : (isVisitor ? ' customer-layout' : ' guest-layout');
+  const containerClass = hasNormalSidebar ? '' : (isVisitorOrGuest ? ' customer-layout' : ' guest-layout');
 
   return (
     <>

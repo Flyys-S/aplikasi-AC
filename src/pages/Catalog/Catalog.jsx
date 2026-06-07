@@ -265,14 +265,14 @@ const Catalog = () => {
     catalogSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const isVisitor = role === 'visitor';
+  const isVisitorOrGuest = !user || role === 'visitor';
 
   return (
     <>
-      <div className={`dashboard-container ${(!user || !isVisitor) ? 'guest-layout' : 'customer-layout'}`}>
+      <div className={`dashboard-container ${isVisitorOrGuest ? 'customer-layout' : 'guest-layout'}`}>
       <header className="catalog-header glass-panel fade-in">
         <div className="catalog-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {user && isVisitor && (
+          {isVisitorOrGuest && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
               <button 
                 className="icon-btn back-btn-customer" 
@@ -1267,7 +1267,7 @@ const Catalog = () => {
       )}
 
     </div>
-      {user && <Navigation />}
+      <Navigation />
     </>
   );
 };

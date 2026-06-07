@@ -21,8 +21,8 @@ const Sidebar = () => {
   if (frontEndRoutes.includes(location.pathname)) {
     if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog')) {
       // Render sidebar for admin
-    } else if (role === 'visitor' && ['/', '/catalog', '/tools', '/visitor-home'].includes(location.pathname)) {
-      // Render sidebar for visitor
+    } else if ((role === 'visitor' || !user) && ['/', '/catalog', '/tools', '/visitor-home'].includes(location.pathname)) {
+      // Render sidebar for visitor or guest
     } else {
       return null
     }
@@ -40,29 +40,30 @@ const Sidebar = () => {
 
   const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'A'
 
+  const isGuest = !user;
   const navItems = [
     ...(isAdmin ? [{ to: '/dashboard', label: 'Beranda', icon: LayoutDashboard }] : []),
-    ...(role === 'visitor' ? [{ to: '/', label: 'Beranda', icon: LayoutDashboard }] : []),
-    { to: isAdmin ? '/admin-catalog' : (role === 'visitor' ? '/catalog' : '/'), label: 'Katalog', icon: BookOpen },
+    ...((role === 'visitor' || isGuest) ? [{ to: '/', label: 'Beranda', icon: LayoutDashboard }] : []),
+    { to: isAdmin ? '/admin-catalog' : ((role === 'visitor' || isGuest) ? '/catalog' : '/'), label: 'Katalog', icon: BookOpen },
     ...(isAdmin ? [{ to: '/inventory', label: 'Stok', icon: Package }] : []),
-    ...(!isTechnician && role !== 'visitor' ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
-    ...(role === 'visitor' ? [{ to: '/tools', label: 'Kalkulator', icon: Calculator }] : []),
+    ...(!isTechnician && role !== 'visitor' && !isGuest ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
+    ...((role === 'visitor' || isGuest) ? [{ to: '/tools', label: 'Kalkulator', icon: Calculator }] : []),
     ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),
-    ...(role === 'visitor' ? [{ to: '/visitor-home', label: 'Servis', icon: Wrench }] : (role !== 'visitor' ? [{ to: '/service', label: 'Servis', icon: Wrench }] : [])),
+    ...((role === 'visitor' || isGuest) ? [{ to: '/visitor-home', label: 'Servis', icon: Wrench }] : (role !== 'visitor' && !isGuest ? [{ to: '/service', label: 'Servis', icon: Wrench }] : [])),
     ...(isTechnician || isAdmin ? [{ to: '/technician', label: 'Tugas Saya', icon: HardHat }] : []),
-    ...(role === 'visitor' ? [{ to: '/profile', label: 'Profil Saya', icon: User }] : []),
+    ...((role === 'visitor' || isGuest) ? [{ to: '/profile', label: 'Profil Saya', icon: User }] : []),
   ]
 
   return (
     <>
       <div className="sidebar-backdrop" onClick={() => document.body.classList.remove('sidebar-open')}></div>
-      <aside className={`sidebar-nav glass-panel ${role === 'visitor' ? 'customer-sidebar' : ''}`}>
+      <aside className={`sidebar-nav glass-panel ${(role === 'visitor' || !user) ? 'customer-sidebar' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <span className="logo-icon">❄️</span>
             <div className="logo-text">
               <h3>MITRA MAJU SEJATI</h3>
-              <span className="logo-badge">{role?.toUpperCase() || 'VISITOR'}</span>
+              <span className="logo-badge">{role?.toUpperCase() || 'GUEST'}</span>
             </div>
           </div>
         </div>
@@ -87,16 +88,26 @@ const Sidebar = () => {
         </nav>
 
         <div className="sidebar-footer">
-          <div className="sidebar-user" onClick={() => navigate('/profile')}>
-            <div className="sidebar-user-avatar">{userInitial}</div>
-            <div className="sidebar-user-info">
-              <span className="user-email">{user?.email?.split('@')[0]}</span>
-              <span className="user-role">{role}</span>
+          {user ? (
+            <>
+              <div className="sidebar-user" onClick={() => navigate('/profile')}>
+                <div className="sidebar-user-avatar">{userInitial}</div>
+                <div className="sidebar-user-info">
+                  <span className="user-email">{user?.email?.split('@')[0]}</span>
+                  <span className="user-role">{role}</span>
+                </div>
+              </div>
+              <button className="sidebar-logout-btn" onClick={() => setShowConfirm(true)} title="Keluar">
+                <LogOut size={18} />
+              </button>
+            </>
+          ) : (
+            <div style={{ display: 'flex', width: '100%', gap: '8px' }}>
+              <Button variant="primary" style={{ width: '100%', height: '36px', fontSize: '13px' }} onClick={() => navigate('/login')}>
+                Masuk / Login
+              </Button>
             </div>
-          </div>
-          <button className="sidebar-logout-btn" onClick={() => setShowConfirm(true)} title="Keluar">
-            <LogOut size={18} />
-          </button>
+          )}
         </div>
       </aside>
 
