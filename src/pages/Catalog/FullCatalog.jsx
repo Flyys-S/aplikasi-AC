@@ -45,35 +45,19 @@ const FullCatalog = () => {
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Customize Modal
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
   useEffect(() => {
-    if (isCartOpen || selectedProduct) {
+    if (isCartOpen) {
       document.body.classList.add('modal-open');
     } else {
       document.body.classList.remove('modal-open');
     }
     return () => document.body.classList.remove('modal-open');
-  }, [isCartOpen, selectedProduct]);
-
-  const [purchaseType, setPurchaseType] = useState('package'); 
-  const [pipeGrade, setPipeGrade] = useState('premium'); 
-  const [pipeLength, setPipeLength] = useState(3);
+  }, [isCartOpen]);
 
   // Sync Cart
   useEffect(() => {
     localStorage.setItem('arctic_cart', JSON.stringify(cart));
   }, [cart]);
-
-  // Reset customize options when product changes
-  useEffect(() => {
-    if (selectedProduct) {
-      setPurchaseType('package');
-      setPipeGrade('premium');
-      setPipeLength(3);
-    }
-  }, [selectedProduct]);
 
   // Fetch products
   const fetchProducts = useCallback(async () => {
@@ -624,7 +608,7 @@ const FullCatalog = () => {
                         className="add-to-cart-btn"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedProduct(product);
+                          addToCart(product);
                         }}
                         style={{
                           position: 'absolute',
@@ -726,183 +710,6 @@ const FullCatalog = () => {
         </div>
       )}
 
-      {/* Customize View Modal */}
-      {selectedProduct && (
-        <div className="quick-view-overlay" onClick={() => setSelectedProduct(null)}>
-          <div className="quick-view-modal glass-panel fade-in-scale" onClick={e => e.stopPropagation()} style={{ maxWidth: '980px' }}>
-            <button className="quick-view-close" onClick={() => setSelectedProduct(null)}>
-              <X size={20} />
-            </button>
-            <div className="quick-view-content" style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr' }}>
-              <div className="quick-view-image-pane" style={{ display: 'flex', flexDirection: 'column', padding: '24px', justifyContent: 'space-between' }}>
-                <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                  {selectedProduct.image_url ? (
-                    <img src={selectedProduct.image_url} alt={selectedProduct.name} style={{ borderRadius: '16px', maxHeight: '280px', objectFit: 'contain' }} />
-                  ) : (
-                    <div className="quick-view-image-placeholder">No Image</div>
-                  )}
-                </div>
-                
-                <div className="details-specs-section" style={{ width: '100%', marginTop: '20px' }}>
-                  <h3>Spesifikasi AC</h3>
-                  <div className="specs-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-                    <div className="spec-item" style={{ padding: '8px 12px' }}>
-                      <span className="spec-label">PK</span>
-                      <span className="spec-value">{selectedProduct.capacity_pk} PK</span>
-                    </div>
-                    <div className="spec-item" style={{ padding: '8px 12px' }}>
-                      <span className="spec-label">Daya</span>
-                      <span className="spec-value">{selectedProduct.power_watt || 'TBA'} W</span>
-                    </div>
-                    <div className="spec-item" style={{ padding: '8px 12px' }}>
-                      <span className="spec-label">Tipe</span>
-                      <span className="spec-value">{selectedProduct.type || 'Split'}</span>
-                    </div>
-                    <div className="spec-item" style={{ padding: '8px 12px' }}>
-                      <span className="spec-label">Refrigerant</span>
-                      <span className="spec-value">R32</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="quick-view-details-pane">
-                <span className="details-brand-badge">{selectedProduct.brand}</span>
-                <h2 className="details-title">{selectedProduct.brand} {selectedProduct.name}</h2>
-                
-                <div className="details-price-row">
-                  <span className="details-price-label">Harga Total</span>
-                  <span className="details-price">
-                    {formatRupiah(calculateProductTotalPrice(selectedProduct, purchaseType, pipeGrade, pipeLength))}
-                  </span>
-                </div>
-
-                {/* Purchase Type */}
-                <div className="purchase-type-section" style={{ marginBottom: '24px' }}>
-                  <h3 style={{ fontSize: '13px', fontWeight: '800', marginBottom: '12px' }}>PILIH KATEGORI PEMBELIAN</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div 
-                      onClick={() => setPurchaseType('unit')}
-                      style={{
-                        padding: '16px',
-                        borderRadius: '16px',
-                        border: `2px solid ${purchaseType === 'unit' ? 'var(--color-primary)' : 'var(--color-outline-variant)'}`,
-                        background: purchaseType === 'unit' ? 'rgba(0, 85, 255, 0.05)' : 'var(--color-surface-container-lowest)',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <div style={{ fontWeight: '800', fontSize: '13px', marginBottom: '4px' }}>Hanya Unit AC</div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>Tanpa pipa, material, dan jasa pasang</div>
-                    </div>
-                    
-                    <div 
-                      onClick={() => setPurchaseType('package')}
-                      style={{
-                        padding: '16px',
-                        borderRadius: '16px',
-                        border: `2px solid ${purchaseType === 'package' ? 'var(--color-primary)' : 'var(--color-outline-variant)'}`,
-                        background: purchaseType === 'package' ? 'rgba(0, 85, 255, 0.05)' : 'var(--color-surface-container-lowest)',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <div style={{ fontWeight: '800', fontSize: '13px', marginBottom: '4px' }}>Paket Pasang (Terima Beres)</div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>Termasuk pipa tembaga, kabel, bracket, isolasi, vacum, & jasa pasang</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Package Options */}
-                {purchaseType === 'package' && (
-                  <div className="package-options-section animate-slide-down" style={{ marginBottom: '24px' }}>
-                    <h3 style={{ fontSize: '13px', fontWeight: '800', marginBottom: '12px' }}>PILIH GRADE PIPA TEMBAGA</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-                      {[
-                        { val: 'basic', label: 'Basic Grade (Tebal 0.50mm)', desc: 'Ekonomis, direkomendasikan untuk low-budget.' },
-                        { val: 'premium', label: 'Premium Grade (Tebal 0.60mm JIS)', desc: 'Standar tebal inverter, direkomendasikan untuk performa optimal.' },
-                        { val: 'elite', label: 'Elite Grade (Tebal 0.76mm ASTM)', desc: 'Tebal & kokoh, terbaik untuk jalur di dalam dinding/plafon.' }
-                      ].map(item => (
-                        <div 
-                          key={item.val}
-                          onClick={() => setPipeGrade(item.val)}
-                          style={{
-                            padding: '14px 18px',
-                            borderRadius: '16px',
-                            border: `2px solid ${pipeGrade === item.val ? 'var(--color-primary)' : 'var(--color-outline-variant)'}`,
-                            background: pipeGrade === item.val ? 'rgba(0, 85, 255, 0.03)' : 'var(--color-surface-container-lowest)',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          <div style={{ fontWeight: '800', fontSize: '13px', marginBottom: '2px' }}>{item.label}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>{item.desc}</div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <h3 style={{ fontSize: '13px', fontWeight: '800', marginBottom: '12px' }}>ESTIMASI PANJANG PIPA (METER)</h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--color-surface-container-low)', padding: '6px 14px', borderRadius: '12px', border: '1px solid var(--color-outline-variant)' }}>
-                        <button 
-                          onClick={() => setPipeLength(prev => Math.max(3, prev - 1))}
-                          style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-on-surface)' }}
-                        >
-                          <Minus size={16} />
-                        </button>
-                        <span style={{ fontWeight: '800', fontSize: '14px', minWidth: '24px', textAlign: 'center' }}>{pipeLength}m</span>
-                        <button 
-                          onClick={() => setPipeLength(prev => prev + 1)}
-                          style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--color-on-surface)' }}
-                        >
-                          <Plus size={16} />
-                        </button>
-                      </div>
-                      <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', lineHeight: '1.4' }}>
-                        *Sudah termasuk standar 3 meter bawaan paket.<br />Panjang tambahan dikenakan tarif per meter.
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="details-cta-section" style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--color-outline-variant)' }}>
-                  {user ? (
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                      <Button 
-                        fullWidth
-                        icon={ShoppingCart} 
-                        onClick={() => {
-                          addToCart(selectedProduct, {
-                            purchaseType,
-                            pipeGrade,
-                            pipeLength
-                          });
-                          setSelectedProduct(null);
-                        }}
-                      >
-                        Masukkan Keranjang
-                      </Button>
-                      <Button variant="outline" onClick={() => setSelectedProduct(null)}>Batal</Button>
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--color-on-surface-variant)', margin: '0 0 8px 0' }}>
-                        Anda harus masuk ke sistem untuk melakukan pemesanan dan menjadwalkan instalasi AC.
-                      </p>
-                      <div style={{ display: 'flex', gap: '12px' }}>
-                        <Button fullWidth onClick={() => navigate('/login')}>
-                          Masuk untuk Memesan
-                        </Button>
-                        <Button variant="outline" onClick={() => setSelectedProduct(null)}>Batal</Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
       {!isAdmin && <Navigation />}
     </>
