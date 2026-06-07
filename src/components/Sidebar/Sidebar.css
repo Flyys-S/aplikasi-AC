@@ -405,6 +405,8 @@ body.sidebar-open .sidebar-nav.customer-sidebar {
 .dashboard-container.customer-layout {
   padding-left: 0 !important;
   width: 100% !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
