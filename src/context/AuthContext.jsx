@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
           .select('role, full_name, phone, address')
           .eq('id', userId)
           .single(),
-        timeout(3500)
+        timeout(10000)
       ])
 
       if (error) {
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
               }])
               .select('role, full_name, phone, address')
               .single(),
-            timeout(3500)
+            timeout(10000)
           ])
 
           if (insertError) {
@@ -161,7 +161,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const sessionResult = await Promise.race([
             supabase.auth.getSession(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Session fetch timeout')), 3000))
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Session fetch timeout')), 10000))
           ])
           
           const session = sessionResult?.data?.session

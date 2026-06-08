@@ -29,14 +29,22 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!user) return;
+      
+      const timeout = (ms) => new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout koneksi database')), ms)
+      );
+
       try {
         setLoading(true);
-        // Fetch from profiles table
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+        // Fetch from profiles table with 10s timeout
+        const { data, error } = await Promise.race([
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single(),
+          timeout(10000)
+        ]);
 
         if (error) {
           console.error('Error fetching profile:', error);
@@ -61,6 +69,15 @@ const UserProfile = () => {
         }
       } catch (err) {
         console.error('Profile fetch failed:', err);
+        // Fallback to Auth metadata on catch
+        setProfileData({
+          fullName: user.user_metadata?.full_name || '',
+          email: user.email || '',
+          role: role || 'visitor',
+          createdAt: user.created_at || '',
+          phone: user.user_metadata?.phone || '',
+          address: ''
+        });
       } finally {
         setLoading(false);
       }
