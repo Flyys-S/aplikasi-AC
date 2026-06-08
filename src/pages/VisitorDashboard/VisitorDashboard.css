@@ -859,3 +859,135 @@
   }
 }
 
+/* Redesigned Customer Service Layout */
+.dashboard-container.customer-layout {
+  background-color: #f0f4f8;
+  min-height: 100vh;
+}
+[data-theme="dark"] .dashboard-container.customer-layout {
+  background-color: #121318;
+}
+
+.visitor-service-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .visitor-service-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.service-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.service-select-card {
+  background: var(--color-surface-container-low, #ffffff);
+  border: 2px solid var(--color-outline-variant, #e2e8f0);
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.service-select-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary, #0055ff);
+}
+.service-select-card.selected {
+  border-color: var(--color-primary, #0055ff);
+  background-color: rgba(0, 85, 255, 0.08);
+}
+.service-select-card-icon {
+  font-size: 24px;
+}
+.service-select-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+@media (max-width: 500px) {
+  .service-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-row-horizontal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .form-row-horizontal {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.vd-submit-btn-new {
+  background-color: var(--color-primary, #0055ff);
+  color: #ffffff;
+  border: none;
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px; /* rounded-xl */
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 85, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.vd-submit-btn-new:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 16px rgba(0, 85, 255, 0.3);
+}
+.vd-submit-btn-new:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.whatsapp-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #25D366;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+  cursor: pointer;
+  z-index: 999;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+.whatsapp-fab:hover {
+  transform: scale(1.1) rotate(5deg);
+  background-color: #20ba5a;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+}
+@media (max-width: 768px) {
+  .whatsapp-fab {
+    bottom: 80px;
+    right: 16px;
+  }
+}
+
+

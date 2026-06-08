@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Wrench, ChevronRight, Loader2, Headphones,
   Sun, Moon, Plus, X, CheckCircle, Clock, AlertCircle,
-  MapPin, Calendar, FileText, Send, ArrowLeft, Menu, Phone
+  MapPin, Calendar, FileText, Send, ArrowLeft, Menu, Phone, MessageCircle
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
@@ -265,7 +265,7 @@ const VisitorDashboard = () => {
 
         {/* ─── Page Content ─── */}
         <div className="page-content fade-in" style={{ padding: '24px var(--gutter)' }}>
-          <div className="visitor-service-layout" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
+          <div className="visitor-service-layout">
             
             {/* ─── FORM SCHEDULING (Left Column) ─── */}
             <div className="tool-card glass-panel" style={{ padding: '28px', height: 'fit-content' }}>
@@ -278,39 +278,47 @@ const VisitorDashboard = () => {
 
               <form onSubmit={handleSubmitService} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 
-                {/* Jenis Layanan */}
+                {/* Jenis Layanan (Selectable Cards Grid) */}
                 <div className="vd-form-group">
-                  <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>Jenis Layanan</label>
-                  <select
-                    className="vd-form-select"
-                    value={serviceForm.service_type}
-                    onChange={e => setServiceForm({ ...serviceForm, service_type: e.target.value })}
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)' }}
-                  >
-                    {SERVICE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px', marginBottom: '8px' }}>Pilih Jenis Layanan</label>
+                  <div className="service-card-grid">
+                    {[
+                      { type: 'Cuci AC Rutin', icon: '🧼', desc: 'Perawatan Berkala' },
+                      { type: 'Perbaikan AC', icon: '🔧', desc: 'Troubleshoot & Servis' },
+                      { type: 'Bongkar Pasang', icon: '🛠️', desc: 'Relokasi / Pasang Baru' }
+                    ].map(item => (
+                      <div
+                        key={item.type}
+                        className={`service-select-card ${serviceForm.service_type === item.type ? 'selected' : ''}`}
+                        onClick={() => setServiceForm({ ...serviceForm, service_type: item.type })}
+                      >
+                        <span className="service-select-card-icon">{item.icon}</span>
+                        <span className="service-select-card-title">{item.type}</span>
+                        <span style={{ fontSize: '10px', color: 'var(--color-on-surface-variant)', opacity: 0.8 }}>{item.desc}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Deskripsi Keluhan */}
                 <div className="vd-form-group">
                   <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
-                    Deskripsi Masalah / Keluhan <span className="vd-form-required" style={{ color: '#ff4444' }}>*</span>
+                    Deskripsi Masalah / Keluhan <span className="vd-form-required">*</span>
                   </label>
                   <textarea
                     className="vd-form-textarea"
-                    placeholder="Tulis keluhan Anda (misal: AC bocor air, outdoor berisik, AC kurang dingin setelah dicuci...)"
+                    placeholder="Tulis keluhan Anda secara detail (misal: AC bocor air, outdoor berisik, AC kurang dingin...)"
                     rows={4}
                     value={serviceForm.complaint_description}
                     onChange={e => setServiceForm({ ...serviceForm, complaint_description: e.target.value })}
                     required
-                    style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)', resize: 'vertical' }}
                   />
                 </div>
 
                 {/* Alamat Servis */}
                 <div className="vd-form-group">
                   <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
-                    Alamat Lengkap Servis <span className="vd-form-required" style={{ color: '#ff4444' }}>*</span>
+                    Alamat Lengkap Servis <span className="vd-form-required">*</span>
                   </label>
                   <textarea
                     className="vd-form-textarea"
@@ -319,63 +327,47 @@ const VisitorDashboard = () => {
                     value={serviceForm.service_address}
                     onChange={e => setServiceForm({ ...serviceForm, service_address: e.target.value })}
                     required
-                    style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)', resize: 'vertical' }}
                   />
                 </div>
 
-                {/* Tanggal Penjadwalan */}
-                <div className="vd-form-group">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px', margin: 0 }}>Tanggal Servis</label>
-                    <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: '700', background: 'rgba(0, 85, 255, 0.08)', padding: '2px 8px', borderRadius: '8px' }}>
-                      Slot Tersedia: 3/5 harian
-                    </span>
+                {/* Tanggal & Kontak (Inline Grid) */}
+                <div className="form-row-horizontal">
+                  {/* Tanggal Penjadwalan */}
+                  <div className="vd-form-group">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px', margin: 0 }}>Tanggal Servis</label>
+                      <span style={{ fontSize: '10px', color: 'var(--color-primary)', fontWeight: '700', background: 'rgba(0, 85, 255, 0.08)', padding: '2px 6px', borderRadius: '6px' }}>
+                        Slot: 3/5
+                      </span>
+                    </div>
+                    <input
+                      type="date"
+                      className="vd-form-input"
+                      min={getTomorrowDate()}
+                      value={serviceForm.scheduled_date}
+                      onChange={e => setServiceForm({ ...serviceForm, scheduled_date: e.target.value })}
+                      required
+                    />
                   </div>
-                  <input
-                    type="date"
-                    className="vd-form-input"
-                    min={getTomorrowDate()}
-                    value={serviceForm.scheduled_date}
-                    onChange={e => setServiceForm({ ...serviceForm, scheduled_date: e.target.value })}
-                    required
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)' }}
-                  />
-                </div>
 
-                {/* Kontak */}
-                <div className="vd-form-group">
-                  <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>Nomor HP Kontak</label>
-                  <input
-                    type="tel"
-                    className="vd-form-input"
-                    placeholder="0812xxxxxxxx"
-                    value={serviceForm.contact_phone}
-                    onChange={e => setServiceForm({ ...serviceForm, contact_phone: e.target.value })}
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: '12px', background: 'var(--color-surface-container-low)', border: '1px solid var(--color-outline-variant)', color: 'var(--color-on-surface)' }}
-                  />
+                  {/* Kontak */}
+                  <div className="vd-form-group">
+                    <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px', marginBottom: '6px' }}>Nomor HP Kontak</label>
+                    <input
+                      type="tel"
+                      className="vd-form-input"
+                      placeholder="0812xxxxxxxx"
+                      value={serviceForm.contact_phone}
+                      onChange={e => setServiceForm({ ...serviceForm, contact_phone: e.target.value })}
+                    />
+                  </div>
                 </div>
 
                 {/* Submit */}
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="vd-submit-btn"
-                  style={{
-                    backgroundColor: 'var(--color-primary)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '12px 24px',
-                    borderRadius: '12px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    width: '100%',
-                    boxShadow: '0 4px 12px rgba(0, 85, 255, 0.25)',
-                    marginTop: '8px'
-                  }}
+                  className="vd-submit-btn-new"
                 >
                   {submitting ? (
                     <><Loader2 size={18} className="vd-spinner" /> Memproses...</>
@@ -389,124 +381,101 @@ const VisitorDashboard = () => {
 
             {/* ─── MY SERVICES LIST (Right Column) ─── */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div className="vd-section-header" style={{ margin: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 className="vd-section-title" style={{ fontSize: '18px', fontWeight: '800' }}>🔧 Servis AC Saya</h3>
-                <span className="vd-see-all-btn" style={{ fontSize: '12px', opacity: 0.8 }}>({serviceReqs.length} total)</span>
-              </div>
-
               {loadingServices ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+                <div className="tool-card glass-panel" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px', minHeight: '300px' }}>
                   <Loader2 size={32} className="vd-spinner" color="var(--color-primary)" />
                 </div>
               ) : serviceReqs.length === 0 ? (
-                <div className="vd-empty" style={{ background: 'var(--color-surface-container-low)', padding: '40px 24px', borderRadius: '20px', textAlign: 'center', border: '1px solid var(--color-outline-variant)' }}>
-                  <div className="vd-empty-icon" style={{ fontSize: '32px', marginBottom: '12px' }}>🔧</div>
-                  <h4 style={{ margin: 0, fontWeight: '700' }}>Belum Ada Pengajuan</h4>
-                  <p style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>Daftar jadwal servis Anda akan tampil di kolom ini.</p>
+                <div className="tool-card glass-panel" style={{ padding: '28px', textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+                  <div style={{ fontSize: '64px', marginBottom: '16px', filter: 'drop-shadow(0 4px 12px rgba(0,85,255,0.15))' }}>❄️🤖</div>
+                  <h4 style={{ margin: '0 0 8px 0', fontWeight: '800', fontSize: '16px' }}>Wah, Belum Ada Jadwal Servis!</h4>
+                  <p style={{ fontSize: '13px', color: 'var(--color-on-surface-variant)', maxWidth: '280px', margin: 0, lineHeight: 1.5 }}>
+                    AC Anda butuh dicuci atau diperbaiki? Yuk ajukan jadwal servis di kolom kiri. Teknisi andalan kami siap meluncur!
+                  </p>
                 </div>
               ) : (
-                <div className="vd-service-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '720px', overflowY: 'auto', paddingRight: '4px' }}>
-                  {serviceReqs.map(req => (
-                    <div key={req.id} className="vd-service-card card-elevation" style={{ background: 'var(--color-surface-container-low)', borderRadius: '18px', padding: '20px', border: '1px solid var(--color-outline-variant)', position: 'relative' }}>
-                      <div className="vd-service-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                        <div className="vd-service-type-badge" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '800', fontSize: '14px', color: 'var(--color-primary)' }}>
-                          <Wrench size={14} />
-                          {req.service_type}
-                        </div>
-                        <span className={`vd-service-status ${getServiceStatusClass(req.status)}`} style={{ padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          {req.status === 'completed'   && <CheckCircle size={11} />}
-                          {req.status === 'pending'      && <Clock size={11} />}
-                          {req.status === 'in_progress' && <AlertCircle size={11} />}
-                          {getServiceStatusLabel(req.status)}
-                        </span>
-                      </div>
+                <div className="tool-card glass-panel" style={{ padding: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--color-outline-variant)', paddingBottom: '12px' }}>
+                    <h4 style={{ margin: 0, fontWeight: '800', fontSize: '15px' }}>Riwayat & Status Servis</h4>
+                    <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: '700', background: 'rgba(0, 85, 255, 0.08)', padding: '2px 8px', borderRadius: '8px' }}>
+                      {serviceReqs.length} Pengerjaan
+                    </span>
+                  </div>
 
-                      {req.complaint_description && (
-                        <p style={{ fontSize: '13px', color: 'var(--color-on-surface)', margin: '0 0 12px 0', lineHeight: 1.4, background: 'var(--color-surface-container-lowest)', padding: '10px 12px', borderRadius: '10px' }}>
-                          <strong>Keluhan:</strong> {req.complaint_description}
+                  <div className="vd-service-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '500px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {serviceReqs.map(req => (
+                      <div key={req.id} style={{ background: 'var(--color-surface-container-low)', borderRadius: '16px', padding: '16px', border: '1px solid var(--color-outline-variant)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <span style={{ fontWeight: '800', fontSize: '13px', color: 'var(--color-on-surface)' }}>
+                            {req.service_type}
+                          </span>
+                          <span className={`vd-service-status ${getServiceStatusClass(req.status)}`} style={{ padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: '700' }}>
+                            {getServiceStatusLabel(req.status)}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', margin: '0 0 10px 0', background: 'var(--color-surface-container-lowest)', padding: '8px 10px', borderRadius: '8px', lineHeight: 1.4 }}>
+                          {req.complaint_description}
                         </p>
-                      )}
-
-                      <div className="vd-service-meta" style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px', color: 'var(--color-on-surface-variant)', borderBottom: '1px solid var(--color-outline-variant)', paddingBottom: '12px', marginBottom: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Calendar size={13} style={{ color: 'var(--color-primary)' }} />
-                          <span>Tanggal Jadwal: <strong>{new Date(req.scheduled_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></span>
-                        </div>
-                        {req.service_address && (
-                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
-                            <MapPin size={13} style={{ color: 'var(--color-primary)', marginTop: '2px' }} />
-                            <span>{req.service_address}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Cancel & Reschedule Actions */}
-                      {(req.status === 'pending' || req.status === 'in_progress') && (
-                        <div style={{ marginTop: '8px' }}>
-                          {editingJobId === req.id ? (
-                            <div className="reschedule-form" style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'var(--color-surface-container-high)', padding: '10px', borderRadius: '12px' }}>
-                              <input 
-                                type="date" 
-                                className="vd-form-input" 
-                                min={getTomorrowDate()}
-                                value={rescheduleDate}
-                                onChange={e => setRescheduleDate(e.target.value)}
-                                style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--color-outline-variant)', fontSize: '12px' }}
-                              />
-                              <button 
-                                className="vd-submit-btn" 
-                                style={{ padding: '6px 12px', width: 'auto', margin: 0, fontSize: '12px', backgroundColor: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
-                                onClick={() => handleRescheduleService(req.id)}
-                              >
-                                Simpan
-                              </button>
-                              <button 
-                                className="qty-btn" 
-                                style={{ border: '1px solid var(--color-outline-variant)', background: 'transparent', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', color: 'var(--color-on-surface)' }}
-                                onClick={() => setEditingJobId(null)}
-                              >
-                                Batal
-                              </button>
-                            </div>
-                          ) : (
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                              <button 
-                                className="vd-see-all-btn" 
-                                style={{ background: 'rgba(0, 85, 255, 0.08)', color: 'var(--color-primary)', border: 'none', padding: '6px 14px', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: '800' }}
-                                onClick={() => { setEditingJobId(req.id); setRescheduleDate(req.scheduled_date); }}
-                              >
-                                Reschedule
-                              </button>
-                              <button 
-                                className="vd-see-all-btn" 
-                                style={{ background: 'rgba(255, 68, 68, 0.08)', color: '#ff4444', border: 'none', padding: '6px 14px', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: '800' }}
-                                onClick={() => handleCancelService(req.id)}
-                              >
-                                Batalkan
-                              </button>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'var(--color-outline)', borderTop: '1px solid var(--color-outline-variant)', paddingTop: '10px' }}>
+                          <span>📅 {new Date(req.scheduled_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                          
+                          {/* Cancel/Reschedule trigger inside list item */}
+                          {(req.status === 'pending' || req.status === 'in_progress') && (
+                            <div>
+                              {editingJobId === req.id ? (
+                                <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                                  <input 
+                                    type="date" 
+                                    min={getTomorrowDate()}
+                                    value={rescheduleDate}
+                                    onChange={e => setRescheduleDate(e.target.value)}
+                                    style={{ padding: '2px 6px', borderRadius: '6px', border: '1px solid var(--color-outline-variant)', fontSize: '10px', background: 'var(--color-surface-container-lowest)', color: 'var(--color-on-surface)' }}
+                                  />
+                                  <button onClick={() => handleRescheduleService(req.id)} style={{ padding: '2px 6px', backgroundColor: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '6px', fontSize: '10px', cursor: 'pointer' }}>Set</button>
+                                  <button onClick={() => setEditingJobId(null)} style={{ padding: '2px 6px', border: '1px solid var(--color-outline-variant)', background: 'transparent', color: 'var(--color-on-surface)', borderRadius: '6px', fontSize: '10px', cursor: 'pointer' }}>X</button>
+                                </div>
+                              ) : (
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <button 
+                                    onClick={() => { setEditingJobId(req.id); setRescheduleDate(req.scheduled_date); }}
+                                    style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: '700', fontSize: '11px' }}
+                                  >
+                                    Ubah
+                                  </button>
+                                  <button 
+                                    onClick={() => handleCancelService(req.id)}
+                                    style={{ background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontWeight: '700', fontSize: '11px' }}
+                                  >
+                                    Batal
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
-                      )}
-
-                    </div>
-                  ))}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
-
-              {/* WA Help Button */}
-              <a href={waUrl} target="_blank" rel="noopener noreferrer"
-                className="vd-wa-btn" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '12px', borderRadius: '12px', fontWeight: '700', fontSize: '13px', marginTop: '8px' }}>
-                <Headphones size={18} />
-                Butuh Bantuan? Hubungi via WhatsApp
-              </a>
-
             </div>
 
           </div>
         </div>
 
       </div>
+
+      {/* Floating Action Button (FAB) WhatsApp */}
+      <a 
+        href={waUrl} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="whatsapp-fab"
+        title="Hubungi Kami via WhatsApp"
+      >
+        <MessageCircle size={28} />
+      </a>
+
       <Navigation />
     </>
   );
