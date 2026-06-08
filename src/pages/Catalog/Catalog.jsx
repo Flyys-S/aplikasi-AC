@@ -19,25 +19,9 @@ const Catalog = () => {
   const { user, isAdmin, role, isBioComplete } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const catalogSectionRef = useRef(null);
-  const containerRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Parallax 3D tilt state
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5; // -0.5 to 0.5
-    setTilt({ x: x * 15, y: -y * 15 }); // Max tilt angle 15 deg
-  };
-
-  const handleMouseLeave = () => {
-    setTilt({ x: 0, y: 0 });
-  };
 
   // Cart State
   const [cart, setCart] = useState(() => {
@@ -91,11 +75,6 @@ const Catalog = () => {
     startPromoTimer();
   };
 
-  // PK Calculator State
-  const [roomLength, setRoomLength] = useState('');
-  const [roomWidth, setRoomWidth] = useState('');
-  const [calcBtu, setCalcBtu] = useState(null);
-  const [recommendedPK, setRecommendedPK] = useState('');
   const [pkFilter, setPkFilter] = useState('');
   const [brandFilter, setBrandFilter] = useState('');
 
@@ -124,42 +103,14 @@ const Catalog = () => {
   // Reset product customization on selection change
   useEffect(() => {
     if (selectedProduct) {
-      setPurchaseType('package');
-      setPipeGrade('premium');
-      setPipeLength(3);
+      const timer = setTimeout(() => {
+        setPurchaseType('package');
+        setPipeGrade('premium');
+        setPipeLength(3);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [selectedProduct]);
-
-  // Handle PK calculation
-  const handleCalculatePK = () => {
-    const l = parseFloat(roomLength);
-    const w = parseFloat(roomWidth);
-    if (isNaN(l) || isNaN(w) || l <= 0 || w <= 0) {
-      setCalcBtu(null);
-      setRecommendedPK('');
-      return;
-    }
-    const btu = l * w * 500;
-    setCalcBtu(btu);
-    
-    let recommendation = '0.5';
-    if (btu <= 5000) recommendation = '0.5';
-    else if (btu <= 7000) recommendation = '0.75';
-    else if (btu <= 9000) recommendation = '1';
-    else if (btu <= 12000) recommendation = '1.5';
-    else if (btu <= 18000) recommendation = '2';
-    else recommendation = '2.5';
-    
-    setRecommendedPK(recommendation);
-  };
-
-  const clearCalculator = () => {
-    setRoomLength('');
-    setRoomWidth('');
-    setCalcBtu(null);
-    setRecommendedPK('');
-    setPkFilter('');
-  };
 
   const fetchProducts = useCallback(async () => {
     try {
