@@ -497,57 +497,79 @@ const TechnicianDashboard = () => {
   const greetIcon = hour < 11 ? '☀️' : hour < 15 ? '🌤️' : hour < 18 ? '🌅' : '🌙';
   const userName = user?.email?.split('@')[0] || 'Teknisi';
 
+  const activeJobs = jobs.filter(j => j.status === 'pending' || j.status === 'in_progress');
+  const completedJobs = jobs.filter(j => j.status === 'completed');
+
   return (
     <div className="dashboard-container">
-      <TopHeader title="Dashboard Teknisi" subtitle="Daftar tugas servis Anda" />
+      <TopHeader title="Dashboard Teknisi" subtitle="Datar tugas servis Anda" />
 
-      <div className="page-content fade-in">
+      <div className="page-content fade-in" style={{ paddingBottom: '100px', paddingLeft: '24px', paddingRight: '24px' }}>
 
-        {/* ─── Hero Greeting ─── */}
-        <div className="tech-hero">
-          <div className="tech-hero-text">
-            <p className="tech-hero-greeting">{greetIcon} {greeting},</p>
-            <h2 className="tech-hero-name">{userName}</h2>
-            <p className="tech-hero-sub">
-              {stats.in_progress > 0
-                ? `Anda sedang mengerjakan ${stats.in_progress} tugas aktif`
-                : stats.pending > 0
-                ? `${stats.pending} tugas menunggu untuk dikerjakan`
-                : 'Semua tugas hari ini sudah selesai! 🎉'}
-            </p>
+        {/* Row 1 (Welcome & Performance - Grid 65:35) */}
+        <div className="tech-row-1-grid">
+          <div className="tech-welcome-card">
+            <div className="tech-welcome-text">
+              <p className="tech-welcome-greeting">{greetIcon} {greeting},</p>
+              <h2 className="tech-welcome-name">{userName === 'TEKNISI' ? 'Rafly Rajwa' : userName}</h2>
+              <p className="tech-welcome-sub">
+                {stats.in_progress > 0
+                  ? `Anda sedang mengerjakan ${stats.in_progress} tugas aktif`
+                  : stats.pending > 0
+                  ? `${stats.pending} tugas menunggu untuk dikerjakan`
+                  : 'Semua tugas hari ini sudah selesai! 🎉'}
+              </p>
+            </div>
+            <div className="tech-welcome-icon">
+              <Wrench size={24} />
+            </div>
           </div>
-          <div className="tech-hero-icon">
-            <Wrench size={28} />
+          <div className="tech-performance-card glass-panel">
+            <div className="performance-stars">
+              <Star size={20} fill="#facc15" stroke="#facc15" />
+            </div>
+            <div className="performance-content">
+              <span className="performance-label">Kepuasan Pelanggan</span>
+              <span className="performance-value">4.9 / 5.0</span>
+            </div>
           </div>
         </div>
 
-        {/* ─── Stats Cards ─── */}
-        <div className="tech-stats-row">
-          <div className="tech-stat-card">
-            <div className="tech-stat-icon pending">
-              <Clock size={18} />
+        {/* Row 2 (Task Status - Grid 3 Columns) */}
+        <div className="tech-task-status-grid">
+          <div className="tech-status-card" onClick={() => setActiveFilter('pending')}>
+            <div className="status-header">
+              <span className="status-label">Menunggu</span>
+              <div className="status-icon-bg amber-soft">
+                <Clock size={16} />
+              </div>
             </div>
-            <span className="tech-stat-value">{stats.pending}</span>
-            <span className="tech-stat-label">Menunggu</span>
+            <span className="status-value">{stats.pending}</span>
           </div>
-          <div className="tech-stat-card">
-            <div className="tech-stat-icon progress">
-              <Activity size={18} />
+
+          <div className="tech-status-card" onClick={() => setActiveFilter('in_progress')}>
+            <div className="status-header">
+              <span className="status-label">Dikerjakan</span>
+              <div className="status-icon-bg blue-soft">
+                <Activity size={16} />
+              </div>
             </div>
-            <span className="tech-stat-value">{stats.in_progress}</span>
-            <span className="tech-stat-label">Dikerjakan</span>
+            <span className="status-value">{stats.in_progress}</span>
           </div>
-          <div className="tech-stat-card">
-            <div className="tech-stat-icon done">
-              <CheckCircle2 size={18} />
+
+          <div className="tech-status-card" onClick={() => setActiveFilter('completed')}>
+            <div className="status-header">
+              <span className="status-label">Selesai</span>
+              <div className="status-icon-bg green-soft">
+                <CheckCircle2 size={16} />
+              </div>
             </div>
-            <span className="tech-stat-value">{stats.completed}</span>
-            <span className="tech-stat-label">Selesai</span>
+            <span className="status-value">{stats.completed}</span>
           </div>
         </div>
 
-        {/* ─── Filter Tabs ─── */}
-        <div className="filter-tabs">
+        {/* Filter Tabs for Tasks view */}
+        <div className="filter-tabs" style={{ marginTop: '24px' }}>
           {FILTERS.map(f => (
             <button
               key={f.key}
@@ -560,49 +582,76 @@ const TechnicianDashboard = () => {
           ))}
         </div>
 
-        {/* ─── Job List ─── */}
-        <div className="section-header">
-          <h3 className="section-title">
-            {FILTERS.find(f => f.key === activeFilter)?.label.replace(/[^a-zA-Z\s]/g, '').trim()}
-          </h3>
-          <span className="section-count">{filteredJobs.length} tugas</span>
+        {/* Row 3 (Operations Feed - Grid 60:40) */}
+        <div className="tech-operations-grid">
+          {/* Left Card: Tugas Servis Aktif */}
+          <div className="operations-card left-card glass-panel">
+            <div className="operations-header">
+              <h3>Tugas Servis Aktif</h3>
+              <span className="section-count">{activeJobs.length} tugas</span>
+            </div>
+            <div className="operations-body">
+              {loading ? (
+                <div className="tech-compact-empty">
+                  <Loader2 size={24} className="spin-loader" />
+                  <p>Memuat tugas...</p>
+                </div>
+              ) : activeJobs.length > 0 ? (
+                <div className="job-list">
+                  {activeJobs.map(job => (
+                    <JobCard
+                      key={job.id}
+                      job={job}
+                      onOpenDetail={setSelectedJob}
+                      onQuickUpdateStatus={handleQuickUpdateStatus}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="tech-compact-empty">
+                  <Coffee size={36} style={{ color: 'var(--color-outline)' }} />
+                  <h4 style={{ margin: '8px 0 4px 0', fontSize: '15px' }}>Tidak ada tugas aktif</h4>
+                  <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>Nikmati istirahat Anda! ☕</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Card: Riwayat Kerja Terbaru */}
+          <div className="operations-card right-card glass-panel">
+            <div className="operations-header">
+              <h3>Riwayat Kerja Terbaru</h3>
+            </div>
+            <div className="operations-body">
+              {completedJobs.length > 0 ? (
+                <div className="tech-history-list">
+                  {completedJobs.slice(0, 5).map(job => (
+                    <div 
+                      key={job.id} 
+                      className="tech-history-item"
+                      onClick={() => setSelectedJob(job)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="history-details">
+                        <span className="history-client">{job.customers?.name || 'Klien'}</span>
+                        <span className="history-type">{getServiceTypeLabel(job.service_type)}</span>
+                      </div>
+                      <span className="history-time">
+                        {job.completed_at ? new Date(job.completed_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="tech-compact-empty">
+                  <CheckCircle2 size={32} style={{ color: 'var(--color-outline)' }} />
+                  <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>Belum ada riwayat pengerjaan selesai.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {loading ? (
-          <div className="tech-empty-state">
-            <div className="tech-empty-icon">
-              <Loader2 size={32} className="spin-loader" />
-            </div>
-            <p className="tech-empty-desc">Memuat daftar tugas...</p>
-          </div>
-        ) : filteredJobs.length === 0 ? (
-          <div className="tech-empty-state">
-            <div className="tech-empty-icon">
-              {activeFilter === 'completed' ? <CheckCircle2 size={32} /> : <Coffee size={32} />}
-            </div>
-            <h4 className="tech-empty-title">
-              {activeFilter === 'completed' ? 'Belum ada tugas selesai' : 'Tidak ada tugas'}
-            </h4>
-            <p className="tech-empty-desc">
-              {activeFilter === 'active'
-                ? 'Tidak ada tugas aktif saat ini. Nikmati istirahat Anda! ☕'
-                : activeFilter === 'completed'
-                ? 'Tugas yang sudah selesai akan muncul di sini.'
-                : 'Tidak ada tugas dengan filter ini.'}
-            </p>
-          </div>
-        ) : (
-          <div className="job-list">
-            {filteredJobs.map(job => (
-              <JobCard
-                key={job.id}
-                job={job}
-                onOpenDetail={setSelectedJob}
-                onQuickUpdateStatus={handleQuickUpdateStatus}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
       {/* ─── Detail Bottom Sheet ─── */}
