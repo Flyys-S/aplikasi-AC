@@ -123,38 +123,6 @@ export const AuthProvider = ({ children }) => {
   }, [user, fetchUserProfile])
 
   useEffect(() => {
-    const checkInitialSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-
-        if (session?.user) {
-          setUser(session.user)
-          await fetchUserProfile(session.user.id)
-          cleanAuthUrlParams()
-        } else {
-          // Handle error query params from failed OAuth sign-in
-          const params = new URLSearchParams(window.location.search)
-          const errorMsg = params.get('error_description') || params.get('error')
-          if (errorMsg) {
-            console.error('Auth error in query params:', errorMsg)
-            toast.error('Gagal login: ' + decodeURIComponent(errorMsg).replace(/\+/g, ' '))
-            cleanAuthUrlParams()
-          }
-          if (window.location.hash.includes('error=')) {
-            console.error('Auth error in hash:', window.location.hash)
-            // Clear hash
-            window.history.replaceState(null, '', window.location.pathname)
-          }
-          setLoading(false)
-        }
-      } catch (err) {
-        console.error('Session check failed:', err)
-        setLoading(false)
-      }
-    }
-
-    checkInitialSession()
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state change event:', event, session?.user?.email)
 
