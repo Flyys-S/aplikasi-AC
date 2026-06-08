@@ -8,7 +8,6 @@ import {
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { formatTanggalJam } from '../../lib/formatters';
 import toast from 'react-hot-toast';
 import Navigation from '../../components/Navigation';
 import './VisitorDashboard.css';
@@ -48,7 +47,7 @@ const getTomorrowDate = () => {
 
 const VisitorDashboard = () => {
   const navigate = useNavigate();
-  const { user, role, isBioComplete } = useAuth();
+  const { user, isBioComplete } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   /* ── State ── */
@@ -98,7 +97,10 @@ const VisitorDashboard = () => {
   }, [user]);
 
   useEffect(() => {
-    fetchServiceRequests();
+    const timer = setTimeout(() => {
+      fetchServiceRequests();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fetchServiceRequests]);
 
   /* ── Cancel Service request ── */
@@ -203,7 +205,6 @@ const VisitorDashboard = () => {
     }
   };
 
-  const userName = user?.email?.split('@')[0] || 'Pelanggan';
   const waMessage = encodeURIComponent('Halo Mitra Maju Sejati, saya ingin bertanya tentang servis AC...');
   const waUrl = `https://wa.me/${WA_NUMBER}?text=${waMessage}`;
 
