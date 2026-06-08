@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   const fetchUserProfile = useCallback(async (userId) => {
+    console.log('fetchUserProfile started for:', userId)
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -55,29 +56,68 @@ export const AuthProvider = ({ children }) => {
         .eq('id', userId)
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.warn('Profile fetch error, checking code:', error)
+        if (error.code === 'PGRST116') {
+          console.log('Profile row not found. Auto-creating profile for:', userId)
+          // Get current auth user details to populate
+          const { data: { user: authUser } } = await supabase.auth.getUser()
+          const { data: insertedData, error: insertError } = await supabase
+            .from('profiles')
+            .insert([{
+              id: userId,
+              role: 'visitor',
+              email: authUser?.email || '',
+              full_name: authUser?.user_metadata?.full_name || '',
+              phone: authUser?.user_metadata?.phone || ''
+            }])
+            .select('role, full_name, phone, address')
+            .single()
+
+          if (insertError) {
+            console.error('Failed to auto-create profile:', insertError)
+            throw insertError
+          }
+          
+          if (insertedData) {
+            console.log('Profile auto-created successfully:', insertedData)
+            setRole(insertedData.role || 'visitor')
+            localStorage.setItem('supabase_user_role', insertedData.role || 'visitor')
+            setProfile(insertedData)
+            const complete = !!(insertedData.full_name?.trim() && insertedData.phone?.trim() && insertedData.address?.trim())
+            setIsBioComplete(complete)
+            return
+          }
+        }
+        throw error
+      }
+
       if (data) {
+        console.log('Profile fetched successfully:', data)
         setRole(data.role || 'visitor')
         localStorage.setItem('supabase_user_role', data.role || 'visitor')
         setProfile(data)
         const complete = !!(data.full_name?.trim() && data.phone?.trim() && data.address?.trim())
         setIsBioComplete(complete)
       } else {
+        console.warn('No profile data returned, defaulting to visitor')
         setRole('visitor')
         setIsBioComplete(false)
       }
     } catch (err) {
-      console.error('Error fetching user profile:', err.message)
+      console.error('Error fetching user profile:', err)
       const cachedRole = localStorage.getItem('supabase_user_role')
       setRole(cachedRole || 'visitor')
       setIsBioComplete(false)
     } finally {
+      console.log('fetchUserProfile finished, setting loading to false')
       setLoading(false)
     }
   }, [])
 
   const refreshProfile = useCallback(async () => {
     if (user) {
+      console.log('Refreshing profile for user:', user.id)
       await fetchUserProfile(user.id)
     }
   }, [user, fetchUserProfile])
