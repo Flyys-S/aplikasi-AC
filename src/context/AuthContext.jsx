@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   const [isBioComplete, setIsBioComplete] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  const fetchUserProfile = useCallback(async (userId) => {
+  const fetchUserProfile = useCallback(async (userId, authUser = null) => {
     console.log('fetchUserProfile started for:', userId)
     try {
       const { data, error } = await supabase
@@ -60,8 +60,6 @@ export const AuthProvider = ({ children }) => {
         console.warn('Profile fetch error, checking code:', error)
         if (error.code === 'PGRST116') {
           console.log('Profile row not found. Auto-creating profile for:', userId)
-          // Get current auth user details to populate
-          const { data: { user: authUser } } = await supabase.auth.getUser()
           const { data: insertedData, error: insertError } = await supabase
             .from('profiles')
             .insert([{
@@ -118,17 +116,22 @@ export const AuthProvider = ({ children }) => {
   const refreshProfile = useCallback(async () => {
     if (user) {
       console.log('Refreshing profile for user:', user.id)
-      await fetchUserProfile(user.id)
+      await fetchUserProfile(user.id, user)
     }
   }, [user, fetchUserProfile])
 
   useEffect(() => {
+    let active = true
+    let fired = false
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state change event:', event, session?.user?.email)
+      fired = true
+      if (!active) return
 
       if (session?.user) {
         setUser(session.user)
-        await fetchUserProfile(session.user.id)
+        await fetchUserProfile(session.user.id, session.user)
         cleanAuthUrlParams()
       } else {
         setUser(null)
@@ -140,7 +143,30 @@ export const AuthProvider = ({ children }) => {
       }
     })
 
+    // Fallback in case onAuthStateChange does not fire on mount for guest users
+    const fallbackTimer = setTimeout(async () => {
+      if (!fired && active) {
+        console.log('onAuthStateChange did not fire, running fallback session check')
+        try {
+          const { data: { session } } = await supabase.auth.getSession()
+          if (active && !fired) {
+            if (session?.user) {
+              setUser(session.user)
+              await fetchUserProfile(session.user.id, session.user)
+            } else {
+              setLoading(false)
+            }
+          }
+        } catch (e) {
+          console.error('Fallback session check failed:', e)
+          if (active) setLoading(false)
+        }
+      }
+    }, 150)
+
     return () => {
+      active = false
+      clearTimeout(fallbackTimer)
       if (subscription) subscription.unsubscribe()
     }
   }, [fetchUserProfile])
