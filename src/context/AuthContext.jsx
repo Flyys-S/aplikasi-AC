@@ -43,38 +43,44 @@ const cleanAuthUrlParams = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [role, setRole] = useState(() => localStorage.getItem('supabase_user_role') || null)
+  const [profile, setProfile] = useState(null)
+  const [isBioComplete, setIsBioComplete] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  const fetchUserRole = useCallback(async (userId) => {
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Timeout fetching role')), 5000)
-    );
-
+  const fetchUserProfile = useCallback(async (userId) => {
     try {
-      const rolePromise = supabase.rpc('get_user_role', { user_id: userId });
-      const { data, error } = await Promise.race([rolePromise, timeoutPromise]);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role, full_name, phone, address')
+        .eq('id', userId)
+        .single()
 
-      if (error) {
-        console.error('Error fetching user role via RPC:', error)
-        const cachedRole = localStorage.getItem('supabase_user_role')
-        if (!cachedRole) {
-          setRole('visitor')
-        }
+      if (error) throw error
+      if (data) {
+        setRole(data.role || 'visitor')
+        localStorage.setItem('supabase_user_role', data.role || 'visitor')
+        setProfile(data)
+        const complete = !!(data.full_name?.trim() && data.phone?.trim() && data.address?.trim())
+        setIsBioComplete(complete)
       } else {
-        const userRole = data || 'visitor'
-        setRole(userRole)
-        localStorage.setItem('supabase_user_role', userRole)
+        setRole('visitor')
+        setIsBioComplete(false)
       }
     } catch (err) {
-      console.error('Fetch role failed or timed out:', err.message)
+      console.error('Error fetching user profile:', err.message)
       const cachedRole = localStorage.getItem('supabase_user_role')
-      if (!cachedRole) {
-        setRole('visitor')
-      }
+      setRole(cachedRole || 'visitor')
+      setIsBioComplete(false)
     } finally {
       setLoading(false)
     }
-  }, []);
+  }, [])
+
+  const refreshProfile = useCallback(async () => {
+    if (user) {
+      await fetchUserProfile(user.id)
+    }
+  }, [user, fetchUserProfile])
 
   useEffect(() => {
     const checkInitialSession = async () => {
@@ -83,7 +89,7 @@ export const AuthProvider = ({ children }) => {
 
         if (session?.user) {
           setUser(session.user)
-          await fetchUserRole(session.user.id)
+          await fetchUserProfile(session.user.id)
           cleanAuthUrlParams()
         } else {
           // Handle error query params from failed OAuth sign-in
@@ -114,11 +120,13 @@ export const AuthProvider = ({ children }) => {
 
       if (session?.user) {
         setUser(session.user)
-        await fetchUserRole(session.user.id)
+        await fetchUserProfile(session.user.id)
         cleanAuthUrlParams()
       } else {
         setUser(null)
         setRole(null)
+        setProfile(null)
+        setIsBioComplete(false)
         localStorage.removeItem('supabase_user_role')
         setLoading(false)
       }
@@ -127,7 +135,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       if (subscription) subscription.unsubscribe()
     }
-  }, [fetchUserRole])
+  }, [fetchUserProfile])
 
   const signInWithGoogle = async () => {
     try {
@@ -165,7 +173,10 @@ export const AuthProvider = ({ children }) => {
       isTechnician: role === 'technician',
       loading,
       signInWithGoogle,
-      signOut
+      signOut,
+      profile,
+      isBioComplete,
+      refreshProfile
     }}>
       {children}
     </AuthContext.Provider>

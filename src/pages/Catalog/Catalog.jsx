@@ -12,10 +12,11 @@ import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import '../Inventory/Inventory.css';
 import './Catalog.css';
+import toast from 'react-hot-toast';
 
 const Catalog = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, role } = useAuth();
+  const { user, isAdmin, role, isBioComplete } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const catalogSectionRef = useRef(null);
   const containerRef = useRef(null);
@@ -223,6 +224,12 @@ const Catalog = () => {
   };
 
   const addToCart = (product, customOpts = null) => {
+    if (user && role === 'visitor' && !isBioComplete) {
+      toast.error('Silakan lengkapi biodata Anda (Nama, No. Telepon, dan Alamat) di halaman profil terlebih dahulu!');
+      navigate('/profile');
+      return;
+    }
+
     // Generate distinct ID for different configuration items in cart
     const cartItemId = customOpts
       ? `${product.id}-${customOpts.purchaseType}-${customOpts.purchaseType === 'package' ? customOpts.pipeGrade : ''}-${customOpts.purchaseType === 'package' ? customOpts.pipeLength : ''}`

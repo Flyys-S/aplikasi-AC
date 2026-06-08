@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { supabase } from '../../lib/supabase';
 import { formatTanggalJam } from '../../lib/formatters';
-import { User, Mail, Shield, Calendar, Moon, Sun, Save, LogOut, Loader2 } from 'lucide-react';
+import { User, Mail, Shield, Calendar, Moon, Sun, Save, LogOut, Loader2, Phone, MapPin } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TopHeader from '../../components/TopHeader';
 import Navigation from '../../components/Navigation';
@@ -13,13 +13,15 @@ import './Profile.css';
 
 const UserProfile = () => {
   const navigate = useNavigate();
-  const { user, role, signOut } = useAuth();
+  const { user, role, signOut, refreshProfile } = useAuth();
   const { theme, setTheme } = useTheme();
   const [profileData, setProfileData] = useState({
     fullName: '',
     email: '',
     role: '',
-    createdAt: ''
+    createdAt: '',
+    phone: '',
+    address: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -43,14 +45,18 @@ const UserProfile = () => {
             fullName: user.user_metadata?.full_name || '',
             email: user.email || '',
             role: role || 'visitor',
-            createdAt: user.created_at || ''
+            createdAt: user.created_at || '',
+            phone: user.user_metadata?.phone || '',
+            address: ''
           });
         } else if (data) {
           setProfileData({
             fullName: data.full_name || '',
             email: data.email || user.email || '',
             role: data.role || role || 'visitor',
-            createdAt: data.created_at || user.created_at || ''
+            createdAt: data.created_at || user.created_at || '',
+            phone: data.phone || '',
+            address: data.address || ''
           });
         }
       } catch (err) {
@@ -70,10 +76,46 @@ const UserProfile = () => {
       setSaving(true);
       const { error } = await supabase
         .from('profiles')
-        .update({ full_name: profileData.fullName })
+        .update({ 
+          full_name: profileData.fullName,
+          phone: profileData.phone,
+          address: profileData.address
+        })
         .eq('id', user.id);
 
       if (error) throw error;
+
+      // Sync customer details for visitors
+      if (role === 'visitor') {
+        const { data: customer } = await supabase
+          .from('customers')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (customer) {
+          await supabase
+            .from('customers')
+            .update({ 
+              name: profileData.fullName, 
+              phone: profileData.phone, 
+              address: profileData.address 
+            })
+            .eq('user_id', user.id);
+        } else {
+          await supabase
+            .from('customers')
+            .insert([{ 
+              user_id: user.id, 
+              name: profileData.fullName, 
+              phone: profileData.phone, 
+              address: profileData.address, 
+              email: user.email 
+            }]);
+        }
+      }
+
+      await refreshProfile();
       toast.success('Profil berhasil diperbarui!');
     } catch (err) {
       console.error('Error updating profile:', err);
@@ -179,6 +221,36 @@ const UserProfile = () => {
                         value={profileData.fullName}
                         onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
                         placeholder="Masukkan nama lengkap"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="phone">Nomor Telepon</label>
+                    <div className="input-with-icon">
+                      <Phone size={18} className="input-icon" />
+                      <input
+                        type="tel"
+                        id="phone"
+                        value={profileData.phone}
+                        onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                        placeholder="Masukkan nomor telepon (e.g. 0812xxxxxxxx)"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="address">Alamat Lengkap</label>
+                    <div className="input-with-icon">
+                      <MapPin size={18} className="input-icon" />
+                      <input
+                        type="text"
+                        id="address"
+                        value={profileData.address}
+                        onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
+                        placeholder="Masukkan alamat lengkap pengiriman/pengerjaan"
                         required
                       />
                     </div>
