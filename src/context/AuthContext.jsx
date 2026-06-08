@@ -49,28 +49,39 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserProfile = useCallback(async (userId, authUser = null) => {
     console.log('fetchUserProfile started for:', userId)
+    
+    const timeout = (ms) => new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout koneksi database')), ms)
+    )
+
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('role, full_name, phone, address')
-        .eq('id', userId)
-        .single()
+      const { data, error } = await Promise.race([
+        supabase
+          .from('profiles')
+          .select('role, full_name, phone, address')
+          .eq('id', userId)
+          .single(),
+        timeout(3500)
+      ])
 
       if (error) {
         console.warn('Profile fetch error, checking code:', error)
         if (error.code === 'PGRST116') {
           console.log('Profile row not found. Auto-creating profile for:', userId)
-          const { data: insertedData, error: insertError } = await supabase
-            .from('profiles')
-            .insert([{
-              id: userId,
-              role: 'visitor',
-              email: authUser?.email || '',
-              full_name: authUser?.user_metadata?.full_name || '',
-              phone: authUser?.user_metadata?.phone || ''
-            }])
-            .select('role, full_name, phone, address')
-            .single()
+          const { data: insertedData, error: insertError } = await Promise.race([
+            supabase
+              .from('profiles')
+              .insert([{
+                id: userId,
+                role: 'visitor',
+                email: authUser?.email || '',
+                full_name: authUser?.user_metadata?.full_name || '',
+                phone: authUser?.user_metadata?.phone || ''
+              }])
+              .select('role, full_name, phone, address')
+              .single(),
+            timeout(3500)
+          ])
 
           if (insertError) {
             console.error('Failed to auto-create profile:', insertError)
@@ -148,7 +159,12 @@ export const AuthProvider = ({ children }) => {
       if (!fired && active) {
         console.log('onAuthStateChange did not fire, running fallback session check')
         try {
-          const { data: { session } } = await supabase.auth.getSession()
+          const sessionResult = await Promise.race([
+            supabase.auth.getSession(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Session fetch timeout')), 3000))
+          ])
+          
+          const session = sessionResult?.data?.session
           if (active && !fired) {
             if (session?.user) {
               setUser(session.user)
@@ -162,7 +178,7 @@ export const AuthProvider = ({ children }) => {
           if (active) setLoading(false)
         }
       }
-    }, 150)
+    }, 200)
 
     return () => {
       active = false
