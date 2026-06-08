@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Loader2, Package, Sun, Moon, Sparkles, SlidersHorizontal, RefreshCw, HelpCircle, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
-import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 import Navigation from '../../components/Navigation';
 import ProductCard from '../../components/ProductCard';
 import Button from '../../components/Button';
@@ -16,8 +14,6 @@ import './Catalog.css';
 
 const AdminCatalog = () => {
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +46,10 @@ const AdminCatalog = () => {
   }, []);
 
   useEffect(() => {
-    fetchProducts();
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fetchProducts]);
 
   // Handle PK calculation

@@ -16,7 +16,7 @@ import './Catalog.css';
 
 const FullCatalog = () => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const { user, isAdmin, role } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
@@ -52,9 +52,12 @@ const FullCatalog = () => {
   // Reset product customization on selection change
   useEffect(() => {
     if (selectedProduct) {
-      setPurchaseType('package');
-      setPipeGrade('premium');
-      setPipeLength(3);
+      const timer = setTimeout(() => {
+        setPurchaseType('package');
+        setPipeGrade('premium');
+        setPipeLength(3);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [selectedProduct]);
 
@@ -88,10 +91,13 @@ const FullCatalog = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setLoading, setProducts]);
 
   useEffect(() => {
-    fetchProducts();
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fetchProducts]);
 
   // Cart Functions
