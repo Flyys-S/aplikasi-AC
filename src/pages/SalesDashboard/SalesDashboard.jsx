@@ -14,7 +14,7 @@ import '../SalesDashboard/SalesDashboard.css';
 const SalesDashboard = () => {
   const navigate = useNavigate();
   const { role, user } = useAuth();
-  const { getTransactions, getServices } = useData();
+  const { getTransactions, getServices, getProducts } = useData();
   const [stats, setStats] = useState({
     totalSales: 0,
     unitsSold: 0,
@@ -22,9 +22,12 @@ const SalesDashboard = () => {
     pendingOrders: 0,
     recentActivity: [],
     technicianJobs: [],
-    customerOrders: []
+    customerOrders: [],
+    lowStockCount: 0,
+    todayServices: []
   });
   const [loading, setLoading] = useState(true);
+  const [adminSearch, setAdminSearch] = useState('');
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -32,9 +35,10 @@ const SalesDashboard = () => {
       
       // Admin dashboard data
       if (role === 'admin') {
-        const [txns, jobs] = await Promise.all([
+        const [txns, jobs, productsList] = await Promise.all([
           getTransactions(),
-          getServices()
+          getServices(),
+          getProducts ? getProducts() : []
         ]);
 
         const completedTxns = txns.filter(t => t.status === 'completed');
@@ -46,6 +50,12 @@ const SalesDashboard = () => {
 
         const pendingOrders = txns.filter(t => t.status === 'pending_verification').length;
         const recentActivity = [...txns].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+        const lowStockCount = productsList ? productsList.filter(p => p.stock > 0 && p.stock <= 5).length : 0;
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        const todayServices = jobs.filter(j => {
+          return j.status === 'pending' || j.status === 'in_progress' || j.scheduled_date?.startsWith(todayStr);
+        });
 
         setStats({
           totalSales,
@@ -53,6 +63,8 @@ const SalesDashboard = () => {
           serviceCount: jobs.length || 0,
           pendingOrders,
           recentActivity,
+          lowStockCount,
+          todayServices,
           technicianJobs: [],
           customerOrders: []
         });
@@ -74,7 +86,7 @@ const SalesDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [role, getTransactions, getServices]);
+  }, [role, getTransactions, getServices, getProducts]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -90,21 +102,49 @@ const SalesDashboard = () => {
   const userDisplayName = user?.email?.split('@')[0]?.toUpperCase() || 'PENGGUNA';
   const roleTitle = role === 'admin' ? '🛡️ Administrator' : role === 'technician' ? '🔧 Teknisi Lapangan' : '👤 Customer Premium';
 
+  const filteredRecentActivity = stats.recentActivity.filter(txn => {
+    if (!adminSearch) return true;
+    const searchLower = adminSearch.toLowerCase();
+    return (
+      txn.customers?.name?.toLowerCase().includes(searchLower) ||
+      txn.id.toLowerCase().includes(searchLower) ||
+      txn.payment_method?.toLowerCase().includes(searchLower)
+    );
+  });
+
+  const filteredServices = (stats.todayServices || []).filter(job => {
+    if (!adminSearch) return true;
+    const searchLower = adminSearch.toLowerCase();
+    return (
+      job.customers?.name?.toLowerCase().includes(searchLower) ||
+      job.description?.toLowerCase().includes(searchLower) ||
+      job.status?.toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="dashboard-container">
-      <TopHeader title="Sistem MMS" subtitle={`Sesi Aktif: ${roleTitle}`} />
+      <TopHeader 
+        title={role === 'admin' ? "Dashboard" : "Sistem MMS"} 
+        subtitle={role === 'admin' ? "Sesi Aktif: Administrator" : `Sesi Aktif: ${roleTitle}`}
+        isAdminDashboard={role === 'admin'}
+        searchValue={adminSearch}
+        onSearchChange={setAdminSearch}
+      />
 
       <div className="page-content fade-in" style={{ paddingBottom: '100px', paddingLeft: '24px', paddingRight: '24px' }}>
         
-        {/* Dynamic Premium Welcoming Glassmorphic Header Card */}
-        <div className="welcoming-card glass-panel fade-in">
-          <div className="welcome-inner">
-            <span className="welcome-greet">Selamat Datang Kembali,</span>
-            <h2 className="welcome-name">{userDisplayName}</h2>
-            <p className="welcome-desc">Solusi pendingin udara & instalasi tepercaya untuk kenyamanan terbaik Anda.</p>
+        {/* Dynamic Premium Welcoming Glassmorphic Header Card for Non-Admin */}
+        {role !== 'admin' && (
+          <div className="welcoming-card glass-panel fade-in">
+            <div className="welcome-inner">
+              <span className="welcome-greet">Selamat Datang Kembali,</span>
+              <h2 className="welcome-name">{userDisplayName}</h2>
+              <p className="welcome-desc">Solusi pendingin udara & instalasi tepercaya untuk kenyamanan terbaik Anda.</p>
+            </div>
+            <div className="welcome-decor-orb">❄️</div>
           </div>
-          <div className="welcome-decor-orb">❄️</div>
-        </div>
+        )}
 
         {/* 1. ADMIN DASHBOARD VIEW */}
         {role === 'admin' && (
@@ -128,74 +168,148 @@ const SalesDashboard = () => {
               </div>
             )}
 
-            {/* Primary Stats HSL Gradient Grid */}
-            <section className="dashboard-stats-grid">
-              <div className="stat-card-gradient sales-grad">
-                <div className="stat-card-header">
-                  <DollarSign size={24} className="stat-icon-light" />
+            {/* Row 1 (Welcome & Quick Action - Grid 65:35) */}
+            <div className="admin-row-1-grid">
+              <div className="admin-welcome-banner">
+                <div className="welcome-inner">
+                  <span className="welcome-greet">Selamat datang kembali,</span>
+                  <h2 className="welcome-name">{userDisplayName === 'ADMIN' ? 'Rafly Rajwa' : userDisplayName}</h2>
+                  <p className="welcome-desc">Operasional hari ini berjalan lancar. Semua sistem terpantau normal.</p>
+                </div>
+                <div className="welcome-decor-orb">❄️</div>
+              </div>
+              
+              <div className="admin-quick-actions-card glass-panel">
+                <button className="quick-action-btn primary" onClick={() => navigate('/transactions/new')}>
+                  <span className="btn-icon">+</span> Tambah Transaksi Baru
+                </button>
+                <button className="quick-action-btn secondary" onClick={() => navigate('/service')}>
+                  <span className="btn-icon">+</span> Jadwalkan Servis Baru
+                </button>
+              </div>
+            </div>
+
+            {/* Row 2 (KPI Metrics - Grid 4 Columns) */}
+            <section className="admin-kpi-grid">
+              <div className="admin-kpi-card">
+                <div className="kpi-icon-wrapper blue-soft">
+                  <DollarSign size={20} />
+                </div>
+                <div className="kpi-content">
+                  <span className="kpi-label">Total Pendapatan</span>
+                  <span className="kpi-value">{formatRupiahCompact(stats.totalSales)}</span>
+                  <svg className="kpi-sparkline" viewBox="0 0 100 20" width="100%" height="20">
+                    <path d="M0 15 Q 15 5, 30 12 T 60 4 T 90 15 T 100 10" fill="none" stroke="var(--color-primary)" strokeWidth="1.5" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="admin-kpi-card">
+                <div className="kpi-icon-wrapper green-soft">
+                  <Package size={20} />
+                </div>
+                <div className="kpi-content">
+                  <span className="kpi-label">Unit Terjual</span>
+                  <span className="kpi-value">{stats.unitsSold} Unit</span>
+                </div>
+              </div>
+
+              <div className="admin-kpi-card">
+                <div className="kpi-icon-wrapper orange-soft">
+                  <Activity size={20} />
+                </div>
+                <div className="kpi-content">
+                  <span className="kpi-label">Layanan Servis</span>
+                  <span className="kpi-value">{stats.serviceCount} Servis</span>
+                </div>
+              </div>
+
+              <div className="admin-kpi-card">
+                <div className="kpi-icon-wrapper pink-soft">
                   <TrendingUp size={20} />
                 </div>
-                <span className="stat-card-label">Total Pendapatan</span>
-                <span className="stat-card-value">
-                  {formatRupiahCompact(stats.totalSales)}
-                </span>
-              </div>
-
-              <div className="stat-card-gradient units-grad">
-                <div className="stat-card-header">
-                  <Package size={24} className="stat-icon-light" />
+                <div className="kpi-content">
+                  <span className="kpi-label">Stok Menipis</span>
+                  <span className="kpi-value pink-value">{stats.lowStockCount} Item</span>
                 </div>
-                <span className="stat-card-label">Unit Terjual</span>
-                <span className="stat-card-value">
-                  {stats.unitsSold} Unit
-                </span>
-              </div>
-
-              <div className="stat-card-gradient service-grad">
-                <div className="stat-card-header">
-                  <Activity size={24} className="stat-icon-light" />
-                </div>
-                <span className="stat-card-label">Total Layanan Servis</span>
-                <span className="stat-card-value">{stats.serviceCount} Servis</span>
               </div>
             </section>
 
-            {/* Recent Transactions list */}
-            <section className="recent-activity" style={{ marginTop: '32px' }}>
-              <div className="section-header">
-                <h3 className="section-title">Transaksi Terkini</h3>
-                <span className="link-text" onClick={() => navigate('/transactions')}>Lihat Semua</span>
-              </div>
-              <div className="activity-list card-elevation">
-                {stats.recentActivity.length > 0 ? (
-                  stats.recentActivity.map((txn) => (
-                    <div 
-                      key={txn.id} 
-                      className="activity-item-mms" 
-                      onClick={() => navigate(`/transactions/${txn.id}`)}
-                    >
-                      <div className="activity-icon-container">
-                        <ShoppingBag size={18} />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <span className="activity-cust-name">{txn.customers?.name || 'Pelanggan Umum'}</span>
-                        <span className="activity-meta">{formatTanggalJam(txn.created_at)} · {txn.payment_method}</span>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <span className="activity-amount">
-                          {formatRupiahCompact(txn.total_amount)}
-                        </span>
-                        <span className={`activity-status-badge ${txn.status}`}>
-                          {getStatusLabel(txn.status).label.toUpperCase()}
-                        </span>
-                      </div>
+            {/* Row 3 (Data Monitoring - Grid 60:40) */}
+            <div className="admin-monitoring-grid">
+              {/* Left card: Transaksi Terkini */}
+              <div className="monitoring-card left-card glass-panel">
+                <div className="monitoring-header">
+                  <h3>Transaksi Terkini</h3>
+                  <button className="link-arrow-btn" onClick={() => navigate('/transactions')}>
+                    Lihat Semua ↗
+                  </button>
+                </div>
+                <div className="monitoring-body">
+                  {filteredRecentActivity.length > 0 ? (
+                    <div className="compact-activity-list">
+                      {filteredRecentActivity.map((txn) => (
+                        <div 
+                          key={txn.id} 
+                          className="compact-activity-item" 
+                          onClick={() => navigate(`/transactions/${txn.id}`)}
+                        >
+                          <div className="compact-item-details">
+                            <span className="compact-cust-name">{txn.customers?.name || 'Pelanggan Umum'}</span>
+                            <span className="compact-meta">{formatTanggalJam(txn.created_at)}</span>
+                          </div>
+                          <div className="compact-item-values">
+                            <span className="compact-amount">{formatRupiahCompact(txn.total_amount)}</span>
+                            <span className={`activity-status-badge ${txn.status}`}>
+                              {getStatusLabel(txn.status).label.toUpperCase()}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))
-                ) : (
-                  <EmptyState icon={Activity} text="Belum ada aktivitas transaksi hari ini." />
-                )}
+                  ) : (
+                    <div className="compact-empty-state">
+                      <ShoppingBag size={32} style={{ color: 'var(--color-outline)' }} />
+                      <p>Belum ada transaksi hari ini.</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </section>
+
+              {/* Right card: Antrean Servis Hari Ini */}
+              <div className="monitoring-card right-card glass-panel">
+                <div className="monitoring-header">
+                  <h3>Antrean Servis Hari Ini</h3>
+                </div>
+                <div className="monitoring-body">
+                  {filteredServices.length > 0 ? (
+                    <div className="service-queue-list">
+                      {filteredServices.slice(0, 3).map((job) => (
+                        <div 
+                          key={job.id} 
+                          className="service-queue-item"
+                          onClick={() => navigate('/service')}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div className="queue-info">
+                            <span className="queue-name">{job.customers?.name || 'Pelanggan'}</span>
+                            <span className="queue-desc">{job.description || 'Pembersihan/Servis AC'}</span>
+                          </div>
+                          <span className={`queue-badge ${job.status}`}>
+                            {job.status === 'in_progress' ? 'ON PROCESS' : (job.status || 'PENDING').toUpperCase()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="compact-empty-state">
+                      <Activity size={32} style={{ color: 'var(--color-outline)' }} />
+                      <p>Tidak ada antrean servis hari ini.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </>
         )}
 

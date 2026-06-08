@@ -129,3 +129,39 @@
     display: none;
   }
 }
+
+.header-search-bar {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.header-search-input {
+  padding: 8px 16px;
+  border-radius: var(--radius-full, 999px);
+  border: 1px solid var(--color-outline-variant, #ccc);
+  background: var(--color-surface-container, #f5f5f5);
+  color: var(--color-on-surface);
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.2s;
+  width: 180px;
+}
+
+.header-search-input:focus {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+  width: 220px;
+}
+
+.red-dot-badge {
+  background-color: #ff4d4d !important;
+  border: 2px solid var(--color-surface-container-lowest, white) !important;
+}
+
+@media (max-width: 768px) {
+  .header-search-bar {
+    display: none;
+  }
+}
+

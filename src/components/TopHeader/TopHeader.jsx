@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import './TopHeader.css';
 
-const TopHeader = ({ title, subtitle, onBack, children }) => {
+const TopHeader = ({ title, subtitle, onBack, children, isAdminDashboard, searchValue, onSearchChange }) => {
   const navigate = useNavigate();
   const { signOut, user, role } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -24,7 +24,7 @@ const TopHeader = ({ title, subtitle, onBack, children }) => {
   const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'A';
 
   return (
-    <header className="top-header glass-panel">
+    <header className={`top-header glass-panel ${isAdminDashboard ? 'admin-top-header' : ''}`}>
       <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {role === 'visitor' ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
@@ -72,11 +72,31 @@ const TopHeader = ({ title, subtitle, onBack, children }) => {
         )}
         <div className="header-info">
           <h2>{title}</h2>
-          {subtitle && <p>{subtitle}</p>}
+          {subtitle && (
+            <p style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {isAdminDashboard && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary)' }}>
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              )}
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
       
       <div className="header-actions">
+        {isAdminDashboard && (
+          <div className="header-search-bar">
+            <input 
+              type="text" 
+              placeholder="Cari..." 
+              value={searchValue || ''} 
+              onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+              className="header-search-input"
+            />
+          </div>
+        )}
         {children}
         <button 
           className="icon-btn theme-toggle-btn" 
@@ -89,7 +109,7 @@ const TopHeader = ({ title, subtitle, onBack, children }) => {
         
         <div className="icon-btn notification-btn">
           <Bell size={20} />
-          <span className="badge"></span>
+          <span className="badge red-dot-badge"></span>
         </div>
         
         <div className="user-profile">
