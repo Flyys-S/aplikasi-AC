@@ -188,6 +188,14 @@ const Catalog = () => {
     localStorage.setItem('arctic_cart', JSON.stringify(cart));
   }, [cart]);
 
+  useEffect(() => {
+    if (user && role === 'admin') {
+      navigate('/admin-catalog', { replace: true });
+    } else if (user && role === 'technician') {
+      navigate('/technician', { replace: true });
+    }
+  }, [user, role, navigate]);
+
   // Pricing constants for options
   const getPackageCosts = (grade) => {
     switch (grade) {
