@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import TopHeader from '../../components/TopHeader';
 import Button from '../../components/Button';
+import { decrementStockBatch } from '../../lib/stockUtils';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -85,8 +86,26 @@ const Checkout = () => {
       setLoading(true);
       const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-      // 1. Create Customer if doesn't exist or just record for this transaction
-      // For simplicity in this demo, we'll just create a transaction record
+      // 1. Fetch material & service products to map their database IDs
+      const { data: materialProducts, error: matError } = await supabase
+        .from('products')
+        .select('id, name, price, type')
+        .in('name', [
+          'Pipa Basic (0.50mm) - Per Meter',
+          'Pipa Premium (0.60mm JIS) - Per Meter',
+          'Pipa Elite (0.76mm ASTM) - Per Meter',
+          'Bracket Outdoor AC',
+          'Jasa Pasang Standard'
+        ]);
+
+      if (matError) throw matError;
+
+      const materialMap = {};
+      materialProducts?.forEach(p => {
+        materialMap[p.name] = p.id;
+      });
+
+      // 2. Create Transaction
       const { data: transaction, error: transError } = await supabase
         .from('transactions')
         .insert([{
@@ -106,22 +125,107 @@ const Checkout = () => {
 
       if (transError) throw transError;
 
-      // 2. Add items to transaction_items
-      const itemInserts = cart.map(item => ({
-        transaction_id: transaction.id,
-        product_id: item.id,
-        quantity: item.quantity,
-        unit_price: item.price,
-        subtotal: item.price * item.quantity
-      }));
+      // 3. Prepare detailed transaction items and stock updates
+      const itemInserts = [];
+      const stockUpdates = [];
 
+      for (const item of cart) {
+        if (item.customOpts && item.customOpts.purchaseType === 'package') {
+          const { pipeGrade, pipeLength } = item.customOpts;
+
+          // 3a. AC Unit itself (with its original price)
+          itemInserts.push({
+            transaction_id: transaction.id,
+            product_id: item.id,
+            quantity: item.quantity,
+            unit_price: item.originalPrice || item.price,
+            subtotal: (item.originalPrice || item.price) * item.quantity
+          });
+          stockUpdates.push({ product_id: item.id, quantity: item.quantity });
+
+          // 3b. Bracket Outdoor AC
+          const bracketId = materialMap['Bracket Outdoor AC'];
+          if (bracketId) {
+            itemInserts.push({
+              transaction_id: transaction.id,
+              product_id: bracketId,
+              quantity: item.quantity,
+              unit_price: 75000,
+              subtotal: 75000 * item.quantity
+            });
+            stockUpdates.push({ product_id: bracketId, quantity: item.quantity });
+          }
+
+          // 3c. Jasa Pasang Standard
+          const jasaId = materialMap['Jasa Pasang Standard'];
+          if (jasaId) {
+            itemInserts.push({
+              transaction_id: transaction.id,
+              product_id: jasaId,
+              quantity: item.quantity,
+              unit_price: 250000,
+              subtotal: 250000 * item.quantity
+            });
+            // Services do not have inventory tracking
+          }
+
+          // 3d. Pipa per meter
+          let pipeName = '';
+          let pipeBaseCost = 0;
+          let pipeAddCost = 0;
+          if (pipeGrade === 'basic') {
+            pipeName = 'Pipa Basic (0.50mm) - Per Meter';
+            pipeBaseCost = 175000;
+            pipeAddCost = 100000;
+          } else if (pipeGrade === 'elite') {
+            pipeName = 'Pipa Elite (0.76mm ASTM) - Per Meter';
+            pipeBaseCost = 625000;
+            pipeAddCost = 160000;
+          } else {
+            pipeName = 'Pipa Premium (0.60mm JIS) - Per Meter';
+            pipeBaseCost = 375000;
+            pipeAddCost = 130000;
+          }
+
+          const pipeId = materialMap[pipeName];
+          if (pipeId) {
+            const totalPipePrice = pipeBaseCost + (pipeLength > 3 ? (pipeLength - 3) * pipeAddCost : 0);
+            itemInserts.push({
+              transaction_id: transaction.id,
+              product_id: pipeId,
+              quantity: item.quantity,
+              unit_price: Math.round(totalPipePrice),
+              subtotal: totalPipePrice * item.quantity
+            });
+            stockUpdates.push({ product_id: pipeId, quantity: pipeLength * item.quantity });
+          }
+        } else {
+          // Unit Only
+          itemInserts.push({
+            transaction_id: transaction.id,
+            product_id: item.id,
+            quantity: item.quantity,
+            unit_price: item.price,
+            subtotal: item.price * item.quantity
+          });
+          stockUpdates.push({ product_id: item.id, quantity: item.quantity });
+        }
+      }
+
+      // 4. Insert transaction items into DB
       const { error: itemsError } = await supabase
         .from('transaction_items')
         .insert(itemInserts);
 
       if (itemsError) throw itemsError;
 
-      // 3. Success! Clear cart
+      // 5. Decrement stock atomically via RPC
+      const { success: stockSuccess, errors: stockErrors } = await decrementStockBatch(stockUpdates);
+      if (!stockSuccess) {
+        console.error('Failed to decrement some stocks:', stockErrors);
+      }
+
+      // 6. Success! Clear cart
       localStorage.removeItem('arctic_cart');
       setSuccess(true);
     } catch (error) {
