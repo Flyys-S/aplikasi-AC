@@ -8,9 +8,9 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 // Pages
 import Login from './pages/Login'
-import Catalog from './pages/Catalog'
-import AdminCatalog from './pages/Catalog/AdminCatalog'
-import FullCatalog from './pages/Catalog/FullCatalog'
+import LandingPage from './pages/LandingPage'
+import AdminCatalog from './pages/AdminCatalog'
+import FullCatalog from './pages/FullCatalog'
 import Checkout from './pages/Checkout'
 import OnlineOrders from './pages/OnlineOrders'
 import SalesDashboard from './pages/SalesDashboard'
@@ -25,9 +25,9 @@ import InvoiceDetail from './pages/InvoiceDetail'
 import SignUp from './pages/SignUp'
 import UserManagement from './pages/UserManagement'
 import CompanyProfile from './pages/CompanyProfile'
-import UserProfile from './pages/UserProfile/Profile.jsx'
+import UserProfile from './pages/UserProfile'
 import TechnicianDashboard from './pages/TechnicianDashboard'
-import VisitorDashboard from './pages/VisitorDashboard'
+import ServiceOrder from './pages/ServiceOrder'
 import CalculatorTools from './pages/CalculatorTools'
 
 import './App.css'
@@ -41,7 +41,7 @@ function App() {
           <Router basename="/aplikasi-AC">
             <Routes>
               {/* Public */}
-              <Route path="/" element={<Catalog />} />
+              <Route path="/" element={<LandingPage />} />
               <Route path="/catalog" element={<FullCatalog />} />
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/login" element={<Login />} />
@@ -49,7 +49,7 @@ function App() {
               <Route path="/company" element={<CompanyProfile />} />
               <Route path="/tools" element={<CalculatorTools />} />
               {/* Visitor Dashboard — public route, self-manages auth check */}
-              <Route path="/visitor-home" element={<VisitorDashboard />} />
+              <Route path="/service-order" element={<ServiceOrder />} />
 
               {/* Protected */}
               <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><SalesDashboard /></ProtectedRoute>} />

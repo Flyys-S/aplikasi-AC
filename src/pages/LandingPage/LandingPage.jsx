@@ -11,10 +11,10 @@ import Button from '../../components/Button';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import '../Inventory/Inventory.css';
-import './Catalog.css';
+import './LandingPage.css';
 import toast from 'react-hot-toast';
 
-const Catalog = () => {
+const LandingPage = () => {
   const navigate = useNavigate();
   const { user, isAdmin, role, isBioComplete } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -1185,4 +1185,4 @@ const Catalog = () => {
   );
 };
 
-export default Catalog;
+export default LandingPage;

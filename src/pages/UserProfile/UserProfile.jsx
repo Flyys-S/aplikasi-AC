@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import TopHeader from '../../components/TopHeader';
 import Navigation from '../../components/Navigation';
 import Button from '../../components/Button/Button';
-import './Profile.css';
+import './UserProfile.css';
 
 const UserProfile = () => {
   const navigate = useNavigate();

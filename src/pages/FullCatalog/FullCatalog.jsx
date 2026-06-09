@@ -12,7 +12,7 @@ import Button from '../../components/Button';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import '../Inventory/Inventory.css';
-import './Catalog.css';
+import './FullCatalog.css';
 
 const FullCatalog = () => {
   const navigate = useNavigate();

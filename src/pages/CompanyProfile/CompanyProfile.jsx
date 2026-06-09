@@ -1,6 +1,6 @@
 import React from 'react';
 import '../Login/Login.css';
-import './Profile.css';
+import './CompanyProfile.css';
 import headerImg from '../../assets/profile_header.png';
 
 const CompanyProfile = () => {

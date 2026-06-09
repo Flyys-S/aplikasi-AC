@@ -10,7 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 import Navigation from '../../components/Navigation';
-import './VisitorDashboard.css';
+import './ServiceOrder.css';
 
 /* ─── Helpers ─── */
 const getServiceStatusLabel = (s) => ({
@@ -45,7 +45,7 @@ const getTomorrowDate = () => {
   return tomorrow.toISOString().split('T')[0];
 };
 
-const VisitorDashboard = () => {
+const ServiceOrder = () => {
   const navigate = useNavigate();
   const { user, isBioComplete } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -90,7 +90,7 @@ const VisitorDashboard = () => {
       if (error) throw error;
       setServiceReqs(data || []);
     } catch (e) {
-      console.error('[VisitorDashboard] Fetch service requests:', e.message);
+      console.error('[ServiceOrder] Fetch service requests:', e.message);
     } finally {
       setLoadingServices(false);
     }
@@ -508,4 +508,4 @@ const VisitorDashboard = () => {
   );
 };
 
-export default VisitorDashboard;
+export default ServiceOrder;

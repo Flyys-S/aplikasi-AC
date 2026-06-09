@@ -17,11 +17,11 @@ const Sidebar = () => {
     document.body.classList.remove('sidebar-open')
   }, [location.pathname])
 
-  const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/visitor-home']
+  const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/service-order']
   if (frontEndRoutes.includes(location.pathname)) {
     if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog')) {
       // Render sidebar for admin
-    } else if ((role === 'visitor' || !user) && ['/', '/catalog', '/tools', '/visitor-home'].includes(location.pathname)) {
+    } else if ((role === 'visitor' || !user) && ['/', '/catalog', '/tools', '/service-order'].includes(location.pathname)) {
       // Render sidebar for visitor or guest
     } else {
       return null
@@ -32,7 +32,7 @@ const Sidebar = () => {
     setShowConfirm(false)
     const cleanUrl = window.location.origin + import.meta.env.BASE_URL
     window.history.replaceState(null, '', cleanUrl)
-    navigate('./Catalog', { replace: true })
+    navigate('/', { replace: true })
     setTimeout(() => {
       signOut()
     }, 100)
@@ -49,7 +49,7 @@ const Sidebar = () => {
     ...(!isTechnician && role !== 'visitor' && !isGuest ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
     ...((role === 'visitor' || isGuest) ? [{ to: '/tools', label: 'Kalkulator', icon: Calculator }] : []),
     ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),
-    ...((role === 'visitor' || isGuest) ? [{ to: '/visitor-home', label: 'Servis', icon: Wrench }] : (role !== 'visitor' && !isGuest ? [{ to: '/service', label: 'Servis', icon: Wrench }] : [])),
+    ...((role === 'visitor' || isGuest) ? [{ to: '/service-order', label: 'Servis', icon: Wrench }] : (role !== 'visitor' && !isGuest ? [{ to: '/service', label: 'Servis', icon: Wrench }] : [])),
     ...(isTechnician || isAdmin ? [{ to: '/technician', label: 'Tugas Saya', icon: HardHat }] : []),
     ...((role === 'visitor' || isGuest) ? [{ to: '/profile', label: 'Profil Saya', icon: User }] : []),
   ]

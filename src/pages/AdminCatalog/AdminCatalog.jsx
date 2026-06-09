@@ -10,7 +10,7 @@ import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
 import '../Inventory/Inventory.css';
-import './Catalog.css';
+import './AdminCatalog.css';
 
 const AdminCatalog = () => {
   const navigate = useNavigate();
