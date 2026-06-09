@@ -40,5 +40,5 @@ Rencana ini disusun berdasarkan umpan balik hasil diskusi dengan mitra untuk men
 - **`src/pages/TechnicianPortal/TechnicianPortal.jsx` [NEW]**: Portal pengisian laporan kerja teknisi di lapangan.
 - **`src/pages/InstallationModule/InstallationModule.jsx` [NEW]**: Halaman khusus pemesanan pemasangan AC baru dan survei lokasi.
 - **`src/pages/ProductDetails/ProductDetails.jsx` [MODIFY]**: Menambahkan widget "AC Package Configurator" ala Selka.id.
-- **`src/pages/ServiceMaintenance/ServiceMaintenance.jsx` [MODIFY]**: Validasi jadwal H-1, pembatasan kuota, tombol Reschedule/Cancel.
+- **`src/pages/ServiceMaintenance/ServiceMaintenance.jsx` [MODIFY]**: Vali  dasi jadwal H-1, pembatasan kuota, tombol Reschedule/Cancel.
 - **`src/App.jsx` [MODIFY]**: Pengaturan routing dinamis berdasarkan role user.
