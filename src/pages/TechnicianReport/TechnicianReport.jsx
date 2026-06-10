@@ -4,6 +4,7 @@ import { ArrowLeft, Save, Trash2, ShieldAlert, Loader2, User, Phone, MapPin, Che
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import TopHeader from '../../components/TopHeader';
+import Navigation from '../../components/Navigation';
 import toast from 'react-hot-toast';
 import './TechnicianReport.css';
 
@@ -187,7 +188,7 @@ const TechnicianReport = () => {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container" style={{ paddingLeft: '260px', transition: 'all 0.3s ease' }}>
       <TopHeader title="Buat Laporan Servis" subtitle="Catat detail pengerjaan Anda" onBack={() => navigate('/technician')} />
       
       <div className="page-content fade-in report-page-content">
@@ -321,6 +322,7 @@ const TechnicianReport = () => {
           </button>
         </form>
       </div>
+      <Navigation />
     </div>
   );
 };
