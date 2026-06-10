@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Wrench, MapPin, Phone, User, Clock, Calendar,
   CheckCircle2, PlayCircle, ChevronRight, X,
@@ -265,7 +266,7 @@ const JobDetailSheet = ({ job, onClose, onUpdateStatus }) => {
 /* ─────────────────────────────────────────
    Sub-component: Job Card
 ───────────────────────────────────────── */
-const JobCard = ({ job, onOpenDetail, onQuickUpdateStatus }) => {
+const JobCard = ({ job, navigate, onOpenDetail, onQuickUpdateStatus }) => {
   const [loading, setLoading] = useState(false);
   const customer = job.customers;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.service_address || '')}`;
@@ -362,7 +363,7 @@ const JobCard = ({ job, onOpenDetail, onQuickUpdateStatus }) => {
             <button
               id={`btn-detail-${job.id}`}
               className="job-action-btn detail"
-              onClick={(e) => { e.stopPropagation(); onOpenDetail(job); }}
+              onClick={(e) => { e.stopPropagation(); navigate(`/technician/report?job_id=${job.id}`); }}
             >
               <FileText size={15} />
               Isi Laporan
@@ -399,6 +400,7 @@ const JobCard = ({ job, onOpenDetail, onQuickUpdateStatus }) => {
 ───────────────────────────────────────── */
 const TechnicianDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('active');
@@ -602,6 +604,7 @@ const TechnicianDashboard = () => {
                     <JobCard
                       key={job.id}
                       job={job}
+                      navigate={navigate}
                       onOpenDetail={setSelectedJob}
                       onQuickUpdateStatus={handleQuickUpdateStatus}
                     />

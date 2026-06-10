@@ -1,0 +1,200 @@
+/* ─────────────────────────────────────────
+   ADMIN REPORTS CSS
+───────────────────────────────────────── */
+
+.reports-admin-content {
+  padding: 16px 24px 100px;
+}
+
+.reports-search-row {
+  margin-bottom: 20px;
+}
+
+.reports-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-surface-container);
+  border: 1.5px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  color: var(--color-on-surface-variant);
+  transition: all 0.25s ease;
+}
+
+.reports-search-box:focus-within {
+  border-color: var(--color-primary);
+  background: var(--color-surface-container-lowest);
+  box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.1);
+}
+
+.reports-search-box input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-on-surface);
+  outline: none;
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.report-card-admin {
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-outline-variant);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--color-surface-container-lowest);
+  transition: all 0.25s ease;
+}
+
+.report-card-admin:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-hover);
+}
+
+.report-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.report-cust-name {
+  font-family: var(--font-headline);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin: 0 0 4px 0;
+}
+
+.report-date {
+  font-size: 11px;
+  color: var(--color-on-surface-variant);
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.report-tag-service {
+  padding: 4px 10px;
+  background: rgba(0, 85, 255, 0.1);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.report-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+}
+
+.report-detail-text {
+  line-height: 1.4;
+}
+
+.report-detail-text.text-action {
+  background: var(--color-surface-container);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  margin-top: 4px;
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.report-card-actions {
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid var(--color-outline-variant);
+  padding-top: 12px;
+  margin-top: auto;
+}
+
+.btn-report-action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-report-action.primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-report-action.primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.btn-report-action.outline {
+  background: transparent;
+  border: 1.5px solid var(--color-outline-variant);
+  color: var(--color-on-surface);
+}
+
+.btn-report-action.outline:hover {
+  background: var(--color-surface-container);
+  border-color: var(--color-primary);
+}
+
+.reports-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  gap: 12px;
+  color: var(--color-on-surface-variant);
+}
+
+.reports-empty-state h4 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-on-surface);
+}
+
+.reports-empty-state p {
+  margin: 0;
+  font-size: 13px;
+  max-width: 360px;
+}
+
+/* Modal Styling details */
+.modal-report-details {
+  max-width: 500px !important;
+}
+
+.modal-sig-image {
+  max-width: 100%;
+  height: auto;
+  border: 1.5px dashed var(--color-outline-variant);
+  border-radius: var(--radius-md);
+  background: white;
+  margin-top: 8px;
+}

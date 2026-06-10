@@ -186,6 +186,9 @@ const SalesDashboard = () => {
                 <button className="quick-action-btn secondary" onClick={() => navigate('/service')}>
                   <span className="btn-icon">+</span> Jadwalkan Servis Baru
                 </button>
+                <button className="quick-action-btn secondary" onClick={() => navigate('/admin/reports')} style={{ gridColumn: 'span 2' }}>
+                  📄 Lihat Laporan Servis
+                </button>
               </div>
             </div>
 

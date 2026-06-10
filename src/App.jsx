@@ -29,6 +29,8 @@ import UserProfile from './pages/UserProfile'
 import TechnicianDashboard from './pages/TechnicianDashboard'
 import ServiceOrder from './pages/ServiceOrder'
 import CalculatorTools from './pages/CalculatorTools'
+import TechnicianReport from './pages/TechnicianReport'
+import AdminReports from './pages/AdminReports'
 
 import './App.css'
 
@@ -60,6 +62,8 @@ function App() {
               <Route path="/inventory/:id" element={<ProtectedRoute allowedRoles={['admin']}><ProductDetails /></ProtectedRoute>} />
               <Route path="/service" element={<ProtectedRoute allowedRoles={['admin', 'technician']}><ServiceMaintenance /></ProtectedRoute>} />
               <Route path="/technician" element={<ProtectedRoute allowedRoles={['technician', 'admin']}><TechnicianDashboard /></ProtectedRoute>} />
+              <Route path="/technician/report" element={<ProtectedRoute allowedRoles={['technician', 'admin']}><TechnicianReport /></ProtectedRoute>} />
+              <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AdminReports /></ProtectedRoute>} />
               <Route path="/customers" element={<ProtectedRoute allowedRoles={['admin']}><Customers /></ProtectedRoute>} />
               <Route path="/customers/:id" element={<ProtectedRoute allowedRoles={['admin']}><CustomerDetail /></ProtectedRoute>} />
               <Route path="/transactions" element={<ProtectedRoute allowedRoles={['admin']}><Transactions /></ProtectedRoute>} />
