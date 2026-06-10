@@ -17,9 +17,9 @@ const Sidebar = () => {
     document.body.classList.remove('sidebar-open')
   }, [location.pathname])
 
-  const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/service-order']
+  const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/service-order', '/admin/reports']
   if (frontEndRoutes.includes(location.pathname)) {
-    if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog')) {
+    if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog' || location.pathname === '/admin/reports')) {
       // Render sidebar for admin
     } else if ((role === 'visitor' || !user) && ['/', '/catalog', '/tools', '/service-order'].includes(location.pathname)) {
       // Render sidebar for visitor or guest
