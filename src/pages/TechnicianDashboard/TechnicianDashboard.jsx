@@ -503,7 +503,7 @@ const TechnicianDashboard = () => {
   const completedJobs = jobs.filter(j => j.status === 'completed');
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container" style={{ paddingLeft: '260px', transition: 'all 0.3s ease' }}>
       <TopHeader title="Dashboard Teknisi" subtitle="Datar tugas servis Anda" />
 
       <div className="page-content fade-in" style={{ paddingBottom: '100px', paddingLeft: '24px', paddingRight: '24px' }}>
