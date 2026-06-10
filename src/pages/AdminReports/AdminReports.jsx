@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import TopHeader from '../../components/TopHeader';
+import Navigation from '../../components/Navigation';
 import toast from 'react-hot-toast';
 import './AdminReports.css';
 
@@ -242,6 +243,7 @@ const AdminReports = () => {
           </div>
         </div>
       )}
+      <Navigation />
     </div>
   );
 };
