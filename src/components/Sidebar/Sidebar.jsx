@@ -51,6 +51,7 @@ const Sidebar = () => {
     ...(!isTechnician && role !== 'visitor' && !isGuest ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
     ...((role === 'visitor' || isGuest) ? [{ to: '/tools', label: 'Kalkulator', icon: Calculator }] : []),
     ...(isAdmin ? [{ to: '/admin/reports', label: 'Laporan Servis', icon: FileText }] : []),
+    ...(isTechnician ? [{ to: '/technician/report', label: 'Buat Laporan', icon: FileText }] : []),
     ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),
     ...((role === 'visitor' || isGuest) ? [{ to: '/service-order', label: 'Servis', icon: Wrench }] : (role !== 'visitor' && !isGuest ? [{ to: '/service', label: 'Servis', icon: Wrench }] : [])),
     ...(isTechnician || isAdmin ? [{ to: '/technician', label: 'Tugas Saya', icon: HardHat }] : []),
