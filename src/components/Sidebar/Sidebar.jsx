@@ -43,20 +43,40 @@ const Sidebar = () => {
   const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'A'
 
   const isGuest = !user;
-  const navItems = [
-    ...(isAdmin ? [{ to: '/dashboard', label: 'Beranda', icon: LayoutDashboard }] : []),
-    ...((role === 'visitor' || isGuest) ? [{ to: '/', label: 'Beranda', icon: LayoutDashboard }] : []),
-    { to: isAdmin ? '/admin-catalog' : ((role === 'visitor' || isGuest) ? '/catalog' : '/'), label: 'Katalog', icon: BookOpen },
-    ...(isAdmin ? [{ to: '/inventory', label: 'Stok', icon: Package }] : []),
-    ...(!isTechnician && role !== 'visitor' && !isGuest ? [{ to: '/transactions', label: 'Transaksi', icon: ShoppingBag }] : []),
-    ...((role === 'visitor' || isGuest) ? [{ to: '/tools', label: 'Kalkulator', icon: Calculator }] : []),
-    ...(isAdmin ? [{ to: '/admin/reports', label: 'Laporan Servis', icon: FileText }] : []),
-    ...(isTechnician ? [{ to: '/technician/report', label: 'Buat Laporan', icon: FileText }] : []),
-    ...(isAdmin ? [{ to: '/users', label: 'Akses', icon: ShieldCheck }] : []),
-    ...((role === 'visitor' || isGuest) ? [{ to: '/service-order', label: 'Servis', icon: Wrench }] : (role !== 'visitor' && !isGuest ? [{ to: '/service', label: 'Servis', icon: Wrench }] : [])),
-    ...(isTechnician || isAdmin ? [{ to: '/technician', label: 'Tugas Saya', icon: HardHat }] : []),
-    ...((role === 'visitor' || isGuest) ? [{ to: '/profile', label: 'Profil Saya', icon: User }] : []),
-  ]
+  let navItems = []
+  if (isAdmin) {
+    navItems = [
+      { to: '/dashboard', label: 'Beranda', icon: LayoutDashboard },
+      { to: '/admin-catalog', label: 'Katalog', icon: BookOpen },
+      { to: '/inventory', label: 'Stok', icon: Package },
+      { to: '/transactions', label: 'Transaksi', icon: ShoppingBag },
+      { to: '/admin/reports', label: 'Laporan Servis', icon: FileText },
+      { to: '/service', label: 'Servis', icon: Wrench },
+      { to: '/users', label: 'Akses', icon: ShieldCheck },
+      { to: '/technician', label: 'Tugas Saya', icon: HardHat },
+    ]
+  } else if (isTechnician) {
+    navItems = [
+      { to: '/technician', label: 'Beranda Teknisi', icon: LayoutDashboard },
+      { to: '/service', label: 'Servis', icon: Wrench },
+      { to: '/technician/report', label: 'Buat Laporan', icon: FileText },
+      { to: '/', label: 'Katalog', icon: BookOpen },
+    ]
+  } else if (role === 'visitor' || isGuest) {
+    navItems = [
+      { to: '/', label: 'Beranda', icon: LayoutDashboard },
+      { to: '/catalog', label: 'Katalog', icon: BookOpen },
+      { to: '/tools', label: 'Kalkulator', icon: Calculator },
+      { to: '/service-order', label: 'Servis', icon: Wrench },
+      { to: '/profile', label: 'Profil Saya', icon: User },
+    ]
+  } else {
+    navItems = [
+      { to: '/', label: 'Katalog', icon: BookOpen },
+      { to: '/transactions', label: 'Transaksi', icon: ShoppingBag },
+      { to: '/service', label: 'Servis', icon: Wrench },
+    ]
+  }
 
   return (
     <>
