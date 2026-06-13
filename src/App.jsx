@@ -31,6 +31,8 @@ import ServiceOrder from './pages/ServiceOrder'
 import CalculatorTools from './pages/CalculatorTools'
 import TechnicianReport from './pages/TechnicianReport'
 import AdminReports from './pages/AdminReports'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 import './App.css'
 
@@ -48,6 +50,8 @@ function App() {
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/company" element={<CompanyProfile />} />
               <Route path="/tools" element={<CalculatorTools />} />
               {/* Visitor Dashboard — public route, self-manages auth check */}

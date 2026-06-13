@@ -83,6 +83,9 @@ const Login = () => {
           <div className="form-group-login">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <label htmlFor="password" style={{ margin: 0 }}>Password</label>
+              <Link to="/forgot-password" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none' }}>
+                Lupa Password?
+              </Link>
             </div>
             <div className="login-input-wrapper">
               <Lock size={18} className="input-icon-left" />
