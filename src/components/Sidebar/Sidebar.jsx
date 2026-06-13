@@ -99,7 +99,7 @@ const Sidebar = () => {
               <NavLink
                 key={index}
                 to={item.to}
-                end={item.to === '/'}
+                end={item.to === '/' || item.to === '/technician'}
                 className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
                 onClick={() => document.body.classList.remove('sidebar-open')}
               >
