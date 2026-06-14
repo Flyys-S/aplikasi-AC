@@ -14,20 +14,6 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  // In some setups, we want to ensure the session is active.
-  // When clicking reset password link, Supabase redirects with recovery tokens,
-  // which automatically logs the user in (creates a session).
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        // We can still let them try, but usually Supabase establishes session via hash fragment parameters.
-        console.log("ResetPassword: No active session found yet, waiting for client hash parsing.")
-      }
-    }
-    checkSession()
-  }, [])
-
   const handleResetPassword = async (e) => {
     e.preventDefault()
     if (!password || password.length < 6) {

@@ -7,4 +7,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Supabase URL or Anon Key is missing! Check your environment variables or GitHub Secrets.')
 }
 
-export const supabase = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder')
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder',
+  {
+    auth: {
+      lock: {
+        acquire: async (name, acquireTimeout, fn) => { return await fn() }
+      }
+    }
+  }
+)
