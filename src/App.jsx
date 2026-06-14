@@ -32,6 +32,7 @@ import InstallOrder from './pages/InstallOrder'
 import CalculatorTools from './pages/CalculatorTools'
 import TechnicianReport from './pages/TechnicianReport'
 import AdminReports from './pages/AdminReports'
+import AdminLogs from './pages/AdminLogs'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 
@@ -70,6 +71,7 @@ function App() {
               <Route path="/technician" element={<ProtectedRoute allowedRoles={['technician', 'admin']}><TechnicianDashboard /></ProtectedRoute>} />
               <Route path="/technician/report" element={<ProtectedRoute allowedRoles={['technician', 'admin']}><TechnicianReport /></ProtectedRoute>} />
               <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AdminReports /></ProtectedRoute>} />
+              <Route path="/admin/logs" element={<ProtectedRoute allowedRoles={['admin']}><AdminLogs /></ProtectedRoute>} />
               <Route path="/customers" element={<ProtectedRoute allowedRoles={['admin']}><Customers /></ProtectedRoute>} />
               <Route path="/customers/:id" element={<ProtectedRoute allowedRoles={['admin']}><CustomerDetail /></ProtectedRoute>} />
               <Route path="/transactions" element={<ProtectedRoute allowedRoles={['admin']}><Transactions /></ProtectedRoute>} />

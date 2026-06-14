@@ -11,6 +11,7 @@ import EmptyState from '../../components/EmptyState';
 import InlineLoader from '../../components/InlineLoader';
 import { useProfiles } from '../../hooks/useSupabase';
 import { supabase } from '../../lib/supabase';
+import { logAdminActivity } from '../../lib/activityLog';
 import './UserManagement.css';
 
 const UserManagement = () => {
@@ -31,11 +32,13 @@ const UserManagement = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     setUpdatingId(userId);
+    const targetUser = profiles.find(p => p.id === userId);
     const { error } = await updateProfileRole(userId, newRole);
     if (error) {
       toast.error('Gagal memperbarui role: ' + error.message);
     } else {
       toast.success('Role berhasil diperbarui');
+      await logAdminActivity('UPDATE_USER_ROLE', `Admin mengubah role ${targetUser?.email || userId} dari ${targetUser?.role?.toUpperCase() || 'UNKNOWN'} menjadi ${newRole.toUpperCase()}`, { userId, oldRole: targetUser?.role, newRole });
     }
     setUpdatingId(null);
   };
@@ -43,6 +46,7 @@ const UserManagement = () => {
   const handleDeleteUser = async (profileId) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus hak akses pengguna ini?')) {
       try {
+        const targetUser = profiles.find(p => p.id === profileId);
         const { error } = await supabase
           .from('profiles')
           .delete()
@@ -50,6 +54,7 @@ const UserManagement = () => {
         
         if (error) throw error;
         toast.success('Pengguna berhasil dihapus');
+        await logAdminActivity('DELETE_USER', `Admin menghapus hak akses pengguna: ${targetUser?.email || profileId}`, targetUser);
         fetchProfiles();
       } catch (err) {
         toast.error('Gagal menghapus: ' + err.message);

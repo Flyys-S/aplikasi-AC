@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen, LogOut, HardHat, Calculator, User, FileText } from 'lucide-react'
+import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen, LogOut, HardHat, Calculator, User, FileText, ClipboardList } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../Button'
 import './Sidebar.css'
@@ -17,9 +17,9 @@ const Sidebar = () => {
     document.body.classList.remove('sidebar-open')
   }, [location.pathname])
 
-  const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/service-order', '/install-order', '/admin/reports', '/technician/report']
+  const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/service-order', '/install-order', '/admin/reports', '/admin/logs', '/technician/report']
   if (frontEndRoutes.includes(location.pathname)) {
-    if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog' || location.pathname === '/admin/reports')) {
+    if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog' || location.pathname === '/admin/reports' || location.pathname === '/admin/logs')) {
       // Render sidebar for admin
     } else if ((role === 'technician' || role === 'admin') && location.pathname === '/technician/report') {
       // Render sidebar for technician report
@@ -51,6 +51,7 @@ const Sidebar = () => {
       { to: '/inventory', label: 'Stok', icon: Package },
       { to: '/transactions', label: 'Transaksi', icon: ShoppingBag },
       { to: '/admin/reports', label: 'Laporan Servis', icon: FileText },
+      { to: '/admin/logs', label: 'Log Aktivitas', icon: ClipboardList },
       { to: '/service', label: 'Servis', icon: Wrench },
       { to: '/users', label: 'Akses', icon: ShieldCheck },
       { to: '/technician', label: 'Tugas Saya', icon: HardHat },

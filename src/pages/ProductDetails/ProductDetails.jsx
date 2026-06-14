@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { ArrowLeft, Thermometer, Zap, Star, ShoppingCart, Share2, Camera, Loader2, Save, Trash2, Plus, Minus, Tag, Package, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah } from '../../lib/formatters';
+import { logAdminActivity } from '../../lib/activityLog';
 import toast from 'react-hot-toast';
 import PageLoader from '../../components/PageLoader';
 import TopHeader from '../../components/TopHeader';
@@ -181,6 +182,7 @@ const ProductDetails = () => {
           .eq('id', id);
         
         if (updateError) throw updateError;
+        await logAdminActivity('UPDATE_PRODUCT', `Admin memperbarui gambar produk: ${product.brand} - ${product.name}`, { id, image_url: publicUrl });
       }
     } catch (error) {
       toast.error('Gagal mengunggah gambar: ' + error.message);
@@ -198,6 +200,7 @@ const ProductDetails = () => {
           .insert([product])
           .select();
         if (error) throw error;
+        await logAdminActivity('CREATE_PRODUCT', `Admin menambahkan produk baru: ${product.brand} - ${product.name}`, data[0]);
         navigate(`/inventory/${data[0].id}`);
       } else {
         const { error } = await supabase
@@ -205,6 +208,7 @@ const ProductDetails = () => {
           .update(product)
           .eq('id', id);
         if (error) throw error;
+        await logAdminActivity('UPDATE_PRODUCT', `Admin memperbarui informasi/stok produk: ${product.brand} - ${product.name}`, product);
         fetchProduct();
       }
       toast.success('Data produk berhasil disimpan!');

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, PenTool, CheckCircle, Clock, User, Plus, Loader2, Wrench } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
+import { logAdminActivity } from '../../lib/activityLog';
 import InlineLoader from '../../components/InlineLoader';
 import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
@@ -134,6 +135,10 @@ const ServiceMaintenance = () => {
 
       if (error) throw error;
       
+      const customer = customers.find(c => c.id === newJob.customer_id);
+      const technician = technicians.find(t => t.id === newJob.technician_id);
+      await logAdminActivity('CREATE_SERVICE_JOB', `Admin membuat tugas ${newJob.service_type} untuk pelanggan ${customer?.name || newJob.customer_id} ditugaskan ke ${technician?.full_name || technician?.email || newJob.technician_id}`, { newJob, customer, technician });
+
       toast.success('Penugasan teknisi berhasil dibuat!');
       fetchInitialData();
       // Reset form
@@ -158,6 +163,12 @@ const ServiceMaintenance = () => {
         .eq('id', jobId);
       
       if (error) throw error;
+      
+      if (isAdmin) {
+        const jobObj = jobs.find(j => j.id === jobId);
+        await logAdminActivity('UPDATE_SERVICE_STATUS', `Admin mengubah status tugas ${jobObj?.service_type || jobId} menjadi ${newStatus.toUpperCase()}`, { jobId, newStatus });
+      }
+
       fetchInitialData();
       toast.success('Status berhasil diperbarui!');
     } catch (error) {
@@ -174,6 +185,14 @@ const ServiceMaintenance = () => {
         .eq('id', jobId);
       
       if (error) throw error;
+
+      const jobObj = jobs.find(j => j.id === jobId);
+      const technician = technicians.find(t => t.id === techId);
+      const actionDesc = techId 
+        ? `Admin menugaskan teknisi ${technician?.full_name || technician?.email || techId} untuk tugas ${jobObj?.service_type || jobId}`
+        : `Admin mencabut penugasan teknisi untuk tugas ${jobObj?.service_type || jobId}`;
+      await logAdminActivity('ASSIGN_TECHNICIAN', actionDesc, { jobId, techId, jobObj });
+
       toast.success(techId ? 'Teknisi berhasil ditugaskan!' : 'Penugasan teknisi dibatalkan!');
       fetchInitialData();
     } catch (error) {
