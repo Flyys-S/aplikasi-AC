@@ -28,6 +28,7 @@ import CompanyProfile from './pages/CompanyProfile'
 import UserProfile from './pages/UserProfile'
 import TechnicianDashboard from './pages/TechnicianDashboard'
 import ServiceOrder from './pages/ServiceOrder'
+import InstallOrder from './pages/InstallOrder'
 import CalculatorTools from './pages/CalculatorTools'
 import TechnicianReport from './pages/TechnicianReport'
 import AdminReports from './pages/AdminReports'
@@ -56,6 +57,7 @@ function App() {
               <Route path="/tools" element={<CalculatorTools />} />
               {/* Visitor Dashboard — public route, self-manages auth check */}
               <Route path="/service-order" element={<ServiceOrder />} />
+              <Route path="/install-order" element={<InstallOrder />} />
 
               {/* Protected */}
               <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><SalesDashboard /></ProtectedRoute>} />

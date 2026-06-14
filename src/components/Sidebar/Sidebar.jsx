@@ -17,13 +17,13 @@ const Sidebar = () => {
     document.body.classList.remove('sidebar-open')
   }, [location.pathname])
 
-  const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/service-order', '/admin/reports', '/technician/report']
+  const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/service-order', '/install-order', '/admin/reports', '/technician/report']
   if (frontEndRoutes.includes(location.pathname)) {
     if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog' || location.pathname === '/admin/reports')) {
       // Render sidebar for admin
     } else if ((role === 'technician' || role === 'admin') && location.pathname === '/technician/report') {
       // Render sidebar for technician report
-    } else if ((role === 'visitor' || !user) && ['/', '/catalog', '/tools', '/service-order'].includes(location.pathname)) {
+    } else if ((role === 'visitor' || !user) && ['/', '/catalog', '/tools', '/service-order', '/install-order'].includes(location.pathname)) {
       // Render sidebar for visitor or guest
     } else {
       return null
@@ -68,6 +68,7 @@ const Sidebar = () => {
       { to: '/catalog', label: 'Katalog', icon: BookOpen },
       { to: '/tools', label: 'Kalkulator', icon: Calculator },
       { to: '/service-order', label: 'Servis', icon: Wrench },
+      { to: '/install-order', label: 'Pasang AC', icon: HardHat },
       { to: '/profile', label: 'Profil Saya', icon: User },
     ]
   } else {
