@@ -33,6 +33,9 @@ const ResetPassword = () => {
 
       if (error) throw error
 
+      // Sign out to clear the active session so they must log in with the new password
+      await supabase.auth.signOut()
+
       setSuccess(true)
       toast.success('Password berhasil diperbarui!')
       setTimeout(() => {
