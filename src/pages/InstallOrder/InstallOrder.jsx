@@ -42,7 +42,7 @@ const getTomorrowDate = () => {
 
 const InstallOrder = () => {
   const navigate = useNavigate();
-  const { user, isBioComplete } = useAuth();
+  const { user, isBioComplete, loading: authLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   /* ── State ── */
@@ -203,6 +203,14 @@ const InstallOrder = () => {
 
   const waMessage = encodeURIComponent('Halo Mitra Maju Sejati, saya ingin bertanya tentang jasa bongkar/pasang AC...');
   const waUrl = `https://wa.me/${WA_NUMBER}?text=${waMessage}`;
+
+  if (authLoading) {
+    return (
+      <div className="dashboard-container customer-layout" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+        <Loader2 className="vd-spinner animate-spin" size={40} color="var(--color-primary)" />
+      </div>
+    );
+  }
 
   return (
     <>
