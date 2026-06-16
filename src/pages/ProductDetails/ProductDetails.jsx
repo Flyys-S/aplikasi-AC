@@ -17,7 +17,7 @@ import './ProductDetails.css';
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin, user, role } = useAuth();
+  const { isAdmin, user, role, loading: authLoading } = useAuth();
 
   const [purchaseType, setPurchaseType] = useState('package');
   const [pipeGrade, setPipeGrade] = useState('premium');
@@ -139,11 +139,12 @@ const ProductDetails = () => {
   }, [id, fetchProduct]);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAdmin && id === 'new') {
       toast.error('Akses ditolak: Hanya admin yang dapat menambah produk baru.');
       navigate('/inventory');
     }
-  }, [isAdmin, id, navigate]);
+  }, [isAdmin, id, authLoading, navigate]);
 
   const generateUniqueId = () => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
