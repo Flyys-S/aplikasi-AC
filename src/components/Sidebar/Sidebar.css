@@ -448,4 +448,9 @@ body.sidebar-open .sidebar-backdrop {
   body.sidebar-open .sidebar-nav.customer-sidebar {
     left: 0 !important;
   }
+
+  .dashboard-container.customer-layout {
+    height: auto !important;
+    overflow-y: visible !important;
+  }
 }
