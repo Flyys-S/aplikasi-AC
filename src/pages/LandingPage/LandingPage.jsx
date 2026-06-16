@@ -481,25 +481,20 @@ const LandingPage = () => {
               </section>
 
               {/* 2. Selka-style Category shortcuts */}
-              <section className="selka-categories-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '12px', marginBottom: '32px' }}>
+              <section className="selka-categories-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '12px', marginBottom: '32px' }}>
                 {[
-                  { title: 'AC MULTI SPLIT', icon: '❄️', query: 'multi' },
-                  { title: 'AC PORTABLE', icon: '📱', query: 'portable' },
-                  { title: 'AIR COOLER', icon: '💨', query: 'cooler' },
-                  { title: 'AC CEILING', icon: '⏹️', query: 'ceiling' },
-                  { title: 'JASA PASANG', icon: '🔧', query: 'pasang' },
-                  { title: 'CUCI AC', icon: '🧼', query: 'cuci' },
-                  { title: 'PK CALCULATOR', icon: '🧮', link: '/tools?tab=pk' },
-                  { title: 'MULTI S TOOLS', icon: '⚙️', link: '/tools?tab=kwh' }
+                  { title: 'AC Standard', icon: '❄️', link: '/catalog?category=standard' },
+                  { title: 'AC Low Watt', icon: '⚡', link: '/catalog?category=low watt' },
+                  { title: 'AC Inverter', icon: '🔄', link: '/catalog?category=inverter' },
+                  { title: 'Jasa Pasang', icon: '🔧', link: '/install-order' },
+                  { title: 'Cuci / Servis AC', icon: '🧼', link: '/service-order' },
+                  { title: 'Kalkulator PK', icon: '🧮', link: '/tools?tab=pk' },
+                  { title: 'Kalkulator Listrik', icon: '⚙️', link: '/tools?tab=kwh' }
                 ].map((cat, idx) => (
                   <div
                     key={idx}
                     onClick={() => {
-                      if (cat.link) {
-                        navigate(cat.link);
-                      } else {
-                        navigate(`/catalog?search=${cat.query}`);
-                      }
+                      navigate(cat.link);
                     }}
                     style={{
                       background: 'var(--color-surface-container-lowest)',
