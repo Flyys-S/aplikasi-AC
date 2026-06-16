@@ -99,11 +99,12 @@ const InstallOrder = () => {
 
   /* ── Auth guard ── */
   useEffect(() => {
+    if (authLoading) return;
     if (!user) {
       navigate('/login', { replace: true });
       return;
     }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
   /* ── Fetch installation requests ── */
   const fetchInstallRequests = useCallback(async () => {

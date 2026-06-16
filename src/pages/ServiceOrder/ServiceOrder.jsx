@@ -70,11 +70,12 @@ const ServiceOrder = () => {
 
   /* ── Auth guard ── */
   useEffect(() => {
+    if (authLoading) return;
     if (!user) {
       navigate('/login', { replace: true });
       return;
     }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
   /* ── Fetch service requests ── */
   const fetchServiceRequests = useCallback(async () => {
