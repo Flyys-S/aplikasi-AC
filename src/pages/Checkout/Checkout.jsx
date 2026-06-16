@@ -62,7 +62,7 @@ const Checkout = () => {
       // 1. Fetch material & service products to map their database IDs
       const { data: materialProducts, error: matError } = await supabase
         .from('products')
-        .select('id, name, price, type')
+        .select('id, name, price')
         .in('name', [
           'Pipa Basic (0.50mm) - Per Meter',
           'Pipa Premium (0.60mm JIS) - Per Meter',
