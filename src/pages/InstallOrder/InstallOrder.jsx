@@ -49,6 +49,7 @@ const InstallOrder = () => {
   const [installReqs, setInstallReqs] = useState([]);
   const [loadingInstalls, setLoadingInstalls] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [products, setProducts] = useState([]);
 
   // Editing/Rescheduling State
   const [editingJobId, setEditingJobId] = useState(null);
@@ -57,10 +58,43 @@ const InstallOrder = () => {
   /* ── Form state ── */
   const [installForm, setInstallForm] = useState({
     service_type:            'Pasang AC Baru',
-    complaint_description:   '',
     service_address:         '',
     scheduled_date:          getTomorrowDate(),
     contact_phone:           '',
+  });
+
+  // Wizard state
+  const [selectedBrand, setSelectedBrand] = useState('');
+  const [customBrand, setCustomBrand] = useState('');
+  const [selectedPk, setSelectedPk] = useState('');
+  const [customPk, setCustomPk] = useState('');
+  const [selectedUnit, setSelectedUnit] = useState('');
+  const [customUnit, setCustomUnit] = useState('');
+  const [selectedQty, setSelectedQty] = useState('1');
+  const [customQty, setCustomQty] = useState('');
+
+  // Load products to populate brand and PK list
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const { data, error } = await supabase.from('products').select('*');
+        if (!error && data) {
+          setProducts(data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadProducts();
+  }, []);
+
+  const uniqueBrands = [...new Set(products.map(p => p.brand))].filter(Boolean);
+  const uniquePks = [...new Set(products.map(p => String(p.capacity_pk)))].filter(Boolean).sort((a,b) => parseFloat(a) - parseFloat(b));
+
+  const filteredProducts = products.filter(p => {
+    const matchesBrand = selectedBrand && selectedBrand !== 'Lainnya' ? p.brand === selectedBrand : true;
+    const matchesPk = selectedPk && selectedPk !== 'Lainnya' ? String(p.capacity_pk) === selectedPk : true;
+    return matchesBrand && matchesPk;
   });
 
   /* ── Auth guard ── */
@@ -142,10 +176,19 @@ const InstallOrder = () => {
   /* ── Submit request ── */
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
-    if (!installForm.complaint_description.trim()) {
-      toast.error('Mohon isi deskripsi pekerjaan.');
+    
+    const finalBrand = selectedBrand === 'Lainnya' ? customBrand.trim() : selectedBrand;
+    const finalPk = selectedPk === 'Lainnya' ? customPk.trim() : selectedPk;
+    const finalUnit = selectedUnit === 'Lainnya' ? customUnit.trim() : selectedUnit;
+    const finalQty = selectedQty === 'Lainnya' ? customQty.trim() : selectedQty;
+
+    if (!finalBrand || !finalPk || !finalUnit || !finalQty) {
+      toast.error('Mohon lengkapi spesifikasi AC.');
       return;
     }
+
+    const complaintDescription = `[Pasang AC Baru] Merk: ${finalBrand}, Kapasitas: ${finalPk}${selectedPk === 'Lainnya' ? '' : ' PK'}, Unit: ${finalUnit}, Jumlah: ${finalQty}${selectedQty === 'Lainnya' ? '' : ' Set'}.`;
+
     if (!installForm.service_address.trim()) {
       toast.error('Mohon isi alamat lengkap.');
       return;
@@ -166,7 +209,7 @@ const InstallOrder = () => {
 
       const insertPayload = {
         service_type:          installForm.service_type,
-        complaint_description: installForm.complaint_description.trim(),
+        complaint_description: complaintDescription,
         service_address:       installForm.service_address.trim(),
         scheduled_date:        installForm.scheduled_date,
         notes:                 installForm.contact_phone
@@ -187,11 +230,18 @@ const InstallOrder = () => {
       toast.success('✅ Permintaan pemasangan berhasil diajukan!');
       setInstallForm({
         service_type:          'Pasang AC Baru',
-        complaint_description: '',
         service_address:       '',
         scheduled_date:        getTomorrowDate(),
         contact_phone:         '',
       });
+      setSelectedBrand('');
+      setCustomBrand('');
+      setSelectedPk('');
+      setCustomPk('');
+      setSelectedUnit('');
+      setCustomUnit('');
+      setSelectedQty('1');
+      setCustomQty('');
       fetchInstallRequests();
     } catch (e) {
       console.error(e);
@@ -330,19 +380,112 @@ const InstallOrder = () => {
                     </div>
                   </div>
 
-                  {/* Deskripsi Pekerjaan */}
-                  <div className="vd-form-group">
-                    <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>
-                      Deskripsi Pekerjaan / Catatan Spesifikasi <span className="vd-form-required">*</span>
-                    </label>
-                    <textarea
-                      className="vd-form-textarea"
-                      placeholder="Jelaskan spesifikasi AC (misal: AC Daikin 1 PK, butuh pipa 5 meter, pasang di lantai 2...)"
-                      rows={4}
-                      value={installForm.complaint_description}
-                      onChange={e => setInstallForm({ ...installForm, complaint_description: e.target.value })}
-                      required
-                    />
+                  {/* Wizard Selection */}
+                  <div className="vd-form-group" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    
+                    {/* Brand select */}
+                    <div className="vd-form-group">
+                      <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>Pilih Merk AC</label>
+                      <select 
+                        value={selectedBrand} 
+                        onChange={(e) => { setSelectedBrand(e.target.value); setSelectedUnit(''); }} 
+                        className="vd-form-select"
+                        required
+                      >
+                        <option value="">-- Pilih Merk AC --</option>
+                        {uniqueBrands.map(b => <option key={b} value={b}>{b}</option>)}
+                        <option value="Lainnya">Lainnya (Input Manual)</option>
+                      </select>
+                      {selectedBrand === 'Lainnya' && (
+                        <input
+                          type="text"
+                          placeholder="Masukkan Merk AC Anda..."
+                          value={customBrand}
+                          onChange={(e) => setCustomBrand(e.target.value)}
+                          className="vd-form-input"
+                          style={{ marginTop: '8px' }}
+                          required
+                        />
+                      )}
+                    </div>
+
+                    {/* PK select */}
+                    <div className="vd-form-group">
+                      <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>Pilih PK AC</label>
+                      <select 
+                        value={selectedPk} 
+                        onChange={(e) => { setSelectedPk(e.target.value); setSelectedUnit(''); }} 
+                        className="vd-form-select"
+                        required
+                      >
+                        <option value="">-- Pilih PK --</option>
+                        {uniquePks.map(pk => <option key={pk} value={pk}>{pk} PK</option>)}
+                        <option value="Lainnya">Lainnya (Input Manual)</option>
+                      </select>
+                      {selectedPk === 'Lainnya' && (
+                        <input
+                          type="text"
+                          placeholder="Masukkan PK AC (misal: 1.5 PK)..."
+                          value={customPk}
+                          onChange={(e) => setCustomPk(e.target.value)}
+                          className="vd-form-input"
+                          style={{ marginTop: '8px' }}
+                          required
+                        />
+                      )}
+                    </div>
+
+                    {/* Unit select */}
+                    <div className="vd-form-group">
+                      <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>Pilih Unit AC</label>
+                      <select 
+                        value={selectedUnit} 
+                        onChange={(e) => setSelectedUnit(e.target.value)} 
+                        className="vd-form-select"
+                        required
+                      >
+                        <option value="">-- Pilih Unit AC --</option>
+                        {filteredProducts.map(p => <option key={p.id} value={p.name}>{p.brand} - {p.name}</option>)}
+                        <option value="Lainnya">Lainnya (Input Manual)</option>
+                      </select>
+                      {selectedUnit === 'Lainnya' && (
+                        <input
+                          type="text"
+                          placeholder="Masukkan Tipe/Nama Unit AC..."
+                          value={customUnit}
+                          onChange={(e) => setCustomUnit(e.target.value)}
+                          className="vd-form-input"
+                          style={{ marginTop: '8px' }}
+                          required
+                        />
+                      )}
+                    </div>
+
+                    {/* Quantity select */}
+                    <div className="vd-form-group">
+                      <label className="vd-form-label" style={{ fontWeight: '700', fontSize: '13px' }}>Pasang berapa Set AC?</label>
+                      <select 
+                        value={selectedQty} 
+                        onChange={(e) => setSelectedQty(e.target.value)} 
+                        className="vd-form-select"
+                        required
+                      >
+                        {['1', '2', '3', '4', '5'].map(q => <option key={q} value={q}>{q} Set</option>)}
+                        <option value="Lainnya">Lainnya (Input Manual)</option>
+                      </select>
+                      {selectedQty === 'Lainnya' && (
+                        <input
+                          type="text"
+                          placeholder="Masukkan jumlah set (misal: 10 Set)..."
+                          value={customQty}
+                          onChange={(e) => setCustomQty(e.target.value)}
+                          className="vd-form-input"
+                          style={{ marginTop: '8px' }}
+                          required
+                        />
+                      )}
+                    </div>
+
                   </div>
 
                   {/* Alamat Pemasangan */}
