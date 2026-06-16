@@ -142,7 +142,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     if (user && role === 'admin') {
-      navigate('/admin-catalog', { replace: true });
+      navigate('/dashboard', { replace: true });
     } else if (user && role === 'technician') {
       navigate('/technician', { replace: true });
     }
