@@ -163,13 +163,16 @@ const FullCatalog = () => {
   };
 
   const updateQuantity = (cartItemId, delta) => {
-    setCart(cart.map(item => {
-      if (item.cartItemId === cartItemId) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty };
-      }
-      return item;
-    }));
+    setCart(prevCart =>
+      prevCart
+        .map(item => {
+          if (item.cartItemId === cartItemId) {
+            return { ...item, quantity: item.quantity + delta };
+          }
+          return item;
+        })
+        .filter(item => item.quantity > 0)
+    );
   };
 
   const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
