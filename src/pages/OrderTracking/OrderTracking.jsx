@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase';
 import { formatRupiah, formatAngka, formatTanggalJam } from '../../lib/formatters';
 import { getStatusLabel, getOrderProgress } from '../../lib/statusUtils';
 import InlineLoader from '../../components/InlineLoader';
+import { useAuth } from '../../context/AuthContext';
 import './OrderTracking.css';
 
 const TRACKING_STEPS = [
@@ -36,8 +37,13 @@ const TRACKING_STEPS = [
 const OrderTracking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, role } = useAuth();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const isVisitorOrGuest = !user || role === 'visitor';
+  const hasNormalSidebar = role === 'admin' || role === 'technician';
+  const containerClass = hasNormalSidebar ? '' : (isVisitorOrGuest ? ' customer-layout' : ' guest-layout');
 
   const fetchOrder = useCallback(async () => {
     try {
@@ -69,7 +75,7 @@ const OrderTracking = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-container">
+      <div className={`dashboard-container${containerClass}`}>
         <InlineLoader text="Memuat detail pesanan..." />
       </div>
     );
@@ -77,7 +83,7 @@ const OrderTracking = () => {
 
   if (!order) {
     return (
-      <div className="dashboard-container">
+      <div className={`dashboard-container${containerClass}`}>
         <div className="tracking-not-found">
           <PackageX size={56} color="#d1d5db" />
           <p>Pesanan tidak ditemukan.</p>
@@ -94,7 +100,7 @@ const OrderTracking = () => {
   const isCancelled = order.status === 'cancelled';
 
   return (
-    <div className="dashboard-container">
+    <div className={`dashboard-container${containerClass}`}>
       {/* Nav */}
       <div className="tracking-nav">
         <button className="tracking-nav-back" onClick={() => navigate('/my-orders')}>

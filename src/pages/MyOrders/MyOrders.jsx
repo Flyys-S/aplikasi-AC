@@ -28,10 +28,14 @@ const TRACKING_STEPS = [
 
 const MyOrders = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [activeTab, setActiveTab] = useState('all');
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const isVisitorOrGuest = !user || role === 'visitor';
+  const hasNormalSidebar = role === 'admin' || role === 'technician';
+  const containerClass = hasNormalSidebar ? '' : (isVisitorOrGuest ? ' customer-layout' : ' guest-layout');
 
   const fetchOrders = useCallback(async () => {
     if (!user) return;
@@ -102,7 +106,7 @@ const MyOrders = () => {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className={`dashboard-container${containerClass}`}>
       <TopHeader title="Pesanan Saya" subtitle="Riwayat & Status Pesanan" />
 
       <div className="page-content fade-in" style={{ paddingBottom: '100px' }}>
