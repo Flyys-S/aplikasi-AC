@@ -20,7 +20,7 @@
     padding: var(--space-sm);
     box-shadow: var(--shadow-diffused);
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   body.sidebar-open .sidebar-nav {
@@ -427,7 +427,7 @@
   border-right: 1px solid var(--color-outline-variant);
   box-shadow: var(--shadow-diffused);
   transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 body.sidebar-open .sidebar-nav.customer-sidebar {
