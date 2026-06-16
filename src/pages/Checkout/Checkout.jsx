@@ -256,12 +256,12 @@ const Checkout = () => {
     <div className="dashboard-container">
       <TopHeader title="Checkout" subtitle="Selesaikan Pesanan Anda" />
       
-      <div className="page-content fade-in" style={{ paddingBottom: '120px' }}>
+      <div className="page-content fade-in" style={{ paddingBottom: '120px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
         <button onClick={() => navigate(-1)} className="back-btn mb-5">
           <ChevronLeft size={18} /> Kembali
         </button>
 
-        <section className="card-elevation" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'white' }}>
+        <section className="card-elevation" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)' }}>
           <h3 style={{ fontSize: '16px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <User size={18} color="var(--color-primary)" /> Informasi Pengiriman
           </h3>
@@ -275,6 +275,7 @@ const Checkout = () => {
                 placeholder="Masukkan nama lengkap"
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
+                style={{ background: 'var(--color-surface-container-low)', color: 'var(--color-on-surface)', border: '1px solid var(--color-outline-variant)' }}
               />
             </div>
             <div className="form-group">
@@ -285,13 +286,14 @@ const Checkout = () => {
                 placeholder="Contoh: 0812xxxx"
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                style={{ background: 'var(--color-surface-container-low)', color: 'var(--color-on-surface)', border: '1px solid var(--color-outline-variant)' }}
               />
             </div>
             <div className="form-group">
               <label>Alamat Lengkap</label>
               <textarea 
                 className="service-select" 
-                style={{ height: '80px', padding: '12px' }}
+                style={{ height: '80px', padding: '12px', background: 'var(--color-surface-container-low)', color: 'var(--color-on-surface)', border: '1px solid var(--color-outline-variant)' }}
                 placeholder="Nama jalan, nomor rumah, kec, kota..."
                 value={formData.address}
                 onChange={(e) => setFormData({...formData, address: e.target.value})}
@@ -300,27 +302,27 @@ const Checkout = () => {
           </div>
         </section>
 
-        <section className="card-elevation mt-4" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'white' }}>
+        <section className="card-elevation mt-4" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)' }}>
           <h3 style={{ fontSize: '16px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <CreditCard size={18} color="var(--color-primary)" /> Pembayaran Transfer
           </h3>
-          <div style={{ padding: '16px', backgroundColor: '#f0f4ff', borderRadius: '12px', marginBottom: '16px' }}>
-            <p style={{ fontSize: '12px', margin: '0 0 4px 0', color: '#666' }}>Bank BCA</p>
-            <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 4px 0' }}>1234 5678 90</p>
-            <p style={{ fontSize: '12px', margin: 0, color: '#666' }}>A/N PT Mitra Maju Sejati</p>
+          <div style={{ padding: '16px', backgroundColor: 'var(--color-surface-container-low)', borderRadius: '12px', marginBottom: '16px', border: '1px solid var(--color-outline-variant)' }}>
+            <p style={{ fontSize: '12px', margin: '0 0 4px 0', color: 'var(--color-on-surface-variant)' }}>Bank BCA</p>
+            <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--color-on-surface)' }}>1234 5678 90</p>
+            <p style={{ fontSize: '12px', margin: 0, color: 'var(--color-on-surface-variant)' }}>A/N PT Mitra Maju Sejati</p>
           </div>
 
           <div className="form-group">
             <label>Unggah Bukti Transfer</label>
             <label className="upload-box" style={{ 
-              border: '2px dashed #ddd', 
+              border: '2px dashed var(--color-outline-variant)', 
               borderRadius: '12px', 
               padding: '30px', 
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
               cursor: 'pointer',
-              backgroundColor: formData.payment_proof_url ? '#eafff5' : '#fafafa'
+              backgroundColor: formData.payment_proof_url ? 'rgba(0, 200, 120, 0.08)' : 'var(--color-surface-container-low)'
             }}>
               <input type="file" hidden onChange={handleFileUpload} accept="image/*" />
               {uploading ? (
@@ -328,33 +330,45 @@ const Checkout = () => {
               ) : formData.payment_proof_url ? (
                 <>
                   <CheckCircle size={24} color="#008756" />
-                  <span style={{ fontSize: '12px', color: '#008756', marginTop: '8px' }}>Bukti Berhasil Diunggah</span>
+                  <span style={{ fontSize: '12px', color: '#008756', marginTop: '8px', fontWeight: '600' }}>Bukti Berhasil Diunggah</span>
                 </>
               ) : (
                 <>
-                  <Upload size={24} color="#999" />
-                  <span style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>Klik untuk pilih foto</span>
+                  <Upload size={24} color="var(--color-outline)" />
+                  <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginTop: '8px' }}>Klik untuk pilih foto</span>
                 </>
               )}
             </label>
           </div>
         </section>
 
-        <section className="card-elevation mt-4" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'white' }}>
-          <h3 style={{ fontSize: '16px', marginBottom: '12px' }}>Ringkasan Pesanan</h3>
+        <section className="card-elevation mt-4" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)', marginBottom: '40px' }}>
+          <h3 style={{ fontSize: '16px', marginBottom: '12px', color: 'var(--color-on-surface)' }}>Ringkasan Pesanan</h3>
           {cart.map(item => (
-            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-              <span>{item.quantity}x {item.brand} {item.name}</span>
+            <div key={item.id || item.cartItemId} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px', color: 'var(--color-on-surface)' }}>
+              <span>{item.quantity}x {item.brand} {item.name} {item.configLabel ? `(${item.configLabel})` : ''}</span>
               <span>{formatRupiah(item.price * item.quantity)}</span>
             </div>
           ))}
-          <div style={{ borderTop: '1px solid #eee', marginTop: '12px', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+          <div style={{ borderTop: '1px solid var(--color-outline-variant)', marginTop: '12px', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', color: 'var(--color-on-surface)' }}>
             <span>Total Bayar</span>
             <span style={{ color: 'var(--color-primary)', fontSize: '18px' }}>{formatRupiah(cart.reduce((s, i) => s + (i.price * i.quantity), 0))}</span>
           </div>
         </section>
 
-        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '20px', background: 'white', borderTop: '1px solid #eee', zIndex: 10 }}>
+        <div style={{ 
+          position: 'fixed', 
+          bottom: 0, 
+          left: '50%', 
+          transform: 'translateX(-50%)', 
+          width: '100%', 
+          maxWidth: '800px', 
+          padding: '16px var(--gutter)', 
+          background: 'var(--color-surface-container-lowest)', 
+          borderTop: '1px solid var(--color-outline-variant)', 
+          zIndex: 10,
+          boxShadow: '0 -4px 16px rgba(0, 0, 0, 0.05)'
+        }}>
           <Button fullWidth onClick={handleSubmit} disabled={loading || uploading}>
             {loading ? 'Memproses...' : 'Konfirmasi Pembayaran'}
           </Button>
