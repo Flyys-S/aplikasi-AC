@@ -253,13 +253,10 @@ const Checkout = () => {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container customer-layout">
       <TopHeader title="Checkout" subtitle="Selesaikan Pesanan Anda" />
       
       <div className="page-content fade-in" style={{ paddingBottom: '120px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-        <button onClick={() => navigate(-1)} className="back-btn mb-5">
-          <ChevronLeft size={18} /> Kembali
-        </button>
 
         <section className="card-elevation" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)' }}>
           <h3 style={{ fontSize: '16px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
