@@ -478,7 +478,7 @@ const LandingPage = () => {
             </section>
 
             {/* 2. Selka-style Category shortcuts */}
-            <section className="selka-categories-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '12px', marginBottom: '32px' }}>
+            <section className="selka-categories-grid">
               {[
                 { title: 'AC MULTI SPLIT', icon: '❄️', query: 'multi' },
                 { title: 'AC PORTABLE', icon: '📱', query: 'portable' },
@@ -522,7 +522,7 @@ const LandingPage = () => {
                 <h3 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 6px 0' }}>Bagaimana Cara Belanja Paket AC di Sini?</h3>
                 <p style={{ fontSize: '13px', color: 'var(--color-on-surface-variant)', margin: 0 }}>4 langkah mudah mendapatkan pendingin ruangan berkualitas tanpa repot.</p>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+              <div className="selka-steps-grid">
                 {[
                   { step: '1', title: 'Pilih Unit AC', desc: 'Gunakan kalkulator PK atau filter brand untuk menemukan unit AC terbaik.' },
                   { step: '2', title: 'Pilih Paket Material', desc: 'Pilih grade pipa tembaga (Basic/Premium/Elite) serta estimasi meteran pipa.' },
@@ -703,15 +703,7 @@ const LandingPage = () => {
             </section>
 
             {/* 5. Trust Badges Section */}
-            <section className="selka-trust-badges" style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(4, 1fr)', 
-              gap: '16px', 
-              padding: '24px', 
-              borderRadius: '24px', 
-              background: 'var(--color-surface-container-high)', 
-              marginBottom: '40px' 
-            }}>
+            <section className="selka-trust-badges">
               {[
                 { badge: '🛡️', title: '100% Original', desc: 'Unit asli bergaransi pabrik' },
                 { badge: '🔧', title: 'Teknisi Certified', desc: 'Instalasi rapi & teruji' },

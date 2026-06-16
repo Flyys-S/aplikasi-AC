@@ -1416,6 +1416,21 @@ button:not(.promo-arrow):active {
   transform: translateY(1px) scale(0.97);
 }
 
+.full-catalog-main {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+  padding: 32px var(--gutter);
+}
+
+@media (max-width: 768px) {
+  .full-catalog-main {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 16px var(--gutter);
+  }
+}
+
 
 
 

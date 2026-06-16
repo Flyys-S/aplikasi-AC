@@ -680,3 +680,55 @@ ul {
   transform: rotate(35deg) scale(1.15);
 }
 
+/* ─── Responsive Grid Overrides ─── */
+.selka-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.selka-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.selka-trust-badges {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--color-surface-container-high);
+  margin-bottom: 40px;
+}
+
+@media (max-width: 1024px) {
+  .selka-categories-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .selka-categories-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .selka-steps-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .selka-trust-badges {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .selka-categories-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+

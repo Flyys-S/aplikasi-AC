@@ -94,7 +94,7 @@ const AdminCatalog = () => {
   });
 
   return (
-    <div className="dashboard-container" style={{ paddingLeft: '260px', transition: 'all 0.3s ease' }}>
+    <div className="dashboard-container">
       <TopHeader title="Katalog Produk" subtitle="Daftar produk AC terlengkap untuk manajemen admin" />
       
       <div className="page-content fade-in" style={{ padding: '24px' }}>
@@ -196,7 +196,7 @@ const AdminCatalog = () => {
         )}
 
         {/* 📁 Filters Sidebar/Panel */}
-        <div className="inv-layout" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '24px', alignItems: 'start' }}>
+        <div className="inv-layout">
           <aside className="inv-sidebar card-elevation glass-panel" style={{ padding: '20px', borderRadius: '24px', position: 'sticky', top: '24px', background: 'var(--color-surface-container-low)' }}>
             <div className="inv-sidebar-header" style={{ borderBottom: '1px solid var(--color-outline-variant)', paddingBottom: '12px', marginBottom: '16px' }}>
               <span className="inv-sidebar-title" style={{ fontWeight: '800', fontSize: '14px', letterSpacing: '0.05em' }}>FILTER AC</span>

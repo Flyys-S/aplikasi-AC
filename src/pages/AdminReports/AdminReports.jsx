@@ -120,7 +120,7 @@ const AdminReports = () => {
   };
 
   return (
-    <div className="dashboard-container" style={{ paddingLeft: '260px', transition: 'all 0.3s ease' }}>
+    <div className="dashboard-container">
       <TopHeader title="Riwayat Laporan Servis" subtitle="Daftar laporan hasil pengerjaan teknisi" />
 
       <div className="page-content fade-in reports-admin-content" style={{ paddingBottom: '100px' }}>

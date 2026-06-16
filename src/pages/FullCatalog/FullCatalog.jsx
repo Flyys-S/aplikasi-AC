@@ -331,7 +331,7 @@ const FullCatalog = () => {
 
 
 
-      <main style={{ padding: '32px var(--gutter)', display: 'grid', gridTemplateColumns: '260px 1fr', gap: '32px' }}>
+      <main className="full-catalog-main">
         
         {/* Left Filter Sidebar */}
         <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
