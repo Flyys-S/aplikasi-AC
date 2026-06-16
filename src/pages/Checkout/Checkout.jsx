@@ -20,8 +20,7 @@ const Checkout = () => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    address: '',
-    payment_proof_url: ''
+    address: ''
   });
 
   useEffect(() => {
@@ -48,37 +47,11 @@ const Checkout = () => {
     return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   };
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
 
-    try {
-      setUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${generateUniqueId()}.${fileExt}`;
-      const filePath = `payments/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(filePath);
-
-      setFormData({ ...formData, payment_proof_url: publicUrl });
-    } catch (error) {
-      toast.error('Gagal mengunggah bukti: ' + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.phone || !formData.address || !formData.payment_proof_url) {
-      toast.error('Mohon lengkapi semua data dan unggah bukti transfer.');
+    if (!formData.name || !formData.phone || !formData.address) {
+      toast.error('Mohon lengkapi semua data pengiriman.');
       return;
     }
 
@@ -111,10 +84,9 @@ const Checkout = () => {
         .insert([{
           user_id: user?.id,
           total_amount: totalAmount,
-          payment_method: 'Transfer Bank',
+          payment_method: 'Xendit Gateway',
           status: 'pending_verification',
           is_online: true,
-          payment_proof_url: formData.payment_proof_url,
           buyer_name: formData.name,
           buyer_phone: formData.phone,
           buyer_address: formData.address,
@@ -225,9 +197,29 @@ const Checkout = () => {
         console.error('Failed to decrement some stocks:', stockErrors);
       }
 
+      // Call Xendit Supabase Edge Function
+      const { data: edgeData, error: edgeError } = await supabase.functions.invoke('xendit-invoice', {
+        body: {
+          transactionId: transaction.id,
+          amount: totalAmount,
+          buyerName: formData.name,
+          buyerPhone: formData.phone,
+          buyerEmail: user?.email
+        }
+      });
+
+      if (edgeError || !edgeData?.invoice_url) {
+        throw new Error(edgeError?.message || "Gagal mendapatkan invoice pembayaran Xendit.");
+      }
+
       // 6. Success! Clear cart
       localStorage.removeItem('arctic_cart');
-      setSuccess(true);
+      
+      // Redirect to Xendit Invoice
+      toast.success('Mengalihkan ke halaman pembayaran Xendit...');
+      setTimeout(() => {
+        window.location.href = edgeData.invoice_url;
+      }, 1000);
     } catch (error) {
       toast.error('Gagal memproses pesanan: ' + error.message);
     } finally {
@@ -302,41 +294,13 @@ const Checkout = () => {
 
         <section className="card-elevation mt-4" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)' }}>
           <h3 style={{ fontSize: '16px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <CreditCard size={18} color="var(--color-primary)" /> Pembayaran Transfer
+            <CreditCard size={18} color="var(--color-primary)" /> Metode Pembayaran
           </h3>
-          <div style={{ padding: '16px', backgroundColor: 'var(--color-surface-container-low)', borderRadius: '12px', marginBottom: '16px', border: '1px solid var(--color-outline-variant)' }}>
-            <p style={{ fontSize: '12px', margin: '0 0 4px 0', color: 'var(--color-on-surface-variant)' }}>Bank BCA</p>
-            <p style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--color-on-surface)' }}>1234 5678 90</p>
-            <p style={{ fontSize: '12px', margin: 0, color: 'var(--color-on-surface-variant)' }}>A/N PT Mitra Maju Sejati</p>
-          </div>
-
-          <div className="form-group">
-            <label>Unggah Bukti Transfer</label>
-            <label className="upload-box" style={{
-              border: '2px dashed #ddd',
-              borderRadius: '12px',
-              padding: '30px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              cursor: 'pointer',
-              backgroundColor: formData.payment_proof_url ? 'rgba(0, 200, 120, 0.08)' : 'var(--color-surface-container-low)'
-            }}>
-              <input type="file" hidden onChange={handleFileUpload} accept="image/*" />
-              {uploading ? (
-                <Loader2 className="spinner" size={24} />
-              ) : formData.payment_proof_url ? (
-                <>
-                  <CheckCircle size={24} color="#008756" />
-                  <span style={{ fontSize: '12px', color: '#008756', marginTop: '8px', fontWeight: '600' }}>Bukti Berhasil Diunggah</span>
-                </>
-              ) : (
-                <>
-                  <Upload size={24} color="var(--color-outline)" />
-                  <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginTop: '8px' }}>Klik untuk pilih foto</span>
-                </>
-              )}
-            </label>
+          <div style={{ padding: '16px', backgroundColor: 'var(--color-surface-container-low)', borderRadius: '12px', border: '1px solid var(--color-outline-variant)' }}>
+            <p style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--color-on-surface)' }}>Xendit Payment Gateway</p>
+            <p style={{ fontSize: '12px', margin: 0, color: 'var(--color-on-surface-variant)' }}>
+              Mendukung Transfer Bank (Virtual Account), QRIS (Gopay, OVO, Dana, LinkAja), Kartu Kredit, dan Retail Outlet. Anda akan dialihkan ke halaman pembayaran Xendit yang aman setelah menekan tombol konfirmasi.
+            </p>
           </div>
         </section>
 
