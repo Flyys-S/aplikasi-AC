@@ -165,13 +165,17 @@
   padding: 0;
 }
 
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--color-background);
   color: var(--color-on-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
   scrollbar-color: var(--color-outline-variant) transparent;
   scrollbar-width: thin;
 }

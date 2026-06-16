@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Bell, ArrowLeft, Sun, Moon, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -8,6 +9,13 @@ const TopHeader = ({ title, subtitle, onBack, children, isAdminDashboard, search
   const navigate = useNavigate();
   const { signOut, user, role } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogout = async () => {
     if (window.confirm('Apakah Anda yakin ingin keluar?')) {
@@ -26,7 +34,7 @@ const TopHeader = ({ title, subtitle, onBack, children, isAdminDashboard, search
   return (
     <header className={`top-header glass-panel ${isAdminDashboard ? 'admin-top-header' : ''}`}>
       <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {role === 'visitor' ? (
+        {isMobile ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
             <button 
               className="icon-btn back-btn-customer" 
@@ -64,10 +72,49 @@ const TopHeader = ({ title, subtitle, onBack, children, isAdminDashboard, search
             </button>
           </div>
         ) : (
-          onBack && (
-            <button className="back-btn-header" onClick={onBack}>
-              <ArrowLeft size={22} />
-            </button>
+          role === 'visitor' ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
+              <button 
+                className="icon-btn back-btn-customer" 
+                onClick={() => navigate(-1)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '6px',
+                  color: 'var(--color-on-surface)'
+                }}
+                title="Kembali"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <button 
+                className="icon-btn hamburger-btn-customer" 
+                onClick={() => document.body.classList.toggle('sidebar-open')}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '6px',
+                  color: 'var(--color-on-surface)'
+                }}
+                title="Menu"
+              >
+                <Menu size={20} />
+              </button>
+            </div>
+          ) : (
+            onBack && (
+              <button className="back-btn-header" onClick={onBack}>
+                <ArrowLeft size={22} />
+              </button>
+            )
           )
         )}
         <div className="header-info">
