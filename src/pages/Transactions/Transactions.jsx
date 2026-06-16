@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Globe, Store, ChevronLeft, ChevronRight, Calendar, TrendingUp, ShoppingCart, Printer, Eye, Filter } from 'lucide-react';
+import { Plus, Search, Globe, Store, ChevronLeft, ChevronRight, Calendar, TrendingUp, ShoppingCart, Printer, Eye, Filter, PackageSearch } from 'lucide-react';
 import { formatRupiah, formatTanggalJam } from '../../lib/formatters';
 import { supabase } from '../../lib/supabase';
 import { getStatusLabel } from '../../lib/statusUtils';
@@ -283,7 +283,20 @@ const Transactions = () => {
           </div>
 
           {/* Online Processed KPI */}
-          <div className="kpi-card">
+          <div 
+            className="kpi-card"
+            onClick={() => navigate('/online-orders')}
+            style={{ cursor: 'pointer', border: '1px solid rgba(245, 158, 11, 0.3)', transition: 'all 0.2s' }}
+            title="Kelola Pesanan Online"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 8px 16px rgba(245, 158, 11, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'none';
+              e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+            }}
+          >
             <div className="kpi-card-header">
               <span className="kpi-card-title">Online Diproses</span>
               <div className="kpi-icon-wrapper" style={{ backgroundColor: 'rgba(245, 158, 11, 0.08)', color: '#f59e0b' }}>
@@ -291,7 +304,9 @@ const Transactions = () => {
               </div>
             </div>
             <div className="kpi-card-value">{pendingOnlineOrders} <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--color-on-surface-variant)' }}>Pesanan</span></div>
-            <div className="kpi-card-desc">Butuh verifikasi & pengiriman</div>
+            <div className="kpi-card-desc" style={{ color: '#f59e0b', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              Klik untuk kelola <ChevronRight size={12} />
+            </div>
           </div>
 
           {/* Channel Ratio KPI */}

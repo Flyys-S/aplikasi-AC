@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen, LogOut, HardHat, Calculator, User, FileText, ClipboardList } from 'lucide-react'
+import { LayoutDashboard, Package, Wrench, ShieldCheck, ShoppingBag, BookOpen, LogOut, HardHat, Calculator, User, FileText, ClipboardList, PackageSearch } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../Button'
 import './Sidebar.css'
@@ -70,6 +70,7 @@ const Sidebar = () => {
       { to: '/tools', label: 'Kalkulator', icon: Calculator },
       { to: '/service-order', label: 'Servis', icon: Wrench },
       { to: '/install-order', label: 'Pasang AC', icon: HardHat },
+      { to: '/my-orders', label: 'Pesanan Saya', icon: PackageSearch },
       { to: '/profile', label: 'Profil Saya', icon: User },
     ]
   } else {

@@ -1,0 +1,221 @@
+/* ===== Admin Online Orders Styles ===== */
+
+/* Tab Bar */
+.admin-orders-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.admin-orders-tabs::-webkit-scrollbar { display: none; }
+
+.admin-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1.5px solid #e5e7eb;
+  background: white;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.admin-tab-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.admin-tab-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,90,170,0.25);
+}
+.admin-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 0 4px;
+  background: var(--color-primary);
+  color: white;
+}
+.admin-tab-btn.active .admin-tab-badge {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Order Card */
+.admin-order-card {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.admin-order-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.09); }
+
+/* Card Header */
+.admin-order-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.admin-order-header-left h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 3px 0;
+  color: #1f2937;
+  letter-spacing: 0.3px;
+}
+.admin-order-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0;
+}
+.admin-order-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Mini Pipeline */
+.admin-mini-pipeline {
+  display: flex;
+  align-items: center;
+  padding: 0 16px 10px;
+  gap: 0;
+}
+.amp-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  border: 2px solid #d1d5db;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+.amp-dot.current {
+  box-shadow: 0 0 0 3px rgba(0,90,170,0.2);
+  animation: amp-pulse 1.5s infinite;
+}
+@keyframes amp-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(0,90,170,0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(0,90,170,0.08); }
+}
+.amp-line {
+  flex: 1;
+  height: 2px;
+  background: #e5e7eb;
+  transition: background 0.3s ease;
+  min-width: 12px;
+}
+
+/* Buyer Summary */
+.admin-order-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 14px;
+}
+.admin-buyer-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+.admin-order-total {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Expanded Detail */
+.admin-order-detail {
+  border-top: 1px solid #f0f0f0;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fafbff;
+  animation: slideDown 0.2s ease;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Buyer Info */
+.admin-buyer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+}
+.admin-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+/* Items */
+.admin-items-list {
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-item-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #374151;
+}
+.admin-item-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px dashed #e5e7eb;
+  color: #374151;
+}
+
+/* Action Buttons */
+.order-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cancelled-note {
+  font-size: 12px;
+  color: #ff4444;
+  font-style: italic;
+}

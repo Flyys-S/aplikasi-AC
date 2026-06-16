@@ -35,6 +35,8 @@ import AdminReports from './pages/AdminReports'
 import AdminLogs from './pages/AdminLogs'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import MyOrders from './pages/MyOrders'
+import OrderTracking from './pages/OrderTracking'
 
 import './App.css'
 
@@ -79,6 +81,9 @@ function App() {
               <Route path="/transactions/:id" element={<ProtectedRoute allowedRoles={['admin', 'technician', 'visitor']}><InvoiceDetail /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute allowedRoles={['admin', 'technician', 'visitor']}><UserProfile /></ProtectedRoute>} />
               <Route path="/users" element={<ProtectedRoute allowedRoles={['admin']}><UserManagement /></ProtectedRoute>} />
+              {/* Customer Order Dashboard */}
+              <Route path="/my-orders" element={<ProtectedRoute allowedRoles={['visitor', 'admin']}><MyOrders /></ProtectedRoute>} />
+              <Route path="/my-orders/:id" element={<ProtectedRoute allowedRoles={['visitor', 'admin']}><OrderTracking /></ProtectedRoute>} />
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

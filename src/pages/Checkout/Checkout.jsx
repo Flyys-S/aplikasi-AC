@@ -16,7 +16,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [uploading, setUploading] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -255,45 +255,46 @@ const Checkout = () => {
   return (
     <div className="dashboard-container customer-layout">
       <TopHeader title="Checkout" subtitle="Selesaikan Pesanan Anda" />
-      
-      <div className="page-content fade-in" style={{ paddingBottom: '120px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+
+      <div className="page-content fade-in" style={{ paddingBottom: '120px' }}>
+        <button onClick={() => navigate(-1)} className="back-btn mb-5">
+          <ChevronLeft size={18} /> Kembali
+        </button>
 
         <section className="card-elevation" style={{ padding: '20px', borderRadius: '16px', backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)' }}>
           <h3 style={{ fontSize: '16px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <User size={18} color="var(--color-primary)" /> Informasi Pengiriman
           </h3>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div className="form-group">
               <label>Nama Penerima</label>
-              <input 
-                type="text" 
-                className="service-select" 
+              <input
+                type="text"
+                className="service-select"
                 placeholder="Masukkan nama lengkap"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                style={{ background: 'var(--color-surface-container-low)', color: 'var(--color-on-surface)', border: '1px solid var(--color-outline-variant)' }}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
             <div className="form-group">
               <label>No. HP / WhatsApp</label>
-              <input 
-                type="tel" 
-                className="service-select" 
+              <input
+                type="tel"
+                className="service-select"
                 placeholder="Contoh: 0812xxxx"
                 value={formData.phone}
-                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                style={{ background: 'var(--color-surface-container-low)', color: 'var(--color-on-surface)', border: '1px solid var(--color-outline-variant)' }}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               />
             </div>
             <div className="form-group">
               <label>Alamat Lengkap</label>
-              <textarea 
-                className="service-select" 
-                style={{ height: '80px', padding: '12px', background: 'var(--color-surface-container-low)', color: 'var(--color-on-surface)', border: '1px solid var(--color-outline-variant)' }}
+              <textarea
+                className="service-select"
+                style={{ height: '80px', padding: '12px' }}
                 placeholder="Nama jalan, nomor rumah, kec, kota..."
                 value={formData.address}
-                onChange={(e) => setFormData({...formData, address: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               ></textarea>
             </div>
           </div>
@@ -311,13 +312,13 @@ const Checkout = () => {
 
           <div className="form-group">
             <label>Unggah Bukti Transfer</label>
-            <label className="upload-box" style={{ 
-              border: '2px dashed var(--color-outline-variant)', 
-              borderRadius: '12px', 
-              padding: '30px', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
+            <label className="upload-box" style={{
+              border: '2px dashed #ddd',
+              borderRadius: '12px',
+              padding: '30px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
               cursor: 'pointer',
               backgroundColor: formData.payment_proof_url ? 'rgba(0, 200, 120, 0.08)' : 'var(--color-surface-container-low)'
             }}>
@@ -353,19 +354,7 @@ const Checkout = () => {
           </div>
         </section>
 
-        <div style={{ 
-          position: 'fixed', 
-          bottom: 0, 
-          left: '50%', 
-          transform: 'translateX(-50%)', 
-          width: '100%', 
-          maxWidth: '800px', 
-          padding: '16px var(--gutter)', 
-          background: 'var(--color-surface-container-lowest)', 
-          borderTop: '1px solid var(--color-outline-variant)', 
-          zIndex: 10,
-          boxShadow: '0 -4px 16px rgba(0, 0, 0, 0.05)'
-        }}>
+        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '20px', background: 'white', borderTop: '1px solid #eee', zIndex: 10 }}>
           <Button fullWidth onClick={handleSubmit} disabled={loading || uploading}>
             {loading ? 'Memproses...' : 'Konfirmasi Pembayaran'}
           </Button>

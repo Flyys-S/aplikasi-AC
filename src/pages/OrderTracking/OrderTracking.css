@@ -1,0 +1,344 @@
+/* ===== OrderTracking Page Styles ===== */
+
+/* Nav */
+.tracking-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px 12px;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.tracking-nav-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.tracking-nav-back:hover { background: #f4f6fb; }
+.tracking-nav-title {
+  flex: 1;
+}
+.tracking-nav-title h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 1px 0;
+  color: #1f2937;
+}
+.tracking-nav-title span {
+  font-size: 11px;
+  color: #9ca3af;
+  letter-spacing: 0.5px;
+}
+.tracking-proof-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f4f6fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: background 0.2s;
+}
+.tracking-proof-btn:hover { background: rgba(0,90,170,0.1); }
+
+/* Content */
+.tracking-content {
+  padding: 16px 20px 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Status Banner */
+.tracking-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1.5px solid transparent;
+  background: #f4f6fb;
+}
+.tracking-status-banner.cancelled {
+  background: rgba(255,68,68,0.06);
+  border-color: rgba(255,68,68,0.2);
+}
+.tsb-icon { display: flex; }
+.tsb-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+.tsb-desc {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Generic Card */
+.tracking-card {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border: 1px solid #f0f0f0;
+}
+.tracking-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+/* Tracking Stepper */
+.tracking-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+.ts-row {
+  position: relative;
+  padding-left: 36px;
+}
+.ts-connector {
+  position: absolute;
+  left: 16px;
+  top: -14px;
+  width: 2px;
+  height: 22px;
+  background: #e5e7eb;
+  transform: translateX(-50%);
+  transition: background 0.4s ease;
+}
+.ts-connector.active { background: var(--color-primary); }
+
+.ts-row-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+/* Icon Circles */
+.ts-icon-wrap {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+.ts-icon-wrap.done {
+  background: rgba(0,135,86,0.12);
+  color: #008756;
+  border: 2px solid #008756;
+}
+.ts-icon-wrap.current {
+  background: var(--color-primary);
+  color: white;
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(0,90,170,0.15);
+  animation: pulse-ring 2s infinite;
+}
+.ts-icon-wrap.pending {
+  background: #f4f6fb;
+  color: #d1d5db;
+  border: 2px solid #e5e7eb;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(0,90,170,0.15); }
+  50% { box-shadow: 0 0 0 8px rgba(0,90,170,0.07); }
+}
+
+/* Step Content */
+.ts-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.ts-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+.ts-row.pending .ts-label { color: #d1d5db; }
+.ts-row.done .ts-label { color: #374151; }
+.ts-current-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: rgba(0,90,170,0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.ts-done-icon { margin-left: auto; }
+
+/* Info Rows */
+.tracking-info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tracking-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+}
+.tracking-info-row svg { margin-top: 2px; flex-shrink: 0; }
+
+/* Items */
+.tracking-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.tracking-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tracking-item-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.tracking-item-name {
+  font-size: 13px;
+  color: #374151;
+  flex: 1;
+}
+.tracking-item-qty {
+  font-size: 12px;
+  color: #9ca3af;
+  background: #f4f6fb;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.tracking-item-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+.tracking-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1.5px dashed #f0f0f0;
+}
+.tracking-total-row span:first-child {
+  font-size: 13px;
+  color: #6b7280;
+}
+.tracking-total-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Date */
+.tracking-order-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #9ca3af;
+  text-align: center;
+  justify-content: center;
+  margin: 0;
+}
+
+/* Actions */
+.tracking-actions {
+  display: flex;
+  gap: 12px;
+}
+.tracking-btn-secondary {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  background: white;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.tracking-btn-secondary:hover { background: #f4f6fb; }
+.tracking-btn-primary {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,90,170,0.25);
+  transition: opacity 0.2s;
+}
+.tracking-btn-primary:hover { opacity: 0.88; }
+
+/* Not Found */
+.tracking-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 12px;
+  text-align: center;
+  padding: 40px;
+}
+.tracking-not-found p {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0;
+}
+.tracking-back-link {
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.tracking-back-link:hover { background: rgba(0,90,170,0.06); }
