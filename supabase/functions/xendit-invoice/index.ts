@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
-const XENDIT_API_KEY = "xnd_development_ungVHCDCE1c34vpu7tH0wu9vrsLxVWR4M9J7tM0XYzLe3jhBgt7HkQQGzUpy"
+const XENDIT_API_KEY = Deno.env.get("XENDIT_API_KEY") || "";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

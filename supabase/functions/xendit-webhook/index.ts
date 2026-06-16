@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
-const XENDIT_CALLBACK_TOKEN = "sutwNp4d8JfvFSctndZ1VYZyFnlWRG44ZabCMo54Hokb3hGA"
+const XENDIT_CALLBACK_TOKEN = Deno.env.get("XENDIT_CALLBACK_TOKEN") || "";
 
 serve(async (req) => {
   try {
