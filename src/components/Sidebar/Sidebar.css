@@ -41,9 +41,10 @@
   }
 
   .sidebar-nav .sidebar-header {
-    margin-bottom: var(--space-sm);
-    padding-bottom: var(--space-xs, 6px);
-    border-bottom: 1px solid var(--color-outline-variant);
+    order: 1;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: none;
   }
 
   .sidebar-nav .sidebar-logo {
@@ -66,6 +67,7 @@
   }
 
   .sidebar-nav .sidebar-menu {
+    order: 3;
     display: flex;
     flex-direction: column;
     gap: 3px;
@@ -119,8 +121,12 @@
   }
 
   .sidebar-nav .sidebar-footer {
-    padding-top: var(--space-sm);
-    border-top: 1px solid var(--color-outline-variant);
+    order: 2;
+    padding-top: 0;
+    padding-bottom: var(--space-sm);
+    border-top: none;
+    border-bottom: 1px solid var(--color-outline-variant);
+    margin-bottom: var(--space-sm);
     display: flex;
     align-items: center;
     justify-content: space-between;
