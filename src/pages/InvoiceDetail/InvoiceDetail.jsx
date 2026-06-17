@@ -88,7 +88,7 @@ const InvoiceDetail = () => {
         </div>
       </div>
 
-      <div className="invoice-card card-elevation">
+      <div className="invoice-card card-elevation" id="printable-area">
         <div className="invoice-company">
           <div className="invoice-logo">AC</div>
           <div>
