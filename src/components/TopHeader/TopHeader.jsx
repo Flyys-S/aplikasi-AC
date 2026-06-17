@@ -193,7 +193,10 @@ const TopHeader = ({ title, subtitle, onBack, children, isAdminDashboard, search
               boxShadow: 'var(--shadow-hover)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '12px'
+              gap: '12px',
+              background: 'var(--color-surface)',
+              backdropFilter: 'none',
+              WebkitBackdropFilter: 'none'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-outline-variant)', paddingBottom: '8px' }}>
                 <span style={{ fontWeight: '800', fontSize: '11px', color: 'var(--color-on-surface)' }}>NOTIFIKASI</span>
