@@ -37,23 +37,6 @@ const TopHeader = ({ title, subtitle, onBack, children, isAdminDashboard, search
         {isMobile ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
             <button 
-              className="icon-btn back-btn-customer" 
-              onClick={() => navigate(-1)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '6px',
-                color: 'var(--color-on-surface)'
-              }}
-              title="Kembali"
-            >
-              <ArrowLeft size={20} />
-            </button>
-            <button 
               className="icon-btn hamburger-btn-customer" 
               onClick={() => document.body.classList.toggle('sidebar-open')}
               style={{
