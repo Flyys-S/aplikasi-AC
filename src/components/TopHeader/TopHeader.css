@@ -163,5 +163,15 @@
   .header-search-bar {
     display: none;
   }
+  .header-left {
+    gap: 8px !important;
+  }
+  .header-info h2 {
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.01em !important;
+    margin: 0 !important;
+    padding-left: 2px !important;
+  }
 }
 
