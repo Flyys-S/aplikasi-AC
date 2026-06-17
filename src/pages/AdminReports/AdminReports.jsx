@@ -54,62 +54,227 @@ const AdminReports = () => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
+    const measurementsHtml = (report.measurements || [])
+      .map(
+        (m) => `
+      <tr>
+        <td>${m.parameter || '-'}</td>
+        <td>${m.unit || '-'}</td>
+        <td>${m.reference || '-'}</td>
+        <td>${m.before || '-'}</td>
+        <td style="font-weight: 600;">${m.after || '-'}</td>
+      </tr>
+    `
+      )
+      .join('');
+
     printWindow.document.write(`
       <html>
         <head>
-          <title>Laporan Servis AC - ${report.customer_name}</title>
+          <title>SERVICE REPORT DETAIL - ${report.customer_name}</title>
           <style>
-            body { font-family: 'Arial', sans-serif; padding: 40px; color: #333; }
-            .header { border-bottom: 3px solid #0055FF; padding-bottom: 20px; margin-bottom: 30px; }
-            .header h1 { color: #0055FF; margin: 0; font-size: 28px; }
-            .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
-            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-            .section { background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #0055FF; }
-            .section h3 { margin-top: 0; color: #0055FF; border-bottom: 1px solid #ddd; padding-bottom: 5px; font-size: 16px; }
-            .row { display: flex; margin-bottom: 8px; font-size: 14px; }
-            .label { width: 140px; font-weight: bold; color: #555; }
-            .value { flex: 1; }
-            .full-section { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #0055FF; }
-            .full-section h3 { margin-top: 0; color: #0055FF; border-bottom: 1px solid #ddd; padding-bottom: 5px; font-size: 16px; }
-            .action-text { font-size: 15px; line-height: 1.6; white-space: pre-line; }
-            .signature-box { margin-top: 50px; text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
-            .signature-line { width: 200px; border-bottom: 1px solid #000; margin-top: 80px; text-align: center; }
+            body { font-family: 'Arial', sans-serif; padding: 40px; color: #1e293b; }
+            .rpt-letterhead {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 3px double #023e8a;
+              padding-bottom: 16px;
+              margin-bottom: 20px;
+            }
+            .rpt-company-name {
+              font-size: 26px;
+              font-weight: 800;
+              color: #023e8a;
+              line-height: 1.1;
+            }
+            .rpt-company-sub {
+              font-size: 13px;
+              color: #64748b;
+              margin-top: 4px;
+            }
+            .rpt-badge {
+              background: #023e8a;
+              color: white;
+              padding: 8px 16px;
+              font-weight: 800;
+              font-size: 18px;
+              border-radius: 8px;
+              letter-spacing: 1px;
+            }
+            .rpt-title {
+              font-size: 18px;
+              font-weight: 800;
+              text-align: center;
+              color: #0f172a;
+              letter-spacing: 0.5px;
+              margin-bottom: 20px;
+            }
+            .rpt-info-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            .rpt-info-table td {
+              padding: 8px 12px;
+              border: 1px solid #cbd5e1;
+              font-size: 12.5px;
+            }
+            .rpt-key {
+              font-weight: 700;
+              background: #f8fafc;
+              color: #334155;
+              width: 150px;
+            }
+            .rpt-section-label {
+              font-size: 13px;
+              font-weight: 800;
+              color: #023e8a;
+              background: #f1f5f9;
+              padding: 6px 12px;
+              border-left: 4px solid #023e8a;
+              margin: 16px 0 10px;
+              text-transform: uppercase;
+            }
+            .rpt-block {
+              padding: 12px;
+              border: 1px solid #cbd5e1;
+              border-radius: 6px;
+              font-size: 13px;
+              min-height: 60px;
+              white-space: pre-wrap;
+              background: #fafafa;
+            }
+            .rpt-block-success {
+              padding: 12px;
+              border: 1px solid #86efac;
+              border-radius: 6px;
+              font-size: 13px;
+              min-height: 60px;
+              white-space: pre-wrap;
+              background: #f0fdf4;
+              color: #166534;
+              font-weight: 500;
+            }
+            .rpt-measure-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            .rpt-measure-table th,
+            .rpt-measure-table td {
+              padding: 6px 10px;
+              border: 1px solid #cbd5e1;
+              font-size: 12px;
+            }
+            .rpt-measure-table th {
+              background: #f8fafc;
+              font-weight: 700;
+              color: #334155;
+            }
+            .rpt-footer {
+              margin-top: 32px;
+              border-top: 1px dashed #cbd5e1;
+              padding-top: 12px;
+              display: flex;
+              justify-content: space-between;
+              font-size: 11px;
+              color: #94a3b8;
+            }
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>ARCTIC CLARITY</h1>
-            <p>PT. Mitra Maju Sejati · Laporan Servis AC Resmi</p>
-          </div>
-          <div class="grid">
-            <div class="section">
-              <h3>Detail Pelanggan</h3>
-              <div class="row"><div class="label">Nama</div><div class="value">${report.customer_name}</div></div>
-              <div class="row"><div class="label">Telepon</div><div class="value">${report.customer_phone || '-'}</div></div>
-              <div class="row"><div class="label">Alamat</div><div class="value">${report.service_address}</div></div>
+          <div class="rpt-letterhead">
+            <div>
+              <div class="rpt-company-name">Mitra Maju Sejati</div>
+              <div class="rpt-company-sub">Service & Maintenance AC Profesional</div>
             </div>
-            <div class="section">
-              <h3>Spesifikasi AC</h3>
-              <div class="row"><div class="label">Merk AC</div><div class="value">${report.ac_brand}</div></div>
-              <div class="row"><div class="label">Tipe AC</div><div class="value">${report.ac_type}</div></div>
-              <div class="row"><div class="label">Layanan</div><div class="value">${report.service_type}</div></div>
-              <div class="row"><div class="label">Tanggal Laporan</div><div class="value">${new Date(report.created_at).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div></div>
+            <div class="rpt-badge">MMS</div>
+          </div>
+
+          <div class="rpt-title">SERVICE REPORT DETAIL</div>
+
+          <table class="rpt-info-table">
+            <tbody>
+              <tr>
+                <td class="rpt-key">Unit (In / Out)</td>
+                <td>${report.indoor_model || '-'} / ${report.outdoor_model || '-'}</td>
+                <td class="rpt-key">Serial Number</td>
+                <td>${report.indoor_serial || '-'} / ${report.outdoor_serial || '-'}</td>
+              </tr>
+              <tr>
+                <td class="rpt-key">Customer</td>
+                <td>${report.customer_name || '-'}</td>
+                <td class="rpt-key">Alamat</td>
+                <td>${report.service_address || '-'}</td>
+              </tr>
+              <tr>
+                <td class="rpt-key">Teknisi</td>
+                <td>${report.technician_name || '-'}</td>
+                <td class="rpt-key">No Laporan</td>
+                <td>${report.report_number || '-'}</td>
+              </tr>
+              <tr>
+                <td class="rpt-key">Error Code</td>
+                <td>${report.error_code || '-'}</td>
+                <td class="rpt-key">Mode Operasi</td>
+                <td>${report.operation_mode || '-'} / ${report.set_temp || '-'}°C</td>
+              </tr>
+              <tr>
+                <td class="rpt-key">Cause of Failure</td>
+                <td colSpan="3">${report.failure_cause || '-'}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="rpt-section-label">Diagnosa Kerusakan</div>
+          <div class="rpt-block">${report.diagnosis || '-'}</div>
+
+          <div class="rpt-section-label">Hasil Pengecekan</div>
+          <div class="rpt-block">${report.checking_result || '-'}</div>
+
+          <div class="rpt-section-label">Data Pengukuran</div>
+          <table class="rpt-measure-table">
+            <thead>
+              <tr>
+                <th>Data Pengukuran</th>
+                <th>Satuan</th>
+                <th>Referensi</th>
+                <th>Data Before</th>
+                <th>Data After</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${measurementsHtml || '<tr><td colspan="5" style="text-align: center;">Tidak ada data pengukuran</td></tr>'}
+            </tbody>
+          </table>
+
+          <div class="rpt-section-label">Countermeasure / Langkah Perbaikan</div>
+          <div class="rpt-block-success">${report.countermeasure || '-'}</div>
+
+          <div class="rpt-section-label">Persetujuan & Tanda Tangan</div>
+          <div style="display: flex; justify-content: space-between; margin-top: 16px; padding: 0 20px;">
+            <div style="text-align: center;">
+              <div style="font-size: 12px; color: #64748b; margin-bottom: 60px;">Teknisi MMS</div>
+              <div style="font-size: 13px; font-weight: bold; border-top: 1px solid #cbd5e1; padding-top: 4px; width: 150px;">
+                ${report.technician_name || '-'}
+              </div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 12px; color: #64748b; margin-bottom: 10px;">Pelanggan</div>
+              ${report.signature_url ? `<img src="${report.signature_url}" alt="Tanda Tangan Pelanggan" style="height: 50px; object-fit: contain; display: block; margin: 0 auto 10px;" />` : '<div style="height: 50px; margin-bottom: 10px;"></div>'}
+              <div style="font-size: 13px; font-weight: bold; border-top: 1px solid #cbd5e1; padding-top: 4px; width: 150px;">
+                ${report.customer_name || '-'}
+              </div>
             </div>
           </div>
-          <div class="full-section">
-            <h3>Tindakan Servis (Hasil Pekerjaan)</h3>
-            <div class="action-text">${report.technician_action}</div>
+
+          <div class="rpt-footer">
+            <span>No. Laporan: ${report.report_number || '-'}</span>
+            <span>PT. Mitra Maju Sejati — Arctic Clarity</span>
+            <span>Dicetak: ${new Date().toLocaleDateString('id-ID')}</span>
           </div>
-          ${report.technician_notes ? `
-          <div class="full-section">
-            <h3>Catatan Tambahan / Rekomendasi</h3>
-            <div class="action-text">${report.technician_notes}</div>
-          </div>` : ''}
-          <div class="signature-box">
-            <p style="margin-bottom: 10px; font-weight: bold;">Tanda Tangan Pelanggan</p>
-            ${report.signature_url ? `<img src="${report.signature_url}" width="180" height="70" style="border: 1px solid #eee; background: white;" />` : '<div style="height: 70px;"></div>'}
-            <div class="signature-line">${report.customer_name}</div>
-          </div>
+
           <script>
             window.onload = function() { window.print(); }
           </script>
