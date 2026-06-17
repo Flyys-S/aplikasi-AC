@@ -236,3 +236,71 @@
 .invoice-actions-footer .btn {
   flex: 1;
 }
+
+.invoice-badge {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-headline);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+@media print {
+  /* Reset background and layout for printing */
+  html, body, #root, .app-container, .dashboard-container, .invoice-container {
+    background: white !important;
+    color: black !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide everything except the invoice card */
+  .invoice-nav,
+  .invoice-actions-footer,
+  .whatsapp-fab,
+  nav,
+  header,
+  footer,
+  button,
+  .sidebar-container {
+    display: none !important;
+  }
+
+  /* Style the invoice card for full-width print */
+  .invoice-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* Ensure colors and backgrounds print correctly */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .invoice-company {
+    background: #0055ff !important;
+    color: white !important;
+  }
+  
+  .invoice-company h3, .invoice-company p {
+    color: white !important;
+  }
+
+  .invoice-status-badge {
+    background: rgba(0, 135, 86, 0.06) !important;
+    color: #008756 !important;
+  }
+}

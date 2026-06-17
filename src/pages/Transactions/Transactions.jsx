@@ -502,7 +502,7 @@ const Transactions = () => {
                             </button>
                             <button 
                               className="icon-btn" 
-                              onClick={() => window.print()}
+                              onClick={() => navigate(`/transactions/${txn.id}?print=true`)}
                               style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--color-outline-variant)', background: 'transparent' }}
                               title="Cetak Struk"
                             >

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Share2, Printer, Loader2, Download, PlusCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatRupiah, formatAngka, formatTanggal } from '../../lib/formatters';
@@ -9,6 +9,7 @@ import './InvoiceDetail.css';
 const InvoiceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [txn, setTxn] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,6 +44,15 @@ const InvoiceDetail = () => {
     }, 0);
     return () => clearTimeout(timer);
   }, [id, fetchTransaction]);
+
+  useEffect(() => {
+    if (!loading && txn && searchParams.get('print') === 'true') {
+      const timer = setTimeout(() => {
+        window.print();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, txn, searchParams]);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -79,9 +89,9 @@ const InvoiceDetail = () => {
       </div>
 
       <div className="invoice-card card-elevation">
-        <div className="invoice-header-branding">
-          <div className="brand-logo">AC</div>
-          <div className="brand-text">
+        <div className="invoice-company">
+          <div className="invoice-logo">AC</div>
+          <div>
             <h3>PT. MITRA MAJU SEJATI</h3>
             <p>Premium AC Service & Retail</p>
           </div>
@@ -92,61 +102,58 @@ const InvoiceDetail = () => {
 
         <div className="invoice-divider" />
 
-        <div className="invoice-meta-grid">
-          <div className="meta-item">
-            <span className="meta-label">Tanggal</span>
-            <span className="meta-value">{formatTanggal(txn.created_at)}</span>
+        <div className="invoice-info-grid">
+          <div className="invoice-info-item">
+            <span className="info-label">Tanggal</span>
+            <span className="info-value">{formatTanggal(txn.created_at)}</span>
           </div>
-          <div className="meta-item">
-            <span className="meta-label">Metode Bayar</span>
-            <span className="meta-value" style={{ textTransform: 'capitalize' }}>{txn.payment_method}</span>
+          <div className="invoice-info-item">
+            <span className="info-label">Metode Bayar</span>
+            <span className="info-value" style={{ textTransform: 'capitalize' }}>{txn.payment_method}</span>
           </div>
-          <div className="meta-item" style={{ gridColumn: 'span 2' }}>
-            <span className="meta-label">Pelanggan</span>
-            <span className="meta-value">{txn.customers?.name || 'Pelanggan Umum'}</span>
-            <span className="meta-subtext">{txn.customers?.phone}</span>
+          <div className="invoice-info-item" style={{ gridColumn: 'span 2' }}>
+            <span className="info-label">Pelanggan</span>
+            <span className="info-value">{txn.customers?.name || 'Pelanggan Umum'}</span>
+            <span className="info-value" style={{ fontSize: '12px', fontWeight: 'normal', color: 'var(--color-outline)' }}>{txn.customers?.phone}</span>
           </div>
         </div>
 
         <div className="invoice-divider" />
 
-        <div className="invoice-items-table">
-          <div className="table-header">
-            <span className="col-desc">Deskripsi</span>
-            <span className="col-qty">Qty</span>
-            <span className="col-total">Total</span>
+        <div className="invoice-items">
+          <div className="invoice-items-header">
+            <span>Deskripsi</span>
+            <span>Qty</span>
+            <span>Total</span>
           </div>
           {txn.items?.map((item, idx) => (
-            <div key={idx} className="table-row">
-              <div className="col-desc">
+            <div key={idx} className="invoice-item-row">
+              <div className="item-name-col">
                 <span className="item-name">{item.products?.name}</span>
-                <span className="item-unit">@ {formatAngka(item.unit_price)}</span>
+                <span className="item-unit-price">@ {formatAngka(item.unit_price)}</span>
               </div>
-              <span className="col-qty">{item.quantity}</span>
-              <span className="col-total">{formatAngka(item.subtotal)}</span>
+              <span className="item-qty">{item.quantity}</span>
+              <span className="item-subtotal">{formatAngka(item.subtotal)}</span>
             </div>
           ))}
         </div>
 
         <div className="invoice-divider" />
 
-        <div className="invoice-summary">
-          <div className="summary-row">
+        <div className="invoice-total-section">
+          <div className="invoice-total-row">
             <span>Subtotal</span>
             <span>{formatAngka(txn.total_amount)}</span>
           </div>
-          <div className="summary-row grand-total">
+          <div className="invoice-total-row grand-total">
             <span>Total Bayar</span>
             <span>{formatRupiah(txn.total_amount)}</span>
           </div>
         </div>
 
-        <div className="invoice-footer-status">
-          <div className="status-indicator">
-            <CheckCircle size={20} color="#008756" />
-            <span>TRANSAKSI BERHASIL</span>
-          </div>
-          <p>Terima kasih telah mempercayakan AC Anda kepada kami.</p>
+        <div className="invoice-status-badge">
+          <CheckCircle size={20} color="#008756" />
+          <span>TRANSAKSI BERHASIL</span>
         </div>
       </div>
 
