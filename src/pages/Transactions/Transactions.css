@@ -351,3 +351,18 @@
   display: flex;
   gap: 8px;
 }
+
+@media (max-width: 768px) {
+  /* Hide Date (2nd) and Channel (4th) columns on mobile to prevent horizontal overflow */
+  .table-custom th:nth-child(2),
+  .table-custom td:nth-child(2),
+  .table-custom th:nth-child(4),
+  .table-custom td:nth-child(4) {
+    display: none !important;
+  }
+  
+  .table-custom td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+}

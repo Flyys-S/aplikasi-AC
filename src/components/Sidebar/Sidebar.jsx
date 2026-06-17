@@ -13,12 +13,20 @@ const Sidebar = () => {
   const isAdmin = role === 'admin'
   const isTechnician = role === 'technician'
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   useEffect(() => {
     document.body.classList.remove('sidebar-open')
   }, [location.pathname])
 
   const frontEndRoutes = ['/', '/catalog', '/admin-catalog', '/tools', '/company', '/login', '/signup', '/checkout', '/service-order', '/install-order', '/admin/reports', '/admin/logs', '/technician/report']
-  if (frontEndRoutes.includes(location.pathname)) {
+  if (frontEndRoutes.includes(location.pathname) && !isMobile) {
     if (role === 'admin' && (location.pathname === '/' || location.pathname === '/catalog' || location.pathname === '/admin-catalog' || location.pathname === '/admin/reports' || location.pathname === '/admin/logs')) {
       // Render sidebar for admin
     } else if ((role === 'technician' || role === 'admin') && location.pathname === '/technician/report') {

@@ -55,6 +55,7 @@ const Checkout = () => {
       return;
     }
 
+    let createdTransactionId = null;
     try {
       setLoading(true);
       const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -96,6 +97,7 @@ const Checkout = () => {
         .single();
 
       if (transError) throw transError;
+      createdTransactionId = transaction.id;
 
       // 3. Prepare detailed transaction items and stock updates
       const itemInserts = [];
@@ -222,6 +224,16 @@ const Checkout = () => {
       }, 1000);
     } catch (error) {
       toast.error('Gagal memproses pesanan: ' + error.message);
+      if (createdTransactionId) {
+        try {
+          await supabase
+            .from('transactions')
+            .update({ status: 'cancelled', notes: 'Gagal membuat invoice Xendit: ' + error.message })
+            .eq('id', createdTransactionId);
+        } catch (dbErr) {
+          console.error('Failed to cancel transaction status:', dbErr);
+        }
+      }
     } finally {
       setLoading(false);
     }
