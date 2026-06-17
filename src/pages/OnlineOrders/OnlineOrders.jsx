@@ -44,7 +44,6 @@ const OnlineOrders = () => {
         .from('transactions')
         .select(`
           *,
-          profiles:user_id(full_name, email),
           items:transaction_items(
             *,
             products(name, brand)
@@ -57,6 +56,7 @@ const OnlineOrders = () => {
       setOrders(data || []);
     } catch (error) {
       console.error('Error fetching online orders:', error.message);
+      toast.error('Gagal memuat pesanan: ' + error.message);
     } finally {
       setLoading(false);
     }
