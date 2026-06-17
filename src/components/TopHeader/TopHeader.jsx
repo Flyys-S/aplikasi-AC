@@ -35,25 +35,24 @@ const TopHeader = ({ title, subtitle, onBack, children, isAdminDashboard, search
     <header className={`top-header glass-panel ${isAdminDashboard ? 'admin-top-header' : ''}`}>
       <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {isMobile ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
-            <button 
-              className="icon-btn hamburger-btn-customer" 
-              onClick={() => document.body.classList.toggle('sidebar-open')}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '6px',
-                color: 'var(--color-on-surface)'
-              }}
-              title="Menu"
-            >
-              <Menu size={20} />
-            </button>
-          </div>
+          <button 
+            className="icon-btn hamburger-btn-customer" 
+            onClick={() => document.body.classList.toggle('sidebar-open')}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '6px',
+              color: 'var(--color-on-surface)',
+              marginRight: '6px'
+            }}
+            title="Menu"
+          >
+            <Menu size={20} />
+          </button>
         ) : (
           role === 'visitor' ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
@@ -150,9 +149,11 @@ const TopHeader = ({ title, subtitle, onBack, children, isAdminDashboard, search
           >
             {userInitial}
           </div>
-          <button className="logout-btn" onClick={handleLogout} title="Keluar">
-            <LogOut size={18} />
-          </button>
+          {!isMobile && (
+            <button className="logout-btn" onClick={handleLogout} title="Keluar">
+              <LogOut size={18} />
+            </button>
+          )}
         </div>
       </div>
     </header>
