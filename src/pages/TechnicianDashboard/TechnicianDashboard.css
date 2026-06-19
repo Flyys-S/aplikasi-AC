@@ -1002,15 +1002,60 @@
 @media (max-width: 768px) {
   .tech-row-1-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   .tech-operations-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .tech-task-status-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .tech-status-card {
+    padding: 12px;
+    gap: 4px;
+    border-radius: 16px;
+  }
+  .status-label {
+    font-size: 0.7rem;
+  }
+  .status-icon-bg {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+  }
+  .status-icon-bg svg {
+    width: 12px;
+    height: 12px;
+  }
+  .status-value {
+    font-size: 1.3rem;
+  }
+  .tech-welcome-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .tech-welcome-name {
+    font-size: 1.25rem;
+  }
+  .tech-performance-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .performance-value {
+    font-size: 1.15rem;
+  }
+  .operations-card {
+    padding: 16px;
+    border-radius: 16px;
   }
 }
 
 @media (max-width: 480px) {
   .tech-task-status-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
 }
 
