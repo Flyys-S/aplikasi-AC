@@ -472,20 +472,20 @@ const TechnicianReport = () => {
                   <tbody>
                     {measurements.map(m => (
                       <tr key={m.id}>
-                        <td className="text-xs font-semibold text-slate-500 max-w-[120px] whitespace-normal">{m.category}</td>
-                        <td className="w-48">
+                        <td className="category-td text-xs font-semibold text-slate-500 max-w-[120px] whitespace-normal" data-label="Kategori">{m.category}</td>
+                        <td className="w-48" data-label="Parameter">
                           <input type="text" value={m.parameter} onChange={e => handleMeasurementChange(m.id, 'parameter', e.target.value)} className="measure-input" />
                         </td>
-                        <td className="w-24">
+                        <td className="w-24" data-label="Satuan">
                           <input type="text" value={m.unit} onChange={e => handleMeasurementChange(m.id, 'unit', e.target.value)} className="measure-input text-center" />
                         </td>
-                        <td className="w-32">
+                        <td className="w-32" data-label="Referensi">
                           <textarea value={m.reference} onChange={e => handleMeasurementChange(m.id, 'reference', e.target.value)} className="measure-input" style={{ minHeight: '40px', py: '4px', fontSize: '11px' }} />
                         </td>
-                        <td className="w-28">
+                        <td className="w-28" data-label="Before">
                           <input type="text" value={m.before} onChange={e => handleMeasurementChange(m.id, 'before', e.target.value)} className="measure-input" />
                         </td>
-                        <td className="w-28">
+                        <td className="w-28" data-label="After">
                           <input type="text" value={m.after} onChange={e => handleMeasurementChange(m.id, 'after', e.target.value)} className="measure-input" />
                         </td>
                       </tr>

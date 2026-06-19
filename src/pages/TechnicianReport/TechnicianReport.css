@@ -218,6 +218,64 @@
   border-color: var(--color-primary);
 }
 
+@media (max-width: 768px) {
+  /* Hide table header on mobile */
+  .measure-form-table,
+  .measure-form-table thead,
+  .measure-form-table tbody,
+  .measure-form-table tr,
+  .measure-form-table td {
+    display: block;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  
+  .measure-form-table {
+    min-width: 100%;
+  }
+
+  .measure-form-table thead {
+    display: none;
+  }
+
+  .measure-form-table tr {
+    margin-bottom: 20px;
+    border: 1px solid var(--color-outline-variant);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    background: var(--color-surface-container-low);
+  }
+
+  .measure-form-table td {
+    border-bottom: none;
+    padding: 6px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* Add label prefix to inputs on mobile */
+  .measure-form-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--color-on-surface-variant);
+  }
+
+  .measure-form-table td.category-td {
+    font-size: 14px;
+    color: var(--color-primary);
+    border-bottom: 1.5px solid var(--color-outline-variant);
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+  }
+  
+  .measure-form-table td.category-td::before {
+    content: "KATEGORI";
+  }
+}
+
 /* Signature Pad container */
 .signature-header {
   display: flex;
