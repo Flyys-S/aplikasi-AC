@@ -553,22 +553,52 @@
 
 /* Print View CSS Overrides */
 @media print {
+  html, body {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   body * {
     visibility: hidden;
   }
+
   #printable-area, #printable-area * {
     visibility: visible;
   }
+
   #printable-area {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    border: none;
-    box-shadow: none;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    border: none !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
   }
+
+  /* Prevent table data layout transformations during printing */
+  .rpt-measure-table, .rpt-info-table {
+    width: 100% !important;
+    display: table !important;
+  }
+
+  .rpt-measure-table tr, .rpt-info-table tr {
+    display: table-row !important;
+  }
+
+  .rpt-measure-table th, .rpt-measure-table td,
+  .rpt-info-table td {
+    display: table-cell !important;
+  }
+
   .no-print {
     display: none !important;
   }
