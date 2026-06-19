@@ -355,6 +355,8 @@
   max-width: 850px;
   margin: 0 auto;
   padding-bottom: 100px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .preview-topbar {
@@ -367,6 +369,26 @@
   border: 1px solid var(--color-outline-variant);
   margin-bottom: 24px;
   box-shadow: var(--shadow-diffused);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .preview-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 16px;
+  }
+  .preview-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .preview-actions button {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
 }
 
 .preview-actions {
@@ -419,6 +441,15 @@
   border: 1px solid #e2e8f0;
   font-family: var(--font-body), sans-serif;
   line-height: 1.4;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto; /* Prevent cutoffs in horizontal scrolling if tables are wide on small screens */
+}
+
+@media (max-width: 768px) {
+  .report-paper {
+    padding: 16px;
+  }
 }
 
 .dark .report-paper {
@@ -433,6 +464,16 @@
   border-bottom: 3px double #023e8a;
   padding-bottom: 16px;
   margin-bottom: 20px;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .rpt-letterhead {
+    flex-wrap: wrap;
+  }
+  .rpt-company-name {
+    font-size: 20px !important;
+  }
 }
 
 .rpt-company-name {
@@ -485,7 +526,31 @@
   font-weight: 700;
   background: #f8fafc;
   color: #334155;
-  width: 150px;
+  width: 120px;
+}
+
+@media (max-width: 576px) {
+  .rpt-info-table, .rpt-info-table tbody, .rpt-info-table tr, .rpt-info-table td {
+    display: block;
+    width: 100% !important;
+  }
+  .rpt-info-table tr {
+    border-bottom: 1.5px solid #cbd5e1;
+    padding: 8px 0;
+  }
+  .rpt-info-table tr:last-child {
+    border-bottom: none;
+  }
+  .rpt-info-table td {
+    border: none;
+    padding: 4px 8px;
+  }
+  .rpt-key {
+    background: transparent;
+    color: #023e8a;
+    font-weight: 800;
+    padding-bottom: 0;
+  }
 }
 
 .rpt-section-label {
@@ -552,6 +617,11 @@
 }
 
 /* Print View CSS Overrides */
+@page {
+  size: auto;
+  margin: 10mm 15mm;
+}
+
 @media print {
   html, body {
     width: 100% !important;
@@ -578,7 +648,7 @@
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 20px !important;
+    padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
     box-sizing: border-box !important;
@@ -588,6 +658,7 @@
   .rpt-measure-table, .rpt-info-table {
     width: 100% !important;
     display: table !important;
+    table-layout: auto !important;
   }
 
   .rpt-measure-table tr, .rpt-info-table tr {
@@ -597,6 +668,12 @@
   .rpt-measure-table th, .rpt-measure-table td,
   .rpt-info-table td {
     display: table-cell !important;
+  }
+
+  .rpt-key {
+    display: table-cell !important;
+    width: 120px !important;
+    background: #f8fafc !important;
   }
 
   .no-print {
