@@ -42,7 +42,6 @@ const TechnicianReport = () => {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [jobData, setJobData] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [formError, setFormError] = useState('');
 
@@ -67,6 +66,9 @@ const TechnicianReport = () => {
   // Signature canvas
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
+
+  // State untuk menyimpan data URL tanda tangan agar tidak diakses langsung saat render
+  const [signatureUrl, setSignatureUrl] = useState('');
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -94,7 +96,6 @@ const TechnicianReport = () => {
 
         if (error) throw error;
         if (data) {
-          setJobData(data);
           setFormData(prev => ({
             ...prev,
             customerName: data.customers?.name || '',
@@ -151,6 +152,7 @@ const TechnicianReport = () => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setSignatureUrl('');
   };
 
   useEffect(() => {
@@ -181,6 +183,13 @@ const TechnicianReport = () => {
       return;
     }
     setFormError('');
+    
+    // Simpan tanda tangan ke state lokal saat beralih ke preview
+    const canvas = canvasRef.current;
+    if (canvas) {
+      setSignatureUrl(canvas.toDataURL());
+    }
+    
     setShowPreview(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -188,10 +197,6 @@ const TechnicianReport = () => {
   const handleSubmitReport = async () => {
     try {
       setSaving(true);
-
-      // Convert signature to image base64
-      const canvas = canvasRef.current;
-      const signatureDataUrl = canvas ? canvas.toDataURL() : null;
 
       const reportPayload = {
         job_id: jobId || null,
@@ -204,7 +209,7 @@ const TechnicianReport = () => {
         service_type: serviceType,
         technician_action: formData.countermeasure, // map countermeasure
         technician_notes: formData.diagnosis + '\n' + formData.checkingResult + '\n' + formData.sparePartDamage,
-        signature_url: signatureDataUrl,
+        signature_url: signatureUrl || null,
 
         // New extended columns
         indoor_model: formData.indoorModel,
@@ -474,7 +479,7 @@ const TechnicianReport = () => {
                       <tr key={m.id}>
                         <td className="category-td text-xs font-semibold text-slate-500 max-w-[120px] whitespace-normal" data-label="Kategori">{m.category}</td>
                         <td className="w-48" data-label="Parameter">
-                          <input type="text" value={m.parameter} onChange={e => handleMeasurementChange(m.id, 'parameter', e.target.value)} className="measure-input" />
+                           <input type="text" value={m.parameter} onChange={e => handleMeasurementChange(m.id, 'parameter', e.target.value)} className="measure-input" />
                         </td>
                         <td className="w-24" data-label="Satuan">
                           <input type="text" value={m.unit} onChange={e => handleMeasurementChange(m.id, 'unit', e.target.value)} className="measure-input text-center" />
@@ -670,9 +675,9 @@ const TechnicianReport = () => {
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '10px' }}>Pelanggan</div>
-                  {canvasRef.current && (
+                  {signatureUrl && (
                     <img 
-                      src={canvasRef.current.toDataURL()} 
+                      src={signatureUrl} 
                       alt="Tanda Tangan Pelanggan" 
                       style={{ height: '50px', objectFit: 'contain', display: 'block', margin: '0 auto 10px' }} 
                     />

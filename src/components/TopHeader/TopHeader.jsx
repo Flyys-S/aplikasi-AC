@@ -42,7 +42,13 @@ const TopHeader = ({ title, subtitle, onBack, children, isAdminDashboard, search
         { id: 3, text: 'Selamat bergabung di Mitra Maju Sejati!', time: '1h lalu', read: false }
       ];
     }
-    setNotifications(mockNotifications);
+    
+    setNotifications(prev => {
+      if (JSON.stringify(prev) !== JSON.stringify(mockNotifications)) {
+        return mockNotifications;
+      }
+      return prev;
+    });
     setUnreadCount(mockNotifications.filter(n => !n.read).length);
   }, [role]);
 

@@ -146,13 +146,6 @@ const ProductDetails = () => {
     }
   }, [isAdmin, id, authLoading, navigate]);
 
-  const generateUniqueId = () => {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
-    }
-    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-  };
-
   const handleImageUpload = async (event) => {
     try {
       setUploading(true);
@@ -160,7 +153,10 @@ const ProductDetails = () => {
       if (!file) return;
 
       const fileExt = file.name.split('.').pop();
-      const fileName = `${id}-${generateUniqueId()}.${fileExt}`;
+      const uniqueId = typeof crypto !== 'undefined' && crypto.randomUUID 
+        ? crypto.randomUUID() 
+        : `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const fileName = `${id}-${uniqueId}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
       const { error: uploadError } = await supabase.storage

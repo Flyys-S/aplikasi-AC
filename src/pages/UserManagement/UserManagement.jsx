@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Shield, Wrench, Eye, Trash2, Search, Plus, Bell, Sun, Moon, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -19,7 +19,7 @@ const UserManagement = () => {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   
-  const { profiles, loading, error, fetchProfiles, updateProfileRole } = useProfiles();
+  const { profiles, loading, fetchProfiles, updateProfileRole } = useProfiles();
   const [updatingId, setUpdatingId] = useState(null);
   
   // Search & Filter State

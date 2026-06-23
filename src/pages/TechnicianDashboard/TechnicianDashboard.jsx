@@ -51,7 +51,6 @@ const FILTERS = [
    Sub-component: Job Detail Bottom Sheet
 ───────────────────────────────────────── */
 const JobDetailSheet = ({ job, onClose, onUpdateStatus }) => {
-  const [action, setAction] = useState('');
   const [technicianAction, setTechnicianAction] = useState(job?.technician_action || '');
   const [technicianNotes, setTechnicianNotes] = useState(job?.technician_notes || '');
   const [saving, setSaving] = useState(false);
@@ -428,7 +427,7 @@ const TechnicianDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, [user]);
 
   useEffect(() => {
     fetchJobs();
@@ -486,12 +485,6 @@ const TechnicianDashboard = () => {
     in_progress: jobs.filter(j => j.status === 'in_progress').length,
     completed: jobs.filter(j => j.status === 'completed').length,
   };
-
-  /* ─── Filtered Jobs ─── */
-  const filteredJobs = jobs.filter(j => {
-    if (activeFilter === 'active') return j.status === 'pending' || j.status === 'in_progress';
-    return j.status === activeFilter;
-  });
 
   /* ─── Greeting ─── */
   const hour = new Date().getHours();

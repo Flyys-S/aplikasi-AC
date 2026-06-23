@@ -9,7 +9,6 @@ const ProductCard = ({
   price, 
   type, 
   specs, 
-  status, 
   onClick 
 }) => {
   // Parse numeric price for discount calculation

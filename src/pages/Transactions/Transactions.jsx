@@ -139,7 +139,6 @@ const Transactions = () => {
   const radius = 40;
   const circumference = 2 * Math.PI * radius; // ~251.3
   const storePercent = totalTxCount > 0 ? (storeCount / totalTxCount) * 100 : 50;
-  const onlinePercent = 100 - storePercent;
   const storeStrokeDash = (storePercent / 100) * circumference;
 
   // Pagination Logic

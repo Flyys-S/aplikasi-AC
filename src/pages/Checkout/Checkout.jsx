@@ -14,8 +14,6 @@ const Checkout = () => {
   const { user } = useAuth();
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [uploading, setUploading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -39,15 +37,6 @@ const Checkout = () => {
     }, 0);
     return () => clearTimeout(timer);
   }, [navigate]);
-
-  const generateUniqueId = () => {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
-    }
-    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-  };
-
-
 
   const handleSubmit = async () => {
     if (!formData.name || !formData.phone || !formData.address) {
@@ -239,23 +228,6 @@ const Checkout = () => {
     }
   };
 
-  if (success) {
-    return (
-      <div className="dashboard-container" style={{ textAlign: 'center', justifyContent: 'center' }}>
-        <div style={{ padding: '40px' }}>
-          <CheckCircle size={80} color="#008756" style={{ marginBottom: '20px' }} />
-          <h2 style={{ fontSize: '24px', marginBottom: '10px' }}>Pesanan Terkirim!</h2>
-          <p style={{ color: '#666', marginBottom: '30px' }}>
-            Bukti pembayaran Anda sedang diverifikasi oleh tim Admin. Kami akan segera menghubungi Anda.
-          </p>
-          <Button fullWidth onClick={() => navigate('/catalog')}>
-            Kembali ke Katalog
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="dashboard-container customer-layout">
       <TopHeader title="Checkout" subtitle="Selesaikan Pesanan Anda" />
@@ -331,7 +303,7 @@ const Checkout = () => {
         </section>
 
         <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '20px', background: 'white', borderTop: '1px solid #eee', zIndex: 10 }}>
-          <Button fullWidth onClick={handleSubmit} disabled={loading || uploading}>
+          <Button fullWidth onClick={handleSubmit} disabled={loading}>
             {loading ? 'Memproses...' : 'Konfirmasi Pembayaran'}
           </Button>
         </div>
