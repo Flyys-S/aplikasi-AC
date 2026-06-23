@@ -9,6 +9,7 @@ import Navigation from '../../components/Navigation';
 import Button from '../../components/Button';
 import EmptyState from '../../components/EmptyState';
 import InlineLoader from '../../components/InlineLoader';
+import SkeletonTable from '../../components/Loading/SkeletonTable';
 import { useProfiles } from '../../hooks/useSupabase';
 import { supabase } from '../../lib/supabase';
 import { logAdminActivity } from '../../lib/activityLog';
@@ -231,7 +232,7 @@ const UserManagement = () => {
 
           <div className="table-responsive-custom">
             {loading ? (
-              <InlineLoader text="Memuat data pengguna..." />
+              <SkeletonTable rows={5} cols={5} />
             ) : currentItems.length > 0 ? (
               <table className="mgmt-table">
                 <thead>

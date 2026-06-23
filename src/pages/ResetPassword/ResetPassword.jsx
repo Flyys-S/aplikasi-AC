@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import toast from 'react-hot-toast'
 import Button from '../../components/Button'
 import { Lock, Eye, EyeOff, Check } from 'lucide-react'
+import GlassSpinner from '../../components/Loading/GlassSpinner'
 import './ResetPassword.css'
 
 const ResetPassword = () => {
@@ -51,6 +52,7 @@ const ResetPassword = () => {
 
   return (
     <div className="login-container">
+      {loading && <GlassSpinner message="Mengatur ulang kata sandi..." />}
       <div className="ambient-orb orb-primary"></div>
       <div className="ambient-orb orb-accent"></div>
 

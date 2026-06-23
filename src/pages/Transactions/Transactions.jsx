@@ -9,6 +9,7 @@ import EmptyState from '../../components/EmptyState';
 import TopHeader from '../../components/TopHeader';
 import Navigation from '../../components/Navigation';
 import Button from '../../components/Button';
+import SkeletonTable from '../../components/Loading/SkeletonTable';
 import './Transactions.css';
 
 const Transactions = () => {
@@ -442,7 +443,7 @@ const Transactions = () => {
         <section className="table-card-wrapper">
           <div className="table-responsive-custom">
             {loading ? (
-              <InlineLoader text="Memuat data transaksi..." />
+              <SkeletonTable rows={5} cols={7} />
             ) : currentItems.length > 0 ? (
               <table className="table-custom">
                 <thead>
