@@ -215,3 +215,134 @@
   20%, 60% { transform: rotate(15deg); }
   40%, 80% { transform: rotate(-15deg); }
 }
+
+/* Delete User Modal */
+.delete-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.delete-modal-card {
+  width: 90%;
+  max-width: 440px;
+  background: var(--color-surface-container-high);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-deep);
+  animation: scaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.delete-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: var(--color-error);
+}
+
+.delete-modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--color-on-surface);
+}
+
+.delete-modal-body {
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.delete-modal-user-info {
+  background: var(--color-surface-container-low);
+  padding: 12px;
+  border-radius: 10px;
+  margin: 12px 0;
+  border: 1px solid var(--color-outline-variant);
+}
+
+.delete-modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.delete-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.delete-option-btn:hover {
+  background: var(--color-surface-container-low);
+  border-color: var(--color-outline);
+  transform: translateY(-1px);
+}
+
+.delete-option-btn.danger-action {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.delete-option-btn.danger-action:hover {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgb(239, 68, 68);
+}
+
+.delete-option-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.delete-option-details h4 {
+  margin: 0 0 2px 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.delete-option-details p {
+  margin: 0;
+  font-size: 11px;
+  color: var(--color-on-surface-variant);
+}
+
+.delete-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+

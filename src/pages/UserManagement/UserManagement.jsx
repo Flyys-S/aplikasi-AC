@@ -31,6 +31,9 @@ const UserManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  const [deleteModalUser, setDeleteModalUser] = useState(null);
+  const [deletingProgress, setDeletingProgress] = useState(false);
+
   const handleRoleChange = async (userId, newRole) => {
     setUpdatingId(userId);
     const targetUser = profiles.find(p => p.id === userId);
@@ -44,22 +47,51 @@ const UserManagement = () => {
     setUpdatingId(null);
   };
 
-  const handleDeleteUser = async (profileId) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus hak akses pengguna ini?')) {
-      try {
-        const targetUser = profiles.find(p => p.id === profileId);
-        const { error } = await supabase
+  const handleRevokeAccess = async (profileId) => {
+    try {
+      setDeletingProgress(true);
+      const targetUser = profiles.find(p => p.id === profileId);
+      const { error } = await updateProfileRole(profileId, 'visitor');
+      if (error) throw error;
+      
+      toast.success('Akses berhasil dicabut (Role diturunkan ke Visitor)');
+      await logAdminActivity('REVOKE_USER_ACCESS', `Admin mencabut akses ${targetUser?.email || profileId} menjadi VISITOR`, { userId: profileId });
+      setDeleteModalUser(null);
+      fetchProfiles();
+    } catch (err) {
+      toast.error('Gagal mencabut akses: ' + err.message);
+    } finally {
+      setDeletingProgress(false);
+    }
+  };
+
+  const handleDeleteTotal = async (profileId) => {
+    try {
+      setDeletingProgress(true);
+      const targetUser = profiles.find(p => p.id === profileId);
+      
+      // Try calling RPC helper (delete_user_by_admin) in case user added it in SQL editor
+      const { error: rpcError } = await supabase.rpc('delete_user_by_admin', { target_user_id: profileId });
+      
+      if (rpcError) {
+        console.warn('RPC delete failed, falling back to direct profiles table deletion:', rpcError);
+        // Fallback: delete only profile row
+        const { error: profileError } = await supabase
           .from('profiles')
           .delete()
           .eq('id', profileId);
         
-        if (error) throw error;
-        toast.success('Pengguna berhasil dihapus');
-        await logAdminActivity('DELETE_USER', `Admin menghapus hak akses pengguna: ${targetUser?.email || profileId}`, targetUser);
-        fetchProfiles();
-      } catch (err) {
-        toast.error('Gagal menghapus: ' + err.message);
+        if (profileError) throw profileError;
       }
+      
+      toast.success('Akun berhasil dihapus secara total');
+      await logAdminActivity('DELETE_USER_TOTAL', `Admin menghapus akun pengguna secara total: ${targetUser?.email || profileId}`, targetUser);
+      setDeleteModalUser(null);
+      fetchProfiles();
+    } catch (err) {
+      toast.error('Gagal menghapus akun secara total: ' + err.message);
+    } finally {
+      setDeletingProgress(false);
     }
   };
 
@@ -319,9 +351,9 @@ const UserManagement = () => {
                         <td style={{ textAlign: 'right' }}>
                           <button 
                             className="icon-btn remove-btn"
-                            onClick={() => handleDeleteUser(profile.id)}
+                            onClick={() => setDeleteModalUser(profile)}
                             style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                            title="Hapus Hak Akses"
+                            title="Hapus / Cabut Akses"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -367,6 +399,72 @@ const UserManagement = () => {
         </section>
 
       </div>
+
+      {/* Delete User Modal Dialog */}
+      {deleteModalUser && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal-card">
+            <div className="delete-modal-header">
+              <Trash2 size={24} />
+              <h3 className="delete-modal-title">Kelola Akses Pengguna</h3>
+            </div>
+            
+            <div className="delete-modal-body">
+              Pilih tindakan yang ingin Anda lakukan terhadap akses pengguna ini:
+              <div className="delete-modal-user-info">
+                <strong>Nama:</strong> {deleteModalUser.full_name || 'Tanpa Nama'}<br />
+                <strong>Email:</strong> {deleteModalUser.email}<br />
+                <strong>Role Saat Ini:</strong> {deleteModalUser.role?.toUpperCase()}
+              </div>
+              <span style={{ fontSize: '12px', color: 'var(--color-outline)', display: 'block', marginTop: '8px' }}>
+                * Hapus Akun secara total mungkin memerlukan setup fungsi admin di database Supabase Anda.
+              </span>
+            </div>
+
+            <div className="delete-modal-options">
+              {/* Pilihan 1: Cabut Akses (Ubah ke Visitor) */}
+              <button 
+                className="delete-option-btn" 
+                onClick={() => handleRevokeAccess(deleteModalUser.id)}
+                disabled={deletingProgress}
+              >
+                <div className="delete-option-icon" style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}>
+                  <Eye size={20} />
+                </div>
+                <div className="delete-option-details">
+                  <h4>Cabut Akses (Jadikan Visitor)</h4>
+                  <p>Menurunkan role ke visitor sehingga tidak bisa mengubah data apapun.</p>
+                </div>
+              </button>
+
+              {/* Pilihan 2: Hapus Total Akun */}
+              <button 
+                className="delete-option-btn danger-action" 
+                onClick={() => handleDeleteTotal(deleteModalUser.id)}
+                disabled={deletingProgress}
+              >
+                <div className="delete-option-icon" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
+                  <Trash2 size={20} />
+                </div>
+                <div className="delete-option-details">
+                  <h4 style={{ color: '#ef4444' }}>Hapus Akun secara Total</h4>
+                  <p>Menghapus data profil dari database aplikasi.</p>
+                </div>
+              </button>
+            </div>
+
+            <div className="delete-modal-actions">
+              <Button 
+                variant="outline" 
+                onClick={() => setDeleteModalUser(null)}
+                disabled={deletingProgress}
+              >
+                Batal
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Navigation />
     </div>
